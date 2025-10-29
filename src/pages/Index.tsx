@@ -1,7 +1,7 @@
-import { SpaceBoosterGame } from "@/components/SpaceBoosterGame";
+import { GameBoosterDashboard } from "@/components/GameBoosterDashboard";
 
 const Index = () => {
-  return <SpaceBoosterGame />;
+  return <GameBoosterDashboard />;
 };
 
 export default Index;

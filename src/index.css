@@ -8,60 +8,60 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Space theme - dark cosmic background */
-    --background: 240 20% 8%;
-    --foreground: 200 100% 95%;
+    /* Gaming dark theme */
+    --background: 220 20% 10%;
+    --foreground: 0 0% 98%;
 
-    /* Glass panels */
-    --card: 240 15% 12%;
-    --card-foreground: 200 100% 95%;
+    /* Card surfaces */
+    --card: 220 18% 14%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 240 15% 12%;
-    --popover-foreground: 200 100% 95%;
+    --popover: 220 18% 14%;
+    --popover-foreground: 0 0% 98%;
 
-    /* Neon cyan primary */
-    --primary: 188 100% 50%;
-    --primary-foreground: 240 20% 8%;
+    /* Gaming green primary */
+    --primary: 142 76% 45%;
+    --primary-foreground: 220 20% 10%;
 
-    /* Electric blue secondary */
-    --secondary: 220 80% 55%;
-    --secondary-foreground: 200 100% 95%;
+    /* Secondary blue */
+    --secondary: 217 91% 60%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 240 10% 20%;
-    --muted-foreground: 200 20% 70%;
+    --muted: 220 15% 20%;
+    --muted-foreground: 0 0% 65%;
 
-    /* Pink accent */
-    --accent: 320 80% 60%;
-    --accent-foreground: 200 100% 95%;
+    /* Accent orange */
+    --accent: 25 95% 55%;
+    --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 70% 55%;
-    --destructive-foreground: 200 100% 95%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 240 15% 20%;
-    --input: 240 15% 15%;
-    --ring: 188 100% 50%;
+    --border: 220 15% 22%;
+    --input: 220 15% 18%;
+    --ring: 142 76% 45%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
-    /* Custom space colors */
-    --space-deep: 240 25% 5%;
-    --neon-cyan: 188 100% 50%;
-    --neon-blue: 220 80% 55%;
-    --neon-pink: 320 80% 60%;
-    --neon-purple: 280 70% 60%;
+    /* Gaming colors */
+    --gaming-green: 142 76% 45%;
+    --gaming-blue: 217 91% 60%;
+    --gaming-orange: 25 95% 55%;
+    --gaming-red: 0 72% 51%;
+    --gaming-purple: 270 70% 60%;
     
     /* Gradients */
-    --gradient-space: linear-gradient(180deg, hsl(240 25% 5%) 0%, hsl(240 20% 8%) 50%, hsl(260 25% 10%) 100%);
-    --gradient-neon: linear-gradient(135deg, hsl(188 100% 50%) 0%, hsl(220 80% 55%) 50%, hsl(280 70% 60%) 100%);
-    --gradient-boost: linear-gradient(180deg, hsl(188 100% 50%) 0%, hsl(320 80% 60%) 100%);
+    --gradient-gaming: linear-gradient(135deg, hsl(142 76% 45%) 0%, hsl(217 91% 60%) 100%);
+    --gradient-performance: linear-gradient(90deg, hsl(142 76% 45%) 0%, hsl(25 95% 55%) 100%);
+    --gradient-boost: linear-gradient(135deg, hsl(25 95% 55%) 0%, hsl(0 72% 51%) 100%);
     
     /* Shadows */
-    --shadow-glow: 0 0 30px hsl(188 100% 50% / 0.5);
-    --shadow-glow-strong: 0 0 50px hsl(188 100% 50% / 0.8);
+    --shadow-glow-green: 0 0 20px hsl(142 76% 45% / 0.4);
+    --shadow-glow-blue: 0 0 20px hsl(217 91% 60% / 0.4);
     
     /* Glass effect */
-    --glass-bg: hsl(240 15% 12% / 0.7);
-    --glass-border: hsl(200 50% 50% / 0.3);
+    --glass-bg: hsl(220 18% 14% / 0.8);
+    --glass-border: hsl(142 76% 45% / 0.2);
   }
 }
 
