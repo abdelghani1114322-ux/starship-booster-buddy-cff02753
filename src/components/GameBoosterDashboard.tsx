@@ -232,6 +232,7 @@ export const GameBoosterDashboard = () => {
         cpuUsage={cpuUsage}
         ramUsage={ramUsage}
         fps={fps}
+        gpuUsage={gpuUsage}
         isBoosted={isBoosted}
       />
     </div>

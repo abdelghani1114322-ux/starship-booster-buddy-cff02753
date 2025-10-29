@@ -1,160 +1,153 @@
-import { useState, useEffect } from "react";
-import { Sparkles, X, Minimize2, Maximize2, Lightbulb, AlertCircle, CheckCircle } from "lucide-react";
+import { useState } from "react";
+import { Cpu, Monitor, Flame, Wind } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
+import { toast } from "sonner";
 
 interface BoostAssistantProps {
   cpuUsage: number;
   ramUsage: number;
   fps: number;
+  gpuUsage: number;
   isBoosted: boolean;
 }
 
-export const BoostAssistant = ({ cpuUsage, ramUsage, fps, isBoosted }: BoostAssistantProps) => {
-  const [isMinimized, setIsMinimized] = useState(false);
-  const [position, setPosition] = useState({ x: 20, y: 100 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [tip, setTip] = useState("");
+export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted }: BoostAssistantProps) => {
+  const [fanMode, setFanMode] = useState<"auto" | "max">("auto");
+  const [diabloMode, setDiabloMode] = useState(false);
 
-  // Generate dynamic tips based on performance
-  useEffect(() => {
-    if (isBoosted) {
-      setTip("Performance mode active! Your games should run smoother now.");
-    } else if (cpuUsage > 70) {
-      setTip("High CPU usage detected. Consider closing background applications.");
-    } else if (ramUsage > 75) {
-      setTip("RAM usage is high. Click 'Free RAM' to optimize memory.");
-    } else if (fps < 60) {
-      setTip("Low FPS detected. Try activating the performance boost.");
-    } else {
-      setTip("System is running smoothly. Ready for gaming!");
-    }
-  }, [cpuUsage, ramUsage, fps, isBoosted]);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest("button")) return;
-    setIsDragging(true);
-    setDragOffset({
-      x: e.clientX - position.x,
-      y: e.clientY - position.y,
+  const toggleFanMode = () => {
+    const newMode = fanMode === "auto" ? "max" : "auto";
+    setFanMode(newMode);
+    toast.success(`Fan Mode: ${newMode.toUpperCase()}`, {
+      description: newMode === "max" ? "Maximum cooling activated" : "Auto cooling enabled",
     });
   };
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isDragging) {
-        setPosition({
-          x: Math.max(0, Math.min(window.innerWidth - 320, e.clientX - dragOffset.x)),
-          y: Math.max(0, Math.min(window.innerHeight - 200, e.clientY - dragOffset.y)),
-        });
-      }
-    };
+  const toggleDiabloMode = () => {
+    setDiabloMode(!diabloMode);
+    toast.success(!diabloMode ? "Diablo Mode Activated! 🔥" : "Diablo Mode Deactivated", {
+      description: !diabloMode ? "Extreme performance unlocked" : "Normal mode restored",
+    });
+  };
 
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    if (isDragging) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
-      return () => {
-        window.removeEventListener("mousemove", handleMouseMove);
-        window.removeEventListener("mouseup", handleMouseUp);
-      };
-    }
-  }, [isDragging, dragOffset]);
-
-  const getStatusIcon = () => {
-    if (isBoosted) return <CheckCircle className="w-4 h-4 text-primary" />;
-    if (cpuUsage > 70 || ramUsage > 75 || fps < 60) {
-      return <AlertCircle className="w-4 h-4 text-accent" />;
-    }
-    return <CheckCircle className="w-4 h-4 text-primary" />;
+  const getStatusColor = (value: number) => {
+    if (value <= 40) return "text-primary";
+    if (value <= 70) return "text-accent";
+    return "text-destructive";
   };
 
   return (
-    <div
-      className="fixed z-50 select-none"
-      style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        width: "320px",
-      }}
-      onMouseDown={handleMouseDown}
-    >
-      <Card className="bg-card/90 backdrop-blur-xl border-primary/30 shadow-[0_0_30px_rgba(16,185,129,0.2)] cursor-move">
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-primary animate-pulse" />
-            <span className="font-bold text-foreground">Performance Assistant</span>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6 hover:bg-primary/10"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsMinimized(!isMinimized);
-            }}
-          >
-            {isMinimized ? (
-              <Maximize2 className="h-4 w-4" />
-            ) : (
-              <Minimize2 className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
-
-        {/* Content */}
-        {!isMinimized && (
-          <div className="p-4 space-y-4">
-            {/* Status Alert */}
-            <div className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
-              <div className="mt-0.5">{getStatusIcon()}</div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <Lightbulb className="w-4 h-4 text-accent" />
-                  <span className="text-xs font-semibold text-foreground">
-                    Smart Tip
-                  </span>
+    <>
+      {/* LEFT PANEL - CPU, GPU, Modes */}
+      <div className="fixed left-6 top-1/2 -translate-y-1/2 z-50 w-64 h-64">
+        <Card className="h-full bg-card/95 backdrop-blur-xl border-primary/30 shadow-[0_0_40px_rgba(16,185,129,0.3)] p-6 flex flex-col justify-between">
+          <div className="space-y-4">
+            {/* CPU Usage */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Cpu className="w-5 h-5 text-secondary" />
+                  <span className="font-semibold text-sm">CPU</span>
                 </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">{tip}</p>
+                <span className={`text-2xl font-bold ${getStatusColor(cpuUsage)}`}>
+                  {Math.round(cpuUsage)}%
+                </span>
+              </div>
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-performance transition-all duration-500"
+                  style={{ width: `${cpuUsage}%` }}
+                />
               </div>
             </div>
 
-            {/* Quick Stats */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Status</span>
-                <span className={`font-semibold ${isBoosted ? "text-primary" : "text-foreground"}`}>
-                  {isBoosted ? "Boosted" : "Normal"}
+            {/* GPU Usage */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Monitor className="w-5 h-5 text-primary" />
+                  <span className="font-semibold text-sm">GPU</span>
+                </div>
+                <span className={`text-2xl font-bold ${getStatusColor(gpuUsage)}`}>
+                  {Math.round(gpuUsage)}%
                 </span>
               </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Current FPS</span>
-                <span className="font-semibold text-accent">{Math.round(fps)}</span>
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-boost transition-all duration-500"
+                  style={{ width: `${gpuUsage}%` }}
+                />
               </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">System Load</span>
-                <span className="font-semibold">
-                  {Math.round((cpuUsage + ramUsage) / 2)}%
+            </div>
+          </div>
+
+          {/* Mode Buttons */}
+          <div className="space-y-2">
+            <Button
+              variant={fanMode === "max" ? "default" : "outline"}
+              className="w-full"
+              onClick={toggleFanMode}
+            >
+              <Wind className="w-4 h-4 mr-2" />
+              Fan: {fanMode.toUpperCase()}
+            </Button>
+            <Button
+              variant={diabloMode ? "default" : "outline"}
+              className={`w-full ${diabloMode ? "bg-destructive hover:bg-destructive/90 shadow-[0_0_20px_rgba(239,68,68,0.5)]" : ""}`}
+              onClick={toggleDiabloMode}
+            >
+              <Flame className="w-4 h-4 mr-2" />
+              Diablo Mode
+            </Button>
+          </div>
+        </Card>
+      </div>
+
+      {/* RIGHT PANEL - RAM, FPS */}
+      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 w-64 h-64">
+        <Card className="h-full bg-card/95 backdrop-blur-xl border-accent/30 shadow-[0_0_40px_rgba(59,130,246,0.3)] p-6 flex flex-col justify-center">
+          <div className="space-y-6">
+            {/* RAM Usage */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Monitor className="w-5 h-5 text-primary" />
+                  <span className="font-semibold text-sm">RAM</span>
+                </div>
+                <span className={`text-2xl font-bold ${getStatusColor(ramUsage)}`}>
+                  {Math.round(ramUsage)}%
                 </span>
+              </div>
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-gaming transition-all duration-500"
+                  style={{ width: `${ramUsage}%` }}
+                />
               </div>
             </div>
 
-            {/* Pro Tip */}
-            <div className="p-3 bg-secondary/5 rounded-lg border border-secondary/20">
-              <p className="text-xs text-muted-foreground">
-                <span className="font-semibold text-secondary">💡 Pro Tip:</span> Keep
-                your drivers updated and close unnecessary background apps for best
-                performance.
+            {/* FPS */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-semibold text-sm">FPS</span>
+                <span className={`text-4xl font-bold ${fps >= 100 ? "text-primary" : fps >= 60 ? "text-accent" : "text-destructive"}`}>
+                  {Math.round(fps)}
+                </span>
+              </div>
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-boost transition-all duration-500"
+                  style={{ width: `${Math.min(100, (fps / 144) * 100)}%` }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1 text-center">
+                {fps >= 100 ? "Excellent" : fps >= 60 ? "Good" : "Low"}
               </p>
             </div>
           </div>
-        )}
-      </Card>
-    </div>
+        </Card>
+      </div>
+    </>
   );
 };
