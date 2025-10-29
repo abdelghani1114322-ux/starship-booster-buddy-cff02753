@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { Zap, Cpu, MemoryStick, Gauge, Monitor, Settings, TrendingUp } from "lucide-react";
+import { Zap, Cpu, MemoryStick, Gauge, Monitor, Settings, TrendingUp, PanelLeftOpen } from "lucide-react";
 import { BoostAssistant } from "./BoostAssistant";
 import { toast } from "sonner";
 
@@ -12,6 +12,8 @@ export const GameBoosterDashboard = () => {
   const [gpuUsage, setGpuUsage] = useState(38);
   const [isBoosted, setIsBoosted] = useState(false);
   const [optimizationScore, setOptimizationScore] = useState(72);
+  const [showPanels, setShowPanels] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Simulate real-time performance metrics
   useEffect(() => {
@@ -58,8 +60,22 @@ export const GameBoosterDashboard = () => {
     return "text-destructive";
   };
 
+  // Handle click outside to close panels
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showPanels && containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setShowPanels(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showPanels]);
+
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-background p-6" ref={containerRef}>
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -71,9 +87,19 @@ export const GameBoosterDashboard = () => {
               Optimize your system for maximum gaming performance
             </p>
           </div>
-          <Button variant="outline" size="icon">
-            <Settings className="h-5 w-5" />
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant={showPanels ? "default" : "outline"} 
+              size="icon"
+              onClick={() => setShowPanels(!showPanels)}
+              className="relative"
+            >
+              <PanelLeftOpen className="h-5 w-5" />
+            </Button>
+            <Button variant="outline" size="icon">
+              <Settings className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
 
         {/* Main Boost Control */}
@@ -234,6 +260,7 @@ export const GameBoosterDashboard = () => {
         fps={fps}
         gpuUsage={gpuUsage}
         isBoosted={isBoosted}
+        isVisible={showPanels}
       />
     </div>
   );

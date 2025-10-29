@@ -10,9 +10,11 @@ interface BoostAssistantProps {
   fps: number;
   gpuUsage: number;
   isBoosted: boolean;
+  isVisible: boolean;
 }
 
-export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted }: BoostAssistantProps) => {
+export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, isVisible }: BoostAssistantProps) => {
+  if (!isVisible) return null;
   const [fanMode, setFanMode] = useState<"auto" | "max">("auto");
   const [diabloMode, setDiabloMode] = useState(false);
 
