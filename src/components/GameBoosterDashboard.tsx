@@ -272,13 +272,15 @@ export const GameBoosterDashboard = () => {
       </div>
 
       {/* Floating Assistant */}
-      <BoostAssistant
+      <BoostAssistant 
         cpuUsage={cpuUsage}
         ramUsage={ramUsage}
         fps={fps}
         gpuUsage={gpuUsage}
         isBoosted={isBoosted}
         isVisible={showPanels}
+        wifiEnabled={wifiEnabled}
+        setWifiEnabled={setWifiEnabled}
       />
     </div>
   );

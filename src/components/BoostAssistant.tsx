@@ -3,6 +3,8 @@ import { Cpu, Monitor, Flame, Wind } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { toast } from "sonner";
+import wifiOn from "@/assets/wifi-on.webp";
+import wifiOff from "@/assets/wifi-off.webp";
 
 interface BoostAssistantProps {
   cpuUsage: number;
@@ -11,9 +13,11 @@ interface BoostAssistantProps {
   gpuUsage: number;
   isBoosted: boolean;
   isVisible: boolean;
+  wifiEnabled: boolean;
+  setWifiEnabled: (enabled: boolean) => void;
 }
 
-export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, isVisible }: BoostAssistantProps) => {
+export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, isVisible, wifiEnabled, setWifiEnabled }: BoostAssistantProps) => {
   if (!isVisible) return null;
   const [fanMode, setFanMode] = useState<"auto" | "max">("auto");
   const [diabloMode, setDiabloMode] = useState(false);
@@ -86,6 +90,21 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
 
           {/* Mode Buttons */}
           <div className="space-y-2">
+            <Button
+              variant={wifiEnabled ? "default" : "outline"}
+              className="w-full"
+              onClick={() => {
+                setWifiEnabled(!wifiEnabled);
+                toast.success(wifiEnabled ? "WiFi Disabled" : "WiFi Enabled");
+              }}
+            >
+              <img 
+                src={wifiEnabled ? wifiOn : wifiOff} 
+                alt="WiFi" 
+                className="w-4 h-4 mr-2"
+              />
+              WiFi: {wifiEnabled ? "ON" : "OFF"}
+            </Button>
             <Button
               variant={fanMode === "max" ? "default" : "outline"}
               className="w-full"
