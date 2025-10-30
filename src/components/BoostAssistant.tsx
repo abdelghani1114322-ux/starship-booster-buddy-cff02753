@@ -5,7 +5,6 @@ import { Card } from "./ui/card";
 import { toast } from "sonner";
 import wifiOn from "@/assets/wifi-on.webp";
 import wifiOff from "@/assets/wifi-off.webp";
-import gameScene from "@/assets/game-scene.jpg";
 
 interface BoostAssistantProps {
   cpuUsage: number;
@@ -126,10 +125,10 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
         </Card>
       </div>
 
-      {/* RIGHT PANEL - RAM, FPS, Game Scene */}
+      {/* RIGHT PANEL - RAM, FPS */}
       <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px]">
-        <Card className="h-full bg-card/95 backdrop-blur-xl border-accent/30 shadow-[0_0_40px_rgba(59,130,246,0.3)] p-6 flex flex-col justify-between overflow-hidden">
-          <div className="space-y-4">
+        <Card className="h-full bg-card/95 backdrop-blur-xl border-accent/30 shadow-[0_0_40px_rgba(59,130,246,0.3)] p-6 flex flex-col justify-center overflow-hidden">
+          <div className="space-y-6">
             {/* RAM Usage */}
             <div>
               <div className="flex items-center justify-between mb-2">
@@ -167,15 +166,6 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
                 {fps >= 100 ? "Excellent" : fps >= 60 ? "Good" : "Low"}
               </p>
             </div>
-          </div>
-
-          {/* Game Scene Image */}
-          <div className="mt-4 rounded-lg overflow-hidden border-2 border-primary/20">
-            <img 
-              src={gameScene} 
-              alt="Game Scene" 
-              className="w-full h-auto object-cover"
-            />
           </div>
         </Card>
       </div>
