@@ -4,6 +4,8 @@ import { Card } from "./ui/card";
 import { Zap, Cpu, MemoryStick, Gauge, Monitor, Settings, TrendingUp, PanelLeftOpen } from "lucide-react";
 import { BoostAssistant } from "./BoostAssistant";
 import { toast } from "sonner";
+import wifiOn from "@/assets/wifi-on.webp";
+import wifiOff from "@/assets/wifi-off.webp";
 
 export const GameBoosterDashboard = () => {
   const [cpuUsage, setCpuUsage] = useState(45);
@@ -13,6 +15,7 @@ export const GameBoosterDashboard = () => {
   const [isBoosted, setIsBoosted] = useState(false);
   const [optimizationScore, setOptimizationScore] = useState(72);
   const [showPanels, setShowPanels] = useState(false);
+  const [wifiEnabled, setWifiEnabled] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Simulate real-time performance metrics
@@ -88,6 +91,21 @@ export const GameBoosterDashboard = () => {
             </p>
           </div>
           <div className="flex gap-2">
+            <Button 
+              variant="outline"
+              size="icon"
+              onClick={() => {
+                setWifiEnabled(!wifiEnabled);
+                toast.success(wifiEnabled ? "WiFi Disabled" : "WiFi Enabled");
+              }}
+              className="relative"
+            >
+              <img 
+                src={wifiEnabled ? wifiOn : wifiOff} 
+                alt="WiFi" 
+                className="h-5 w-5"
+              />
+            </Button>
             <Button 
               variant={showPanels ? "default" : "outline"} 
               size="icon"
