@@ -6,7 +6,6 @@ import { BoostAssistant } from "./BoostAssistant";
 import { toast } from "sonner";
 import wifiOn from "@/assets/wifi-on.webp";
 import wifiOff from "@/assets/wifi-off.webp";
-import buttonGame from "@/assets/button-game.jpg";
 import buttonBar from "@/assets/button-bar.jpg";
 
 export const GameBoosterDashboard = () => {
@@ -345,19 +344,6 @@ export const GameBoosterDashboard = () => {
         wifiEnabled={wifiEnabled}
         setWifiEnabled={setWifiEnabled}
       />
-
-      {/* Floating Button - Game Mode (shows everywhere) */}
-      {!showPanels && (
-        <button
-          onClick={() => setShowPanels(true)}
-          className="fixed left-0 top-1/2 -translate-y-1/2 z-40 w-16 h-16 rounded-r-2xl shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:scale-110 transition-transform"
-          style={{
-            background: `url(${buttonGame})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
-        />
-      )}
 
       {/* Floating Bar Button - App Mode (shows everywhere) */}
       {!showPanels && (
