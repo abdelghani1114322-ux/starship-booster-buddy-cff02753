@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -23,6 +23,16 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
   const [diabloMode, setDiabloMode] = useState(false);
   const [cpuTemp, setCpuTemp] = useState(65);
   const [gpuTemp, setGpuTemp] = useState(58);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [batteryLevel, setBatteryLevel] = useState(85);
+
+  // Update time every minute
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
 
   const gameApps = [
     { name: "Game 1", icon: Gamepad2, color: "bg-gradient-to-br from-red-500 to-red-600" },
@@ -53,6 +63,54 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
     return "text-destructive";
   };
 
+  const CircularGauge = ({ value, label, temp, color }: { value: number; label: string; temp: number; color: string }) => {
+    const radius = 60;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference - (value / 100) * circumference;
+    
+    return (
+      <div className="relative flex flex-col items-center">
+        <svg className="transform -rotate-90" width="140" height="140">
+          {/* Background circle */}
+          <circle
+            cx="70"
+            cy="70"
+            r={radius}
+            stroke="currentColor"
+            strokeWidth="8"
+            fill="none"
+            className="text-muted opacity-20"
+          />
+          {/* Progress circle */}
+          <circle
+            cx="70"
+            cy="70"
+            r={radius}
+            stroke={color}
+            strokeWidth="8"
+            fill="none"
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+            className="transition-all duration-500"
+            style={{ filter: `drop-shadow(0 0 8px ${color})` }}
+          />
+        </svg>
+        {/* Center text */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+          <div className={`text-3xl font-bold ${getStatusColor(value)}`}>
+            {Math.round(value)}%
+          </div>
+          <div className="text-xs text-muted-foreground font-semibold">{label}</div>
+          <div className="flex items-center justify-center gap-1 text-xs mt-1">
+            <Thermometer className="w-3 h-3" />
+            <span>{temp}°C</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       {/* LEFT PANEL - CPU, GPU, Modes */}
@@ -64,6 +122,23 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
           {/* Decorative Red Bars */}
           <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
           <div className="absolute right-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
+          
+          {/* Time and Battery */}
+          <div className="flex items-center justify-between px-6 py-3 bg-muted/30 border-b border-primary/20">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold">{currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="text-xs">{batteryLevel}%</div>
+              <div className="w-8 h-4 border-2 border-primary rounded-sm relative">
+                <div 
+                  className="h-full bg-primary transition-all"
+                  style={{ width: `${batteryLevel}%` }}
+                />
+                <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-1 h-2 bg-primary rounded-r" />
+              </div>
+            </div>
+          </div>
           
           {/* Game Shortcuts */}
           <div className="flex justify-around items-center gap-2 p-3 bg-muted/30 border-b border-primary/20">
@@ -80,51 +155,21 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
             ))}
           </div>
 
-          <div className="flex-1 p-6 space-y-4">
-            {/* CPU Usage with Temperature */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Cpu className="w-5 h-5 text-secondary" />
-                  <span className="font-semibold text-sm">CPU</span>
-                  <div className="flex items-center gap-1 text-xs">
-                    <Thermometer className="w-3 h-3" />
-                    <span>{cpuTemp}°C</span>
-                  </div>
-                </div>
-                <span className={`text-3xl font-bold ${getStatusColor(cpuUsage)}`}>
-                  {Math.round(cpuUsage)}%
-                </span>
-              </div>
-              <div className="h-3 bg-muted rounded-full overflow-hidden border border-primary/20">
-                <div
-                  className="h-full bg-gradient-performance transition-all duration-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"
-                  style={{ width: `${cpuUsage}%` }}
-                />
-              </div>
-            </div>
-
-            {/* GPU Usage with Temperature */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Monitor className="w-5 h-5 text-primary" />
-                  <span className="font-semibold text-sm">GPU</span>
-                  <div className="flex items-center gap-1 text-xs">
-                    <Thermometer className="w-3 h-3" />
-                    <span>{gpuTemp}°C</span>
-                  </div>
-                </div>
-                <span className={`text-3xl font-bold ${getStatusColor(gpuUsage)}`}>
-                  {Math.round(gpuUsage)}%
-                </span>
-              </div>
-              <div className="h-3 bg-muted rounded-full overflow-hidden border border-primary/20">
-                <div
-                  className="h-full bg-gradient-boost transition-all duration-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
-                  style={{ width: `${gpuUsage}%` }}
-                />
-              </div>
+          <div className="flex-1 p-6 space-y-6">
+            {/* Circular Gauges */}
+            <div className="flex justify-around items-center">
+              <CircularGauge 
+                value={cpuUsage} 
+                label="CPU" 
+                temp={cpuTemp}
+                color="rgba(16, 185, 129, 0.8)"
+              />
+              <CircularGauge 
+                value={gpuUsage} 
+                label="GPU" 
+                temp={gpuTemp}
+                color="rgba(59, 130, 246, 0.8)"
+              />
             </div>
 
             {/* Network Status */}
