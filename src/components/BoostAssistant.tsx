@@ -125,8 +125,14 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
           
           {/* Time and Battery */}
           <div className="flex items-center justify-between px-6 py-3 bg-muted/30 border-b border-primary/20">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <span className="text-sm font-semibold">{currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-muted-foreground">FPS</span>
+                <span className={`text-lg font-bold ${fps >= 100 ? "text-primary" : fps >= 60 ? "text-accent" : "text-destructive"}`}>
+                  {Math.round(fps)}
+                </span>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <div className="text-xs">{batteryLevel}%</div>
