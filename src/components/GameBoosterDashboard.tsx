@@ -123,8 +123,26 @@ export const GameBoosterDashboard = () => {
   }, [showPanels]);
 
   return (
-    <div className="min-h-screen bg-background p-6" ref={containerRef}>
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div 
+      className="min-h-screen bg-background p-6" 
+      ref={containerRef}
+      onClick={(e) => {
+        // Hide panels when clicking on the main content area
+        if (showPanels && e.target === e.currentTarget) {
+          setShowPanels(false);
+          toast.info("Panels hidden");
+        }
+      }}
+    >
+      <div 
+        className="max-w-7xl mx-auto space-y-6"
+        onClick={() => {
+          if (showPanels) {
+            setShowPanels(false);
+            toast.info("Panels hidden");
+          }
+        }}
+      >
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
