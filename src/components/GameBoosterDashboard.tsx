@@ -6,6 +6,8 @@ import { BoostAssistant } from "./BoostAssistant";
 import { toast } from "sonner";
 import wifiOn from "@/assets/wifi-on.webp";
 import wifiOff from "@/assets/wifi-off.webp";
+import buttonGame from "@/assets/button-game.jpg";
+import buttonBar from "@/assets/button-bar.jpg";
 
 export const GameBoosterDashboard = () => {
   const [cpuUsage, setCpuUsage] = useState(45);
@@ -17,6 +19,8 @@ export const GameBoosterDashboard = () => {
   const [showPanels, setShowPanels] = useState(false);
   const [wifiEnabled, setWifiEnabled] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number>(0);
+  const touchStartY = useRef<number>(0);
 
   // Simulate real-time performance metrics
   useEffect(() => {
@@ -74,6 +78,47 @@ export const GameBoosterDashboard = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showPanels]);
+
+  // Handle swipe gestures
+  useEffect(() => {
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX.current = e.touches[0].clientX;
+      touchStartY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      const deltaX = touchEndX - touchStartX.current;
+      const deltaY = Math.abs(touchEndY - touchStartY.current);
+
+      // Swipe from left edge to right
+      if (touchStartX.current < 50 && deltaX > 100 && deltaY < 50) {
+        setShowPanels(true);
+        toast.success("Panel opened");
+      }
+      // Swipe from right edge to left
+      else if (touchStartX.current > window.innerWidth - 50 && deltaX < -100 && deltaY < 50) {
+        setShowPanels(true);
+        toast.success("Panel opened");
+      }
+      // Swipe to close when panels are open
+      else if (showPanels) {
+        if ((deltaX < -100 || deltaX > 100) && deltaY < 50) {
+          setShowPanels(false);
+          toast.info("Panel closed");
+        }
+      }
+    };
+
+    document.addEventListener("touchstart", handleTouchStart);
+    document.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      document.removeEventListener("touchstart", handleTouchStart);
+      document.removeEventListener("touchend", handleTouchEnd);
     };
   }, [showPanels]);
 
@@ -282,6 +327,32 @@ export const GameBoosterDashboard = () => {
         wifiEnabled={wifiEnabled}
         setWifiEnabled={setWifiEnabled}
       />
+
+      {/* Floating Button - Game Mode (shows everywhere) */}
+      {!showPanels && (
+        <button
+          onClick={() => setShowPanels(true)}
+          className="fixed left-0 top-1/2 -translate-y-1/2 z-40 w-16 h-16 rounded-r-2xl shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:scale-110 transition-transform"
+          style={{
+            background: `url(${buttonGame})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        />
+      )}
+
+      {/* Floating Bar Button - App Mode (shows everywhere) */}
+      {!showPanels && (
+        <button
+          onClick={() => setShowPanels(true)}
+          className="fixed right-0 top-1/2 -translate-y-1/2 z-40 w-8 h-32 rounded-l-xl shadow-[0_0_20px_rgba(234,179,8,0.5)] hover:scale-110 transition-transform"
+          style={{
+            background: `url(${buttonBar})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        />
+      )}
     </div>
   );
 };
