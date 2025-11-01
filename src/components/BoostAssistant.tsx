@@ -132,9 +132,76 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
           <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
           <div className="absolute right-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
           
-          {/* Purple/Pink Glow Effect - Bottom Left */}
-          <div className="absolute left-0 bottom-0 w-32 h-32 bg-gradient-to-tr from-purple-500/40 via-pink-500/30 to-transparent rounded-tl-full blur-2xl" />
-          <div className="absolute left-2 bottom-2 w-24 h-24 bg-gradient-to-tr from-purple-600/60 via-pink-600/40 to-transparent rounded-tl-full blur-xl" />
+          {/* CPU & GPU Usage Meters */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 bg-muted/20 border-t border-destructive/30">
+            <div className="grid grid-cols-2 gap-3">
+              {/* CPU Usage Meter */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-destructive flex items-center gap-1">
+                    <Cpu className="w-3 h-3" />
+                    CPU
+                  </span>
+                  <span className="text-xs font-bold text-destructive">{Math.round(cpuUsage)}%</span>
+                </div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden border border-destructive/30">
+                  <div
+                    className="h-full bg-gradient-to-r from-red-500 to-red-600 transition-all duration-500"
+                    style={{ 
+                      width: `${cpuUsage}%`,
+                      boxShadow: '0 0 10px rgba(239, 68, 68, 0.6)'
+                    }}
+                  />
+                </div>
+                {/* Mini Graph */}
+                <div className="flex items-end gap-[2px] h-8">
+                  {Array.from({ length: 12 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 bg-destructive/80 rounded-t transition-all duration-300"
+                      style={{ 
+                        height: `${Math.random() * 80 + 20}%`,
+                        boxShadow: '0 0 4px rgba(239, 68, 68, 0.4)'
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+              
+              {/* GPU Usage Meter */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-destructive flex items-center gap-1">
+                    <Monitor className="w-3 h-3" />
+                    GPU
+                  </span>
+                  <span className="text-xs font-bold text-destructive">{Math.round(gpuUsage)}%</span>
+                </div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden border border-destructive/30">
+                  <div
+                    className="h-full bg-gradient-to-r from-red-500 to-red-600 transition-all duration-500"
+                    style={{ 
+                      width: `${gpuUsage}%`,
+                      boxShadow: '0 0 10px rgba(239, 68, 68, 0.6)'
+                    }}
+                  />
+                </div>
+                {/* Mini Graph */}
+                <div className="flex items-end gap-[2px] h-8">
+                  {Array.from({ length: 12 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 bg-destructive/80 rounded-t transition-all duration-300"
+                      style={{ 
+                        height: `${Math.random() * 80 + 20}%`,
+                        boxShadow: '0 0 4px rgba(239, 68, 68, 0.4)'
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
           
           {/* Time and Battery */}
           <div className="flex items-center justify-between px-6 py-3 bg-muted/30 border-b border-primary/20">
@@ -255,9 +322,76 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
           <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
           <div className="absolute right-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
           
-          {/* Purple/Pink Glow Effect - Bottom Right */}
-          <div className="absolute right-0 bottom-0 w-32 h-32 bg-gradient-to-tl from-pink-500/40 via-purple-500/30 to-transparent rounded-tr-full blur-2xl" />
-          <div className="absolute right-2 bottom-2 w-24 h-24 bg-gradient-to-tl from-pink-600/60 via-purple-600/40 to-transparent rounded-tr-full blur-xl" />
+          {/* CPU & GPU Usage Meters */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 bg-muted/20 border-t border-destructive/30">
+            <div className="grid grid-cols-2 gap-3">
+              {/* CPU Usage Meter */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-destructive flex items-center gap-1">
+                    <Cpu className="w-3 h-3" />
+                    CPU
+                  </span>
+                  <span className="text-xs font-bold text-destructive">{Math.round(cpuUsage)}%</span>
+                </div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden border border-destructive/30">
+                  <div
+                    className="h-full bg-gradient-to-r from-red-500 to-red-600 transition-all duration-500"
+                    style={{ 
+                      width: `${cpuUsage}%`,
+                      boxShadow: '0 0 10px rgba(239, 68, 68, 0.6)'
+                    }}
+                  />
+                </div>
+                {/* Mini Graph */}
+                <div className="flex items-end gap-[2px] h-8">
+                  {Array.from({ length: 12 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 bg-destructive/80 rounded-t transition-all duration-300"
+                      style={{ 
+                        height: `${Math.random() * 80 + 20}%`,
+                        boxShadow: '0 0 4px rgba(239, 68, 68, 0.4)'
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+              
+              {/* GPU Usage Meter */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-destructive flex items-center gap-1">
+                    <Monitor className="w-3 h-3" />
+                    GPU
+                  </span>
+                  <span className="text-xs font-bold text-destructive">{Math.round(gpuUsage)}%</span>
+                </div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden border border-destructive/30">
+                  <div
+                    className="h-full bg-gradient-to-r from-red-500 to-red-600 transition-all duration-500"
+                    style={{ 
+                      width: `${gpuUsage}%`,
+                      boxShadow: '0 0 10px rgba(239, 68, 68, 0.6)'
+                    }}
+                  />
+                </div>
+                {/* Mini Graph */}
+                <div className="flex items-end gap-[2px] h-8">
+                  {Array.from({ length: 12 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 bg-destructive/80 rounded-t transition-all duration-300"
+                      style={{ 
+                        height: `${Math.random() * 80 + 20}%`,
+                        boxShadow: '0 0 4px rgba(239, 68, 68, 0.4)'
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
           
           {/* FPS Display - Large and Prominent */}
           <div className="p-6 bg-muted/30 border-b border-accent/20 text-center">
