@@ -42,6 +42,15 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
     { name: "Chat", icon: MessageSquare, color: "bg-gradient-to-br from-green-500 to-green-600" },
   ];
 
+  const gamingTools = [
+    { name: "ROG Instant\nMaster", icon: Flame },
+    { name: "X Sense", icon: Cpu },
+    { name: "AI Grabber", icon: Chrome },
+    { name: "Macro", icon: Gamepad2 },
+    { name: "Blocked\ntouch", icon: Monitor },
+    { name: "Vibration\nMapping", icon: Wind },
+  ];
+
   const toggleFanMode = () => {
     const newMode = fanMode === "auto" ? "max" : "auto";
     setFanMode(newMode);
@@ -122,6 +131,13 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
           {/* Decorative Red Bars */}
           <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
           <div className="absolute right-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
+          
+          {/* CPU Edge Label */}
+          <div className="absolute left-0 bottom-8 -rotate-90 origin-left transform translate-x-8 translate-y-12">
+            <span className="text-2xl font-bold text-primary tracking-widest" style={{ textShadow: '0 0 20px rgba(16, 185, 129, 0.8), 0 0 40px rgba(16, 185, 129, 0.5)' }}>
+              CPU
+            </span>
+          </div>
           
           {/* Time and Battery */}
           <div className="flex items-center justify-between px-6 py-3 bg-muted/30 border-b border-primary/20">
@@ -242,6 +258,13 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
           <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
           <div className="absolute right-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
           
+          {/* GPU Edge Label */}
+          <div className="absolute right-0 bottom-8 rotate-90 origin-right transform -translate-x-8 translate-y-12">
+            <span className="text-2xl font-bold text-destructive tracking-widest" style={{ textShadow: '0 0 20px rgba(239, 68, 68, 0.8), 0 0 40px rgba(239, 68, 68, 0.5)' }}>
+              GPU
+            </span>
+          </div>
+          
           {/* FPS Display - Large and Prominent */}
           <div className="p-6 bg-muted/30 border-b border-accent/20 text-center">
             <div className="text-xs text-muted-foreground mb-1">FRAMES PER SECOND</div>
@@ -286,6 +309,26 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
                   className="h-full bg-gradient-to-r from-primary via-accent to-secondary transition-all duration-500"
                   style={{ width: `${Math.round((100 - cpuUsage + 100 - ramUsage + fps) / 3)}%` }}
                 />
+              </div>
+            </div>
+
+            {/* Gaming Tools */}
+            <div className="p-4 bg-muted/20 rounded-lg border border-accent/20">
+              <div className="text-xs font-semibold mb-3 text-center text-primary">GAMING TOOLS</div>
+              <div className="grid grid-cols-3 gap-2">
+                {gamingTools.map((tool, index) => (
+                  <Button
+                    key={index}
+                    variant="ghost"
+                    className="flex flex-col items-center justify-center h-20 p-2 bg-muted/30 hover:bg-primary/20 border border-primary/20 rounded-lg transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                    onClick={() => toast.success(`${tool.name.replace('\n', ' ')} activated`)}
+                  >
+                    <tool.icon className="w-5 h-5 mb-1 text-primary" />
+                    <span className="text-[9px] font-medium text-center leading-tight whitespace-pre-line">
+                      {tool.name}
+                    </span>
+                  </Button>
+                ))}
               </div>
             </div>
 
