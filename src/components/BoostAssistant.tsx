@@ -132,12 +132,9 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
           <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
           <div className="absolute right-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
           
-          {/* CPU Edge Label */}
-          <div className="absolute left-0 bottom-8 -rotate-90 origin-left transform translate-x-8 translate-y-12">
-            <span className="text-2xl font-bold text-primary tracking-widest" style={{ textShadow: '0 0 20px rgba(16, 185, 129, 0.8), 0 0 40px rgba(16, 185, 129, 0.5)' }}>
-              CPU
-            </span>
-          </div>
+          {/* Purple/Pink Glow Effect - Bottom Left */}
+          <div className="absolute left-0 bottom-0 w-32 h-32 bg-gradient-to-tr from-purple-500/40 via-pink-500/30 to-transparent rounded-tl-full blur-2xl" />
+          <div className="absolute left-2 bottom-2 w-24 h-24 bg-gradient-to-tr from-purple-600/60 via-pink-600/40 to-transparent rounded-tl-full blur-xl" />
           
           {/* Time and Battery */}
           <div className="flex items-center justify-between px-6 py-3 bg-muted/30 border-b border-primary/20">
@@ -258,12 +255,9 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
           <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
           <div className="absolute right-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
           
-          {/* GPU Edge Label */}
-          <div className="absolute right-0 bottom-8 rotate-90 origin-right transform -translate-x-8 translate-y-12">
-            <span className="text-2xl font-bold text-destructive tracking-widest" style={{ textShadow: '0 0 20px rgba(239, 68, 68, 0.8), 0 0 40px rgba(239, 68, 68, 0.5)' }}>
-              GPU
-            </span>
-          </div>
+          {/* Purple/Pink Glow Effect - Bottom Right */}
+          <div className="absolute right-0 bottom-0 w-32 h-32 bg-gradient-to-tl from-pink-500/40 via-purple-500/30 to-transparent rounded-tr-full blur-2xl" />
+          <div className="absolute right-2 bottom-2 w-24 h-24 bg-gradient-to-tl from-pink-600/60 via-purple-600/40 to-transparent rounded-tr-full blur-xl" />
           
           {/* FPS Display - Large and Prominent */}
           <div className="p-6 bg-muted/30 border-b border-accent/20 text-center">
