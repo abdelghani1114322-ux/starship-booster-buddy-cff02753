@@ -128,9 +128,16 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
         onClick={(e) => e.stopPropagation()}
       >
         <Card className="h-full bg-gradient-to-b from-card/95 to-card/90 backdrop-blur-xl border-2 border-primary/40 shadow-[0_0_40px_rgba(16,185,129,0.3)] p-0 flex flex-col overflow-hidden relative">
-          {/* Decorative Red Bars */}
-          <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
-          <div className="absolute right-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
+          {/* Segmented LED Bar - Left Edge */}
+          <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-evenly py-4">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <div
+                key={i}
+                className="w-1 h-10 bg-gradient-to-b from-red-500 via-red-600 to-red-500 rounded-sm border border-red-500/30"
+                style={{ boxShadow: '0 0 8px rgba(239, 68, 68, 0.6)' }}
+              />
+            ))}
+          </div>
           
           {/* CPU & GPU Usage Meters */}
           <div className="absolute bottom-0 left-0 right-0 p-4 bg-muted/20 border-t border-destructive/30">
@@ -318,9 +325,16 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
         onClick={(e) => e.stopPropagation()}
       >
         <Card className="h-full bg-gradient-to-b from-card/95 to-card/90 backdrop-blur-xl border-2 border-accent/40 shadow-[0_0_40px_rgba(59,130,246,0.3)] p-0 flex flex-col overflow-hidden relative">
-          {/* Decorative Red Bars */}
-          <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
-          <div className="absolute right-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-500 via-red-600 to-red-500" />
+          {/* Segmented LED Bar - Right Edge */}
+          <div className="absolute right-0 top-0 bottom-0 flex flex-col justify-evenly py-4">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <div
+                key={i}
+                className="w-1 h-10 bg-gradient-to-b from-red-500 via-red-600 to-red-500 rounded-sm border border-red-500/30"
+                style={{ boxShadow: '0 0 8px rgba(239, 68, 68, 0.6)' }}
+              />
+            ))}
+          </div>
           
           {/* CPU & GPU Usage Meters */}
           <div className="absolute bottom-0 left-0 right-0 p-4 bg-muted/20 border-t border-destructive/30">
