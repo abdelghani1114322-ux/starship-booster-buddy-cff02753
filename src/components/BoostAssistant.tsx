@@ -194,6 +194,60 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
               />
             </div>
 
+            {/* Performance Bars - CPU */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium">CPU</span>
+                <span className={`text-sm font-bold ${getStatusColor(cpuUsage)}`}>
+                  {Math.round(cpuUsage)}%
+                </span>
+              </div>
+              <div className="flex gap-1">
+                {Array.from({ length: 20 }).map((_, i) => {
+                  const segmentThreshold = (i + 1) * 5;
+                  const isActive = cpuUsage >= segmentThreshold;
+                  return (
+                    <div
+                      key={i}
+                      className={`flex-1 h-4 rounded-sm transition-all duration-300 ${
+                        isActive 
+                          ? 'bg-gradient-to-t from-red-500 via-red-600 to-red-500 border border-red-500/30' 
+                          : 'bg-muted/20 border border-muted/30'
+                      }`}
+                      style={isActive ? { boxShadow: '0 0 6px rgba(239, 68, 68, 0.5)' } : {}}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Performance Bars - GPU */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium">GPU</span>
+                <span className={`text-sm font-bold ${getStatusColor(gpuUsage)}`}>
+                  {Math.round(gpuUsage)}%
+                </span>
+              </div>
+              <div className="flex gap-1">
+                {Array.from({ length: 20 }).map((_, i) => {
+                  const segmentThreshold = (i + 1) * 5;
+                  const isActive = gpuUsage >= segmentThreshold;
+                  return (
+                    <div
+                      key={i}
+                      className={`flex-1 h-4 rounded-sm transition-all duration-300 ${
+                        isActive 
+                          ? 'bg-gradient-to-t from-red-500 via-red-600 to-red-500 border border-red-500/30' 
+                          : 'bg-muted/20 border border-muted/30'
+                      }`}
+                      style={isActive ? { boxShadow: '0 0 6px rgba(239, 68, 68, 0.5)' } : {}}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Network Status */}
             <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
               <div className="flex items-center justify-between">
@@ -288,11 +342,22 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
                   {Math.round(ramUsage)}%
                 </span>
               </div>
-              <div className="h-3 bg-muted rounded-full overflow-hidden border border-accent/20">
-                <div
-                  className="h-full bg-gradient-gaming transition-all duration-500 shadow-[0_0_10px_rgba(234,179,8,0.5)]"
-                  style={{ width: `${ramUsage}%` }}
-                />
+              <div className="flex gap-1">
+                {Array.from({ length: 20 }).map((_, i) => {
+                  const segmentThreshold = (i + 1) * 5;
+                  const isActive = ramUsage >= segmentThreshold;
+                  return (
+                    <div
+                      key={i}
+                      className={`flex-1 h-4 rounded-sm transition-all duration-300 ${
+                        isActive 
+                          ? 'bg-gradient-to-t from-red-500 via-red-600 to-red-500 border border-red-500/30' 
+                          : 'bg-muted/20 border border-muted/30'
+                      }`}
+                      style={isActive ? { boxShadow: '0 0 6px rgba(239, 68, 68, 0.5)' } : {}}
+                    />
+                  );
+                })}
               </div>
             </div>
 
