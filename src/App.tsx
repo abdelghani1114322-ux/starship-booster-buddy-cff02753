@@ -1,27 +1,40 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
+import './App.css';
 
-const queryClient = new QueryClient();
+function App() {
+  return (
+    <div style={{ width: '100%', height: '100vh' }}>
+      {/* This shows your actual game components */}
+      <h1>🚀 Starship Booster Buddy</h1>
+      
+      {/* Your game content here */}
+      <div style={{
+        background: 'black',
+        color: 'white',
+        padding: '20px',
+        margin: '20px',
+        borderRadius: '10px'
+      }}>
+        <h2>Game Content</h2>
+        <p>Your starship game will display here!</p>
+        <button>Launch Rocket</button>
+        <button>Calculate Boost</button>
+      </div>
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+      {/* Floating Assistant */}
+      <div style={{
+        position: 'fixed',
+        bottom: '20px', 
+        right: '20px',
+        background: 'green',
+        color: 'white',
+        padding: '10px',
+        borderRadius: '10px'
+      }}>
+        <h4>🛸 Assistant</h4>
+        <p>I'm floating!</p>
+      </div>
+    </div>
+  );
+}
 
 export default App;
