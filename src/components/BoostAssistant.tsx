@@ -124,7 +124,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
     <>
       {/* LEFT PANEL - CPU, GPU, Modes */}
       <div 
-        className="fixed left-6 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px]"
+        className="fixed left-0 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px]"
         onClick={(e) => e.stopPropagation()}
       >
         <Card className="h-full bg-gradient-to-b from-card/95 to-card/90 backdrop-blur-xl border-2 border-primary/40 shadow-[0_0_40px_rgba(16,185,129,0.3)] p-0 flex flex-col overflow-hidden relative select-none">
@@ -270,7 +270,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
 
       {/* RIGHT PANEL - RAM, FPS, Gaming Info */}
       <div 
-        className="fixed right-6 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px]"
+        className="fixed right-0 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px]"
         onClick={(e) => e.stopPropagation()}
       >
         <Card className="h-full bg-gradient-to-b from-card/95 to-card/90 backdrop-blur-xl border-2 border-accent/40 shadow-[0_0_40px_rgba(59,130,246,0.3)] p-0 flex flex-col overflow-hidden relative select-none">
