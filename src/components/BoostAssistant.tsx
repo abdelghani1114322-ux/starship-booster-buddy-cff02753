@@ -138,6 +138,25 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
               />
             ))}
           </div>
+
+          {/* Performance Bars - Right Edge (CPU) */}
+          <div className="absolute right-0 top-0 bottom-0 flex flex-col justify-center gap-1 py-4 px-1">
+            {Array.from({ length: 20 }).map((_, i) => {
+              const segmentThreshold = ((20 - i) / 20) * 100;
+              const isActive = cpuUsage >= segmentThreshold;
+              return (
+                <div
+                  key={i}
+                  className={`w-2 h-6 rounded-sm transition-all duration-300 ${
+                    isActive 
+                      ? 'bg-gradient-to-r from-red-500 via-red-600 to-red-500 border border-red-500/30' 
+                      : 'bg-muted/20 border border-muted/30'
+                  }`}
+                  style={isActive ? { boxShadow: '0 0 6px rgba(239, 68, 68, 0.5)' } : {}}
+                />
+              );
+            })}
+          </div>
           
           {/* Time and Battery */}
           <div className="flex items-center justify-between px-6 py-3 bg-muted/30 border-b border-primary/20">
@@ -194,59 +213,6 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
               />
             </div>
 
-            {/* Performance Bars - CPU */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium">CPU</span>
-                <span className={`text-sm font-bold ${getStatusColor(cpuUsage)}`}>
-                  {Math.round(cpuUsage)}%
-                </span>
-              </div>
-              <div className="flex gap-1">
-                {Array.from({ length: 20 }).map((_, i) => {
-                  const segmentThreshold = (i + 1) * 5;
-                  const isActive = cpuUsage >= segmentThreshold;
-                  return (
-                    <div
-                      key={i}
-                      className={`flex-1 h-4 rounded-sm transition-all duration-300 ${
-                        isActive 
-                          ? 'bg-gradient-to-t from-red-500 via-red-600 to-red-500 border border-red-500/30' 
-                          : 'bg-muted/20 border border-muted/30'
-                      }`}
-                      style={isActive ? { boxShadow: '0 0 6px rgba(239, 68, 68, 0.5)' } : {}}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Performance Bars - GPU */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium">GPU</span>
-                <span className={`text-sm font-bold ${getStatusColor(gpuUsage)}`}>
-                  {Math.round(gpuUsage)}%
-                </span>
-              </div>
-              <div className="flex gap-1">
-                {Array.from({ length: 20 }).map((_, i) => {
-                  const segmentThreshold = (i + 1) * 5;
-                  const isActive = gpuUsage >= segmentThreshold;
-                  return (
-                    <div
-                      key={i}
-                      className={`flex-1 h-4 rounded-sm transition-all duration-300 ${
-                        isActive 
-                          ? 'bg-gradient-to-t from-red-500 via-red-600 to-red-500 border border-red-500/30' 
-                          : 'bg-muted/20 border border-muted/30'
-                      }`}
-                      style={isActive ? { boxShadow: '0 0 6px rgba(239, 68, 68, 0.5)' } : {}}
-                    />
-                  );
-                })}
-              </div>
-            </div>
 
             {/* Network Status */}
             <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
@@ -308,6 +274,25 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
         onClick={(e) => e.stopPropagation()}
       >
         <Card className="h-full bg-gradient-to-b from-card/95 to-card/90 backdrop-blur-xl border-2 border-accent/40 shadow-[0_0_40px_rgba(59,130,246,0.3)] p-0 flex flex-col overflow-hidden relative">
+          {/* Performance Bars - Left Edge (RAM) */}
+          <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-center gap-1 py-4 px-1">
+            {Array.from({ length: 20 }).map((_, i) => {
+              const segmentThreshold = ((20 - i) / 20) * 100;
+              const isActive = ramUsage >= segmentThreshold;
+              return (
+                <div
+                  key={i}
+                  className={`w-2 h-6 rounded-sm transition-all duration-300 ${
+                    isActive 
+                      ? 'bg-gradient-to-r from-red-500 via-red-600 to-red-500 border border-red-500/30' 
+                      : 'bg-muted/20 border border-muted/30'
+                  }`}
+                  style={isActive ? { boxShadow: '0 0 6px rgba(239, 68, 68, 0.5)' } : {}}
+                />
+              );
+            })}
+          </div>
+
           {/* Segmented LED Bar - Right Edge */}
           <div className="absolute right-0 top-0 bottom-0 flex flex-col justify-evenly py-4">
             {Array.from({ length: 10 }).map((_, i) => (
@@ -332,32 +317,15 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
 
           <div className="flex-1 p-6 space-y-4">
             {/* RAM Usage */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
+            <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Monitor className="w-5 h-5 text-primary" />
                   <span className="font-semibold text-sm">RAM</span>
                 </div>
-                <span className={`text-3xl font-bold ${getStatusColor(ramUsage)}`}>
+                <span className={`text-2xl font-bold ${getStatusColor(ramUsage)}`}>
                   {Math.round(ramUsage)}%
                 </span>
-              </div>
-              <div className="flex gap-1">
-                {Array.from({ length: 20 }).map((_, i) => {
-                  const segmentThreshold = (i + 1) * 5;
-                  const isActive = ramUsage >= segmentThreshold;
-                  return (
-                    <div
-                      key={i}
-                      className={`flex-1 h-4 rounded-sm transition-all duration-300 ${
-                        isActive 
-                          ? 'bg-gradient-to-t from-red-500 via-red-600 to-red-500 border border-red-500/30' 
-                          : 'bg-muted/20 border border-muted/30'
-                      }`}
-                      style={isActive ? { boxShadow: '0 0 6px rgba(239, 68, 68, 0.5)' } : {}}
-                    />
-                  );
-                })}
               </div>
             </div>
 
