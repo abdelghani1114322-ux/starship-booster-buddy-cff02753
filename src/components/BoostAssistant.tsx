@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare } from "lucide-react";
+import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
+import { Slider } from "./ui/slider";
 import { toast } from "sonner";
 import wifiOn from "@/assets/wifi-on.webp";
 import wifiOff from "@/assets/wifi-off.webp";
@@ -25,6 +26,8 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
   const [gpuTemp, setGpuTemp] = useState(58);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [batteryLevel, setBatteryLevel] = useState(85);
+  const [volume, setVolume] = useState(70);
+  const [brightness, setBrightness] = useState(80);
 
   // Update time every minute
   useEffect(() => {
@@ -227,6 +230,36 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
                   </div>
                   <span className="text-xs text-primary font-bold">Excellent</span>
                 </div>
+              </div>
+            </div>
+
+            {/* Volume Control */}
+            <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
+              <div className="flex items-center gap-3">
+                <Volume2 className="w-5 h-5 text-accent" />
+                <Slider
+                  value={[volume]}
+                  onValueChange={(value) => setVolume(value[0])}
+                  max={100}
+                  step={1}
+                  className="flex-1"
+                />
+                <span className="text-xs font-medium w-8 text-right">{volume}%</span>
+              </div>
+            </div>
+
+            {/* Brightness Control */}
+            <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
+              <div className="flex items-center gap-3">
+                <Sun className="w-5 h-5 text-accent" />
+                <Slider
+                  value={[brightness]}
+                  onValueChange={(value) => setBrightness(value[0])}
+                  max={100}
+                  step={1}
+                  className="flex-1"
+                />
+                <span className="text-xs font-medium w-8 text-right">{brightness}%</span>
               </div>
             </div>
           </div>
