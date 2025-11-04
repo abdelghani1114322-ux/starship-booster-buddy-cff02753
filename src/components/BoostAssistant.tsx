@@ -26,6 +26,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [gpuTemp, setGpuTemp] = useState(58);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [batteryLevel, setBatteryLevel] = useState(85);
+  const [isCharging, setIsCharging] = useState(false);
   const [volume, setVolume] = useState(70);
   const [brightness, setBrightness] = useState(80);
   const [isRecording, setIsRecording] = useState(false);
@@ -37,6 +38,33 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
       setCurrentTime(new Date());
     }, 60000);
     return () => clearInterval(timer);
+  }, []);
+
+  // Real-time battery monitoring
+  useEffect(() => {
+    const updateBattery = async () => {
+      if ('getBattery' in navigator) {
+        try {
+          const battery = await (navigator as any).getBattery();
+          setBatteryLevel(Math.round(battery.level * 100));
+          setIsCharging(battery.charging);
+
+          battery.addEventListener('levelchange', () => {
+            setBatteryLevel(Math.round(battery.level * 100));
+          });
+          battery.addEventListener('chargingchange', () => {
+            setIsCharging(battery.charging);
+          });
+        } catch (error) {
+          // Fallback: simulate battery drain
+          const interval = setInterval(() => {
+            setBatteryLevel(prev => Math.max(20, prev - Math.random() * 0.5));
+          }, 30000);
+          return () => clearInterval(interval);
+        }
+      }
+    };
+    updateBattery();
   }, []);
 
   // Update recording duration
@@ -200,14 +228,15 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <div className="text-xs">{batteryLevel}%</div>
-              <div className="w-8 h-4 border-2 border-primary rounded-sm relative">
+              <div className="text-xs font-medium">{Math.round(batteryLevel)}%</div>
+              <div className="w-8 h-4 border-2 border-primary rounded-sm relative overflow-hidden">
                 <div 
-                  className="h-full bg-primary transition-all"
+                  className={`h-full transition-all ${isCharging ? 'bg-gradient-to-r from-primary to-accent animate-pulse' : 'bg-primary'}`}
                   style={{ width: `${batteryLevel}%` }}
                 />
                 <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-1 h-2 bg-primary rounded-r" />
               </div>
+              {isCharging && <span className="text-[10px] text-accent">⚡</span>}
             </div>
           </div>
           
@@ -226,7 +255,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             ))}
           </div>
 
-          <div className="flex-1 p-6 space-y-6 overflow-hidden">
+          <div className="flex-1 p-6 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
             {/* Circular Gauges */}
             <div className="flex justify-around items-center">
               <CircularGauge 
