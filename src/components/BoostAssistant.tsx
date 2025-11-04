@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun } from "lucide-react";
+import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Slider } from "./ui/slider";
@@ -28,6 +28,8 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [batteryLevel, setBatteryLevel] = useState(85);
   const [volume, setVolume] = useState(70);
   const [brightness, setBrightness] = useState(80);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingDuration, setRecordingDuration] = useState(0);
 
   // Update time every minute
   useEffect(() => {
@@ -36,6 +38,31 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     }, 60000);
     return () => clearInterval(timer);
   }, []);
+
+  // Update recording duration
+  useEffect(() => {
+    if (isRecording) {
+      const timer = setInterval(() => {
+        setRecordingDuration(prev => prev + 1);
+      }, 1000);
+      return () => clearInterval(timer);
+    } else {
+      setRecordingDuration(0);
+    }
+  }, [isRecording]);
+
+  const toggleRecording = () => {
+    setIsRecording(!isRecording);
+    toast.success(!isRecording ? "Recording Started 🔴" : "Recording Stopped", {
+      description: !isRecording ? "Screen capture in progress" : `Recorded ${Math.floor(recordingDuration / 60)}:${String(recordingDuration % 60).padStart(2, '0')}`,
+    });
+  };
+
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${String(secs).padStart(2, '0')}`;
+  };
 
   const gameApps = [
     { name: "Game 1", icon: Gamepad2, color: "bg-gradient-to-br from-red-500 to-red-600" },
@@ -260,6 +287,31 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                   className="flex-1"
                 />
                 <span className="text-xs font-medium w-8 text-right">{brightness}%</span>
+              </div>
+            </div>
+
+            {/* Screen Recorder */}
+            <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Video className={`w-5 h-5 ${isRecording ? "text-destructive" : "text-accent"}`} />
+                  <span className="text-xs font-medium">Screen Recorder</span>
+                </div>
+                <Button
+                  size="sm"
+                  variant={isRecording ? "destructive" : "default"}
+                  onClick={toggleRecording}
+                  className="h-7 px-3"
+                >
+                  {isRecording ? (
+                    <>
+                      <span className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse" />
+                      {formatDuration(recordingDuration)}
+                    </>
+                  ) : (
+                    "Start"
+                  )}
+                </Button>
               </div>
             </div>
           </div>
