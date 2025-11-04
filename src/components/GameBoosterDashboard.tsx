@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { Zap, Cpu, MemoryStick, Gauge, Monitor, Settings, TrendingUp, PanelLeftOpen } from "lucide-react";
+import { Zap, Cpu, MemoryStick, Gauge, Monitor, Settings, TrendingUp, PanelLeftOpen, Battery } from "lucide-react";
 import { BoostAssistant } from "./BoostAssistant";
 import { toast } from "sonner";
 import wifiOn from "@/assets/wifi-on.webp";
@@ -13,7 +13,7 @@ export const GameBoosterDashboard = () => {
   const [ramUsage, setRamUsage] = useState(62);
   const [fps, setFps] = useState(60);
   const [gpuUsage, setGpuUsage] = useState(38);
-  const [isBoosted, setIsBoosted] = useState(false);
+  const [performanceMode, setPerformanceMode] = useState<"saving" | "balance" | "boost">("balance");
   const [optimizationScore, setOptimizationScore] = useState(72);
   const [showPanels, setShowPanels] = useState(false);
   const [wifiEnabled, setWifiEnabled] = useState(false);
@@ -21,15 +21,23 @@ export const GameBoosterDashboard = () => {
   const touchStartX = useRef<number>(0);
   const touchStartY = useRef<number>(0);
 
-  // Simulate real-time performance metrics
+  // Simulate real-time performance metrics based on mode
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!isBoosted) {
-        setCpuUsage((prev) => Math.max(30, Math.min(80, prev + (Math.random() - 0.5) * 10)));
-        setRamUsage((prev) => Math.max(40, Math.min(85, prev + (Math.random() - 0.5) * 8)));
-        setFps((prev) => Math.max(45, Math.min(75, prev + (Math.random() - 0.5) * 5)));
-        setGpuUsage((prev) => Math.max(25, Math.min(70, prev + (Math.random() - 0.5) * 8)));
+      if (performanceMode === "saving") {
+        // Saving mode: Lower performance, better battery
+        setCpuUsage((prev) => Math.max(20, Math.min(50, prev + (Math.random() - 0.5) * 8)));
+        setRamUsage((prev) => Math.max(30, Math.min(55, prev + (Math.random() - 0.5) * 6)));
+        setFps((prev) => Math.max(30, Math.min(45, prev + (Math.random() - 0.5) * 4)));
+        setGpuUsage((prev) => Math.max(15, Math.min(40, prev + (Math.random() - 0.5) * 6)));
+      } else if (performanceMode === "balance") {
+        // Balance mode: Moderate performance
+        setCpuUsage((prev) => Math.max(30, Math.min(70, prev + (Math.random() - 0.5) * 10)));
+        setRamUsage((prev) => Math.max(40, Math.min(75, prev + (Math.random() - 0.5) * 8)));
+        setFps((prev) => Math.max(50, Math.min(75, prev + (Math.random() - 0.5) * 5)));
+        setGpuUsage((prev) => Math.max(25, Math.min(60, prev + (Math.random() - 0.5) * 8)));
       } else {
+        // Boost mode: Maximum performance
         setCpuUsage((prev) => Math.max(20, Math.min(40, prev + (Math.random() - 0.5) * 5)));
         setRamUsage((prev) => Math.max(30, Math.min(50, prev + (Math.random() - 0.5) * 4)));
         setFps((prev) => Math.max(100, Math.min(144, prev + (Math.random() - 0.5) * 3)));
@@ -38,20 +46,25 @@ export const GameBoosterDashboard = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isBoosted]);
+  }, [performanceMode]);
 
-  const handleBoost = () => {
-    setIsBoosted(!isBoosted);
-    if (!isBoosted) {
-      toast.success("Performance Boost Activated!", {
-        description: "System optimized for maximum gaming performance",
+  const handleModeChange = (mode: "saving" | "balance" | "boost") => {
+    setPerformanceMode(mode);
+    if (mode === "boost") {
+      toast.success("Boost Mode Activated! 🚀", {
+        description: "Maximum performance unlocked",
       });
       setOptimizationScore(95);
-    } else {
-      toast.info("Boost Deactivated", {
-        description: "System returned to normal mode",
+    } else if (mode === "balance") {
+      toast.info("Balance Mode", {
+        description: "Optimal performance and efficiency",
       });
       setOptimizationScore(72);
+    } else {
+      toast.info("Saving Mode", {
+        description: "Battery-saving mode enabled",
+      });
+      setOptimizationScore(55);
     }
   };
 
@@ -182,29 +195,60 @@ export const GameBoosterDashboard = () => {
           </div>
         </div>
 
-        {/* Main Boost Control */}
+        {/* Main Performance Mode Control */}
         <Card className="p-8 bg-gradient-to-br from-card to-card/50 border-primary/20">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="space-y-6">
             <div className="space-y-2">
               <h2 className="text-2xl font-bold">Performance Mode</h2>
               <p className="text-muted-foreground">
-                {isBoosted
-                  ? "System is running in high-performance mode"
-                  : "Click boost to optimize your gaming experience"}
+                {performanceMode === "boost"
+                  ? "Maximum performance for intense gaming"
+                  : performanceMode === "balance"
+                  ? "Optimal balance between performance and efficiency"
+                  : "Battery-saving mode for extended usage"}
               </p>
             </div>
-            <Button
-              size="lg"
-              onClick={handleBoost}
-              className={`px-8 py-6 text-lg font-bold transition-all ${
-                isBoosted
-                  ? "bg-primary hover:bg-primary/90 shadow-[0_0_30px_rgba(16,185,129,0.5)]"
-                  : "bg-accent hover:bg-accent/90"
-              }`}
-            >
-              <Zap className="mr-2 h-6 w-6" />
-              {isBoosted ? "Boosted" : "Activate Boost"}
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                size="lg"
+                onClick={() => handleModeChange("saving")}
+                variant={performanceMode === "saving" ? "default" : "outline"}
+                className={`flex-1 py-6 text-lg font-bold transition-all ${
+                  performanceMode === "saving"
+                    ? "bg-accent hover:bg-accent/90 shadow-[0_0_20px_rgba(234,179,8,0.4)]"
+                    : ""
+                }`}
+              >
+                <Battery className="mr-2 h-6 w-6" />
+                Saving
+              </Button>
+              <Button
+                size="lg"
+                onClick={() => handleModeChange("balance")}
+                variant={performanceMode === "balance" ? "default" : "outline"}
+                className={`flex-1 py-6 text-lg font-bold transition-all ${
+                  performanceMode === "balance"
+                    ? "bg-secondary hover:bg-secondary/90 shadow-[0_0_20px_rgba(59,130,246,0.4)]"
+                    : ""
+                }`}
+              >
+                <Gauge className="mr-2 h-6 w-6" />
+                Balance
+              </Button>
+              <Button
+                size="lg"
+                onClick={() => handleModeChange("boost")}
+                variant={performanceMode === "boost" ? "default" : "outline"}
+                className={`flex-1 py-6 text-lg font-bold transition-all ${
+                  performanceMode === "boost"
+                    ? "bg-primary hover:bg-primary/90 shadow-[0_0_30px_rgba(16,185,129,0.5)]"
+                    : ""
+                }`}
+              >
+                <Zap className="mr-2 h-6 w-6" />
+                Boost
+              </Button>
+            </div>
           </div>
         </Card>
 
@@ -339,7 +383,7 @@ export const GameBoosterDashboard = () => {
         ramUsage={ramUsage}
         fps={fps}
         gpuUsage={gpuUsage}
-        isBoosted={isBoosted}
+        performanceMode={performanceMode}
         isVisible={showPanels}
         wifiEnabled={wifiEnabled}
         setWifiEnabled={setWifiEnabled}

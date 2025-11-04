@@ -12,13 +12,13 @@ interface BoostAssistantProps {
   ramUsage: number;
   fps: number;
   gpuUsage: number;
-  isBoosted: boolean;
+  performanceMode: "saving" | "balance" | "boost";
   isVisible: boolean;
   wifiEnabled: boolean;
   setWifiEnabled: (enabled: boolean) => void;
 }
 
-export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, isVisible, wifiEnabled, setWifiEnabled }: BoostAssistantProps) => {
+export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceMode, isVisible, wifiEnabled, setWifiEnabled }: BoostAssistantProps) => {
   if (!isVisible) return null;
   const [fanMode, setFanMode] = useState<"auto" | "max">("auto");
   const [diabloMode, setDiabloMode] = useState(false);
@@ -401,9 +401,13 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, isBoosted, i
             {/* Gaming Status */}
             <div className="space-y-2">
               <div className="flex items-center justify-between p-2 bg-muted/10 rounded">
-                <span className="text-xs">Boost Status</span>
-                <span className={`text-xs font-bold ${isBoosted ? "text-primary" : "text-muted-foreground"}`}>
-                  {isBoosted ? "ACTIVE" : "INACTIVE"}
+                <span className="text-xs">Performance Mode</span>
+                <span className={`text-xs font-bold ${
+                  performanceMode === "boost" ? "text-primary" : 
+                  performanceMode === "balance" ? "text-accent" : 
+                  "text-secondary"
+                }`}>
+                  {performanceMode.toUpperCase()}
                 </span>
               </div>
               <div className="flex items-center justify-between p-2 bg-muted/10 rounded">
