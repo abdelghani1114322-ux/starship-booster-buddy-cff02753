@@ -429,7 +429,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             </div>
           </div>
 
-          <div className="flex-1 p-6 space-y-4 overflow-hidden">
+          <div className="flex-1 p-6 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/20 scrollbar-track-transparent">
             {/* RAM Usage */}
             <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
               <div className="flex items-center justify-between">
