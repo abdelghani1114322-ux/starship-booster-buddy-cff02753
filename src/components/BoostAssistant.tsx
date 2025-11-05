@@ -130,6 +130,19 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     return "text-destructive";
   };
 
+  const getLEDColor = () => {
+    switch (performanceMode) {
+      case "saving":
+        return { bg: "bg-gradient-to-b from-green-500 via-green-600 to-green-500", border: "border-green-500/30", shadow: "0 0 8px rgba(34, 197, 94, 0.6)", rgb: "rgba(34, 197, 94, 0.5)" };
+      case "balance":
+        return { bg: "bg-gradient-to-b from-yellow-500 via-yellow-600 to-yellow-500", border: "border-yellow-500/30", shadow: "0 0 8px rgba(234, 179, 8, 0.6)", rgb: "rgba(234, 179, 8, 0.5)" };
+      case "boost":
+        return { bg: "bg-gradient-to-b from-red-500 via-red-600 to-red-500", border: "border-red-500/30", shadow: "0 0 8px rgba(239, 68, 68, 0.6)", rgb: "rgba(239, 68, 68, 0.5)" };
+      default:
+        return { bg: "bg-gradient-to-b from-red-500 via-red-600 to-red-500", border: "border-red-500/30", shadow: "0 0 8px rgba(239, 68, 68, 0.6)", rgb: "rgba(239, 68, 68, 0.5)" };
+    }
+  };
+
   const CircularGauge = ({ value, label, temp, color }: { value: number; label: string; temp: number; color: string }) => {
     const radius = 60;
     const circumference = 2 * Math.PI * radius;
@@ -191,8 +204,8 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             {Array.from({ length: 10 }).map((_, i) => (
               <div
                 key={i}
-                className="w-1 h-10 bg-gradient-to-b from-red-500 via-red-600 to-red-500 rounded-sm border border-red-500/30"
-                style={{ boxShadow: '0 0 8px rgba(239, 68, 68, 0.6)' }}
+                className={`w-1 h-10 ${getLEDColor().bg} rounded-sm border ${getLEDColor().border}`}
+                style={{ boxShadow: getLEDColor().shadow }}
               />
             ))}
           </div>
@@ -207,10 +220,10 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                   key={i}
                   className={`w-2 h-6 rounded-sm transition-all duration-300 ${
                     isActive 
-                      ? 'bg-gradient-to-r from-red-500 via-red-600 to-red-500 border border-red-500/30' 
+                      ? `${getLEDColor().bg.replace('from-', 'from-').replace('to-b', 'to-r')} border ${getLEDColor().border}` 
                       : 'bg-muted/20 border border-muted/30'
                   }`}
-                  style={isActive ? { boxShadow: '0 0 6px rgba(239, 68, 68, 0.5)' } : {}}
+                  style={isActive ? { boxShadow: `0 0 6px ${getLEDColor().rgb}` } : {}}
                 />
               );
             })}
@@ -398,10 +411,10 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                   key={i}
                   className={`w-2 h-6 rounded-sm transition-all duration-300 ${
                     isActive 
-                      ? 'bg-gradient-to-r from-red-500 via-red-600 to-red-500 border border-red-500/30' 
+                      ? `${getLEDColor().bg.replace('from-', 'from-').replace('to-b', 'to-r')} border ${getLEDColor().border}` 
                       : 'bg-muted/20 border border-muted/30'
                   }`}
-                  style={isActive ? { boxShadow: '0 0 6px rgba(239, 68, 68, 0.5)' } : {}}
+                  style={isActive ? { boxShadow: `0 0 6px ${getLEDColor().rgb}` } : {}}
                 />
               );
             })}
@@ -412,8 +425,8 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             {Array.from({ length: 10 }).map((_, i) => (
               <div
                 key={i}
-                className="w-1 h-10 bg-gradient-to-b from-red-500 via-red-600 to-red-500 rounded-sm border border-red-500/30"
-                style={{ boxShadow: '0 0 8px rgba(239, 68, 68, 0.6)' }}
+                className={`w-1 h-10 ${getLEDColor().bg} rounded-sm border ${getLEDColor().border}`}
+                style={{ boxShadow: getLEDColor().shadow }}
               />
             ))}
           </div>
