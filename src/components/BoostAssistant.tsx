@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video } from "lucide-react";
+import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Slider } from "./ui/slider";
@@ -16,9 +16,10 @@ interface BoostAssistantProps {
   isVisible: boolean;
   wifiEnabled: boolean;
   setWifiEnabled: (enabled: boolean) => void;
+  setPerformanceMode: (mode: "saving" | "balance" | "boost") => void;
 }
 
-export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceMode, isVisible, wifiEnabled, setWifiEnabled }: BoostAssistantProps) => {
+export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceMode, isVisible, wifiEnabled, setWifiEnabled, setPerformanceMode }: BoostAssistantProps) => {
   if (!isVisible) return null;
   const [fanMode, setFanMode] = useState<"auto" | "max">("auto");
   const [diabloMode, setDiabloMode] = useState(false);
@@ -353,6 +354,61 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                   ) : (
                     "Start"
                   )}
+                </Button>
+              </div>
+            </div>
+
+            {/* Performance Mode Selector */}
+            <div className="p-4 bg-muted/20 rounded-lg border border-primary/20">
+              <div className="text-xs font-semibold mb-3 text-center text-primary">PERFORMANCE MODE</div>
+              <div className="space-y-2">
+                <Button
+                  size="sm"
+                  variant={performanceMode === "saving" ? "default" : "outline"}
+                  className={`w-full ${
+                    performanceMode === "saving"
+                      ? "bg-green-600 hover:bg-green-700 shadow-[0_0_15px_rgba(34,197,94,0.4)]"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    setPerformanceMode("saving");
+                    toast.success("Saving Mode", { description: "Battery-saving enabled" });
+                  }}
+                >
+                  <Battery className="w-4 h-4 mr-2" />
+                  Saving
+                </Button>
+                <Button
+                  size="sm"
+                  variant={performanceMode === "balance" ? "default" : "outline"}
+                  className={`w-full ${
+                    performanceMode === "balance"
+                      ? "bg-yellow-600 hover:bg-yellow-700 shadow-[0_0_15px_rgba(234,179,8,0.4)]"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    setPerformanceMode("balance");
+                    toast.info("Balance Mode", { description: "Optimal performance" });
+                  }}
+                >
+                  <Gauge className="w-4 h-4 mr-2" />
+                  Balance
+                </Button>
+                <Button
+                  size="sm"
+                  variant={performanceMode === "boost" ? "default" : "outline"}
+                  className={`w-full ${
+                    performanceMode === "boost"
+                      ? "bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(16,185,129,0.4)]"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    setPerformanceMode("boost");
+                    toast.success("Boost Mode Activated! 🚀", { description: "Maximum performance" });
+                  }}
+                >
+                  <Zap className="w-4 h-4 mr-2" />
+                  Boost
                 </Button>
               </div>
             </div>

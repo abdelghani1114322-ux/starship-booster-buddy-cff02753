@@ -387,6 +387,7 @@ export const GameBoosterDashboard = () => {
         isVisible={showPanels}
         wifiEnabled={wifiEnabled}
         setWifiEnabled={setWifiEnabled}
+        setPerformanceMode={setPerformanceMode}
       />
 
       {/* Floating Bar Button - App Mode (shows everywhere) */}
