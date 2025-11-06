@@ -303,33 +303,38 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               </div>
             </div>
 
-            {/* Volume Control */}
-            <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
-              <div className="flex items-center gap-3">
-                <Volume2 className="w-5 h-5 text-accent" />
-                <Slider
-                  value={[volume]}
-                  onValueChange={(value) => setVolume(value[0])}
-                  max={100}
-                  step={1}
-                  className="flex-1"
-                />
-                <span className="text-xs font-medium w-8 text-right">{volume}%</span>
+            {/* Volume and Brightness Controls - Vertical */}
+            <div className="flex gap-4 justify-center p-4 bg-muted/20 rounded-lg border border-accent/20">
+              {/* Volume Control */}
+              <div className="flex flex-col items-center gap-3">
+                <Volume2 className="w-6 h-6 text-accent" />
+                <div className="h-32 relative">
+                  <Slider
+                    value={[volume]}
+                    onValueChange={(value) => setVolume(value[0])}
+                    max={100}
+                    step={1}
+                    orientation="vertical"
+                    className="h-full"
+                  />
+                </div>
+                <span className="text-xs font-medium">{volume}%</span>
               </div>
-            </div>
 
-            {/* Brightness Control */}
-            <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
-              <div className="flex items-center gap-3">
-                <Sun className="w-5 h-5 text-accent" />
-                <Slider
-                  value={[brightness]}
-                  onValueChange={(value) => setBrightness(value[0])}
-                  max={100}
-                  step={1}
-                  className="flex-1"
-                />
-                <span className="text-xs font-medium w-8 text-right">{brightness}%</span>
+              {/* Brightness Control */}
+              <div className="flex flex-col items-center gap-3">
+                <Sun className="w-6 h-6 text-accent" />
+                <div className="h-32 relative">
+                  <Slider
+                    value={[brightness]}
+                    onValueChange={(value) => setBrightness(value[0])}
+                    max={100}
+                    step={1}
+                    orientation="vertical"
+                    className="h-full"
+                  />
+                </div>
+                <span className="text-xs font-medium">{brightness}%</span>
               </div>
             </div>
 
