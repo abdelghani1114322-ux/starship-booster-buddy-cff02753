@@ -195,62 +195,157 @@ export const GameBoosterDashboard = () => {
           </div>
         </div>
 
-        {/* Main Performance Mode Control */}
-        <Card className="p-8 bg-gradient-to-br from-card to-card/50 border-primary/20">
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold">Performance Mode</h2>
-              <p className="text-muted-foreground">
-                {performanceMode === "boost"
-                  ? "Maximum performance for intense gaming"
-                  : performanceMode === "balance"
-                  ? "Optimal balance between performance and efficiency"
-                  : "Battery-saving mode for extended usage"}
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button
-                size="lg"
-                onClick={() => handleModeChange("saving")}
-                variant={performanceMode === "saving" ? "default" : "outline"}
-                className={`flex-1 py-6 text-lg font-bold transition-all ${
-                  performanceMode === "saving"
-                    ? "bg-accent hover:bg-accent/90 shadow-[0_0_20px_rgba(234,179,8,0.4)]"
-                    : ""
-                }`}
-              >
-                <Battery className="mr-2 h-6 w-6" />
-                Saving
-              </Button>
-              <Button
-                size="lg"
-                onClick={() => handleModeChange("balance")}
-                variant={performanceMode === "balance" ? "default" : "outline"}
-                className={`flex-1 py-6 text-lg font-bold transition-all ${
-                  performanceMode === "balance"
-                    ? "bg-secondary hover:bg-secondary/90 shadow-[0_0_20px_rgba(59,130,246,0.4)]"
-                    : ""
-                }`}
-              >
-                <Gauge className="mr-2 h-6 w-6" />
-                Balance
-              </Button>
-              <Button
-                size="lg"
-                onClick={() => handleModeChange("boost")}
-                variant={performanceMode === "boost" ? "default" : "outline"}
-                className={`flex-1 py-6 text-lg font-bold transition-all ${
-                  performanceMode === "boost"
-                    ? "bg-primary hover:bg-primary/90 shadow-[0_0_30px_rgba(16,185,129,0.5)]"
-                    : ""
-                }`}
-              >
-                <Zap className="mr-2 h-6 w-6" />
-                Boost
-              </Button>
+        {/* Central Performance Display with Mode Selector */}
+        <div className="relative py-12">
+          {/* Central Hexagon Display */}
+          <div className="flex justify-center mb-12">
+            <div className="relative">
+              {/* Hexagon with gradient border */}
+              <div className="relative w-48 h-48 flex items-center justify-center">
+                <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full">
+                  <defs>
+                    <linearGradient id="hexGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style={{ stopColor: 'hsl(217, 91%, 60%)', stopOpacity: 1 }} />
+                      <stop offset="100%" style={{ stopColor: 'hsl(270, 70%, 60%)', stopOpacity: 1 }} />
+                    </linearGradient>
+                  </defs>
+                  <polygon
+                    points="50 2, 95 27, 95 73, 50 98, 5 73, 5 27"
+                    fill="none"
+                    stroke="url(#hexGradient)"
+                    strokeWidth="2"
+                    className="drop-shadow-[0_0_10px_rgba(142,76,45,0.6)]"
+                  />
+                </svg>
+                
+                {/* Icon based on performance mode */}
+                <div className="relative z-10 flex items-center justify-center">
+                  {performanceMode === "saving" && (
+                    <div className="animate-pulse">
+                      <Battery className="w-20 h-20 text-primary" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Zap className="w-8 h-8 text-accent animate-bounce" />
+                      </div>
+                    </div>
+                  )}
+                  {performanceMode === "balance" && (
+                    <div className="relative animate-pulse">
+                      <div className="absolute inset-0 animate-spin-slow">
+                        <Zap className="w-6 h-6 text-accent absolute -top-8 left-1/2 -translate-x-1/2" />
+                        <Zap className="w-6 h-6 text-accent absolute -bottom-8 left-1/2 -translate-x-1/2" />
+                      </div>
+                      <Gauge className="w-20 h-20 text-secondary relative z-10" />
+                    </div>
+                  )}
+                  {performanceMode === "boost" && (
+                    <div className="relative">
+                      <div className="absolute inset-0 animate-ping opacity-75">
+                        <Zap className="w-20 h-20 text-primary" />
+                      </div>
+                      <Zap className="w-20 h-20 text-primary relative z-10 animate-pulse" />
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
-        </Card>
+
+          {/* Performance Mode Buttons */}
+          <div className="grid grid-cols-3 gap-6 max-w-3xl mx-auto">
+            {/* Low Power Mode */}
+            <button
+              onClick={() => handleModeChange("saving")}
+              className={`group relative flex flex-col items-center gap-4 p-6 rounded-2xl transition-all duration-300 ${
+                performanceMode === "saving"
+                  ? "bg-primary/10 shadow-[0_0_30px_rgba(16,185,129,0.4)] border-2 border-primary"
+                  : "bg-card/50 border-2 border-border hover:border-primary/50"
+              }`}
+            >
+              <div className={`relative ${performanceMode === "saving" ? "animate-pulse" : ""}`}>
+                <Battery className={`w-16 h-16 ${
+                  performanceMode === "saving" ? "text-primary" : "text-muted-foreground"
+                }`} />
+                {performanceMode === "saving" && (
+                  <>
+                    <Zap className="w-6 h-6 text-accent absolute -top-2 -left-2 animate-bounce" />
+                    <Zap className="w-6 h-6 text-accent absolute -top-2 -right-2 animate-bounce delay-75" />
+                  </>
+                )}
+              </div>
+              <span className={`text-sm font-semibold ${
+                performanceMode === "saving" ? "text-primary" : "text-muted-foreground"
+              }`}>
+                Low Power
+              </span>
+              {performanceMode === "saving" && (
+                <div className="absolute -bottom-2 left-0 right-0 h-1 bg-primary rounded-full shadow-[0_0_10px_rgba(16,185,129,0.6)]" />
+              )}
+            </button>
+
+            {/* Balanced Mode */}
+            <button
+              onClick={() => handleModeChange("balance")}
+              className={`group relative flex flex-col items-center gap-4 p-6 rounded-2xl transition-all duration-300 ${
+                performanceMode === "balance"
+                  ? "bg-secondary/10 shadow-[0_0_30px_rgba(59,130,246,0.4)] border-2 border-secondary"
+                  : "bg-card/50 border-2 border-border hover:border-secondary/50"
+              }`}
+            >
+              <div className={`relative ${performanceMode === "balance" ? "animate-pulse" : ""}`}>
+                <Gauge className={`w-16 h-16 ${
+                  performanceMode === "balance" ? "text-secondary" : "text-muted-foreground"
+                }`} />
+                {performanceMode === "balance" && (
+                  <div className="absolute inset-0 animate-spin-slow">
+                    <Zap className="w-5 h-5 text-accent absolute -top-6 left-1/2 -translate-x-1/2" />
+                  </div>
+                )}
+              </div>
+              <span className={`text-sm font-semibold ${
+                performanceMode === "balance" ? "text-secondary" : "text-muted-foreground"
+              }`}>
+                Balanced
+              </span>
+              {performanceMode === "balance" && (
+                <div className="absolute -bottom-2 left-0 right-0 h-1 bg-secondary rounded-full shadow-[0_0_10px_rgba(59,130,246,0.6)]" />
+              )}
+            </button>
+
+            {/* Gamer Mode */}
+            <button
+              onClick={() => handleModeChange("boost")}
+              className={`group relative flex flex-col items-center gap-4 p-6 rounded-2xl transition-all duration-300 ${
+                performanceMode === "boost"
+                  ? "bg-primary/10 shadow-[0_0_40px_rgba(16,185,129,0.6)] border-2 border-primary"
+                  : "bg-card/50 border-2 border-border hover:border-primary/50"
+              }`}
+            >
+              <div className={`relative ${performanceMode === "boost" ? "animate-bounce" : ""}`}>
+                <Zap className={`w-16 h-16 ${
+                  performanceMode === "boost" ? "text-primary" : "text-muted-foreground"
+                }`} />
+                {performanceMode === "boost" && (
+                  <>
+                    <div className="absolute inset-0 animate-ping opacity-50">
+                      <Zap className="w-16 h-16 text-primary" />
+                    </div>
+                    <Zap className="w-4 h-4 text-accent absolute top-0 left-0 animate-pulse" />
+                    <Zap className="w-4 h-4 text-accent absolute top-0 right-0 animate-pulse delay-75" />
+                    <Zap className="w-4 h-4 text-accent absolute bottom-0 left-1/2 -translate-x-1/2 animate-pulse delay-150" />
+                  </>
+                )}
+              </div>
+              <span className={`text-sm font-semibold ${
+                performanceMode === "boost" ? "text-primary" : "text-muted-foreground"
+              }`}>
+                Gamer Mode
+              </span>
+              {performanceMode === "boost" && (
+                <div className="absolute -bottom-2 left-0 right-0 h-1 bg-primary rounded-full shadow-[0_0_10px_rgba(16,185,129,0.6)]" />
+              )}
+            </button>
+          </div>
+        </div>
 
         {/* Performance Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

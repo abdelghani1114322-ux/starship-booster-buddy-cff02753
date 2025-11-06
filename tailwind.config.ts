@@ -101,6 +101,7 @@ export default {
         "twinkle": "twinkle 3s ease-in-out infinite",
         "boost": "boost 0.6s ease-out forwards",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+        "spin-slow": "spin 3s linear infinite",
       },
       backgroundImage: {
         "gradient-space": "var(--gradient-space)",
