@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Zap, Cpu, MemoryStick, Gauge, Monitor, Settings, TrendingUp, PanelLeftOpen, Battery } from "lucide-react";
@@ -9,6 +10,7 @@ import wifiOff from "@/assets/wifi-off.webp";
 import buttonBar from "@/assets/button-bar.jpg";
 
 export const GameBoosterDashboard = () => {
+  const navigate = useNavigate();
   const [cpuUsage, setCpuUsage] = useState(45);
   const [ramUsage, setRamUsage] = useState(62);
   const [fps, setFps] = useState(60);
@@ -189,7 +191,11 @@ export const GameBoosterDashboard = () => {
             >
               <PanelLeftOpen className="h-5 w-5" />
             </Button>
-            <Button variant="outline" size="icon">
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={() => navigate("/settings")}
+            >
               <Settings className="h-5 w-5" />
             </Button>
           </div>
