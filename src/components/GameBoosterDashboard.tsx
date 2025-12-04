@@ -457,6 +457,34 @@ export const GameBoosterDashboard = () => {
           </div>
         </Card>
 
+        {/* Games to Boost */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+              <path d="M6 11H8M16 11H18M10 11V13M14 11V13" stroke="url(#gamepadGradient)" strokeWidth="2" strokeLinecap="round"/>
+              <rect x="2" y="6" width="20" height="12" rx="4" stroke="url(#gamepadGradient)" strokeWidth="2"/>
+              <circle cx="7" cy="14" r="1.5" fill="url(#gamepadGradient)"/>
+              <circle cx="17" cy="14" r="1.5" fill="url(#gamepadGradient)"/>
+              <defs>
+                <linearGradient id="gamepadGradient" x1="2" y1="6" x2="22" y2="18" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#D946EF"/>
+                  <stop offset="1" stopColor="#8B5CF6"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <h3 className="font-semibold text-lg">Games to Boost</h3>
+          </div>
+          <Card 
+            className="p-6 bg-card/60 backdrop-blur border-border hover:border-primary/40 transition-colors cursor-pointer"
+            onClick={() => toast.info("Add Games feature coming soon!")}
+          >
+            <div className="flex items-center gap-4">
+              <div className="text-cyan-400 text-3xl font-light">+</div>
+              <span className="font-medium text-foreground">Add Games</span>
+            </div>
+          </Card>
+        </div>
+
         {/* Quick Actions */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Button variant="outline" className="h-auto py-4 flex-col gap-2">
