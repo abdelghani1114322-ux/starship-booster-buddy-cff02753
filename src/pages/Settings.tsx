@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Wifi, Bell, HelpCircle, User, ChevronDown } from "lucide-react";
+import { Wifi, Bell, HelpCircle, User, ChevronDown, Grid3X3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -38,6 +38,14 @@ export default function Settings() {
 
         {/* Navigation Menu */}
         <nav className="flex-1 p-4 space-y-2">
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-left h-auto py-4 hover:bg-primary/10"
+            onClick={() => navigate("/my-apps")}
+          >
+            <Grid3X3 className="w-5 h-5 mr-3" />
+            <span className="text-base">My Apps</span>
+          </Button>
           <Button
             variant="ghost"
             className="w-full justify-start text-left h-auto py-4 hover:bg-primary/10"
