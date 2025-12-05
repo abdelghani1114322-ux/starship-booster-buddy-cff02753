@@ -56,21 +56,26 @@ export default function MyApps() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="h-16 bg-card/50 border-b border-border flex items-center justify-between px-4">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/")}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-xl font-bold">My Apps</h1>
+      <header className="bg-card/50 border-b border-border">
+        <div className="text-center py-1 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 border-b border-border">
+          <span className="text-xs text-muted-foreground">Developed by <span className="font-semibold text-primary">B.Taha</span></span>
         </div>
-        <Button onClick={handleAddApp} size="sm" className="gap-2">
-          <Plus className="h-4 w-4" />
-          Add App
-        </Button>
+        <div className="h-16 flex items-center justify-between px-4">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/")}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="text-xl font-bold">My Apps</h1>
+          </div>
+          <Button onClick={handleAddApp} size="sm" className="gap-2">
+            <Plus className="h-4 w-4" />
+            Add App
+          </Button>
+        </div>
       </header>
 
       {/* Apps Grid */}
