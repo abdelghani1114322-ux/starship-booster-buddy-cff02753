@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { Zap, Cpu, MemoryStick, Gauge, Monitor, Settings, TrendingUp, PanelLeftOpen, Battery } from "lucide-react";
+import { Zap, Cpu, MemoryStick, Gauge, Monitor, Settings, TrendingUp, PanelLeftOpen, Battery, Grid3X3 } from "lucide-react";
 import { BoostAssistant } from "./BoostAssistant";
 import { toast } from "sonner";
 import wifiOn from "@/assets/wifi-on.webp";
@@ -182,6 +182,13 @@ export const GameBoosterDashboard = () => {
                 alt="WiFi" 
                 className="h-5 w-5"
               />
+            </Button>
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={() => navigate("/my-apps")}
+            >
+              <Grid3X3 className="h-5 w-5" />
             </Button>
             <Button 
               variant={showPanels ? "default" : "outline"} 
