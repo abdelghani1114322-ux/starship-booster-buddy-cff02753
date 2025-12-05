@@ -11,6 +11,8 @@ export interface PermissionStatus {
   notifications: boolean;
   filesystem: boolean;
   motion: boolean;
+  overlayPermission: boolean;
+  systemSettings: boolean;
 }
 
 export async function requestAllPermissions(): Promise<PermissionStatus> {
@@ -20,7 +22,9 @@ export async function requestAllPermissions(): Promise<PermissionStatus> {
     location: false,
     notifications: false,
     filesystem: false,
-    motion: false
+    motion: false,
+    overlayPermission: false,
+    systemSettings: false
   };
 
   try {
@@ -80,7 +84,9 @@ export async function checkAllPermissions(): Promise<PermissionStatus> {
     location: false,
     notifications: false,
     filesystem: false,
-    motion: false
+    motion: false,
+    overlayPermission: false,
+    systemSettings: false
   };
 
   try {
@@ -113,4 +119,25 @@ export async function checkAllPermissions(): Promise<PermissionStatus> {
   }
 
   return status;
+}
+
+// Note: These special Android permissions require native implementation
+// Add to AndroidManifest.xml:
+// <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+// <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+export function getSpecialPermissionsInfo() {
+  return {
+    overlayPermission: {
+      name: 'Display over other apps',
+      androidPermission: 'android.permission.SYSTEM_ALERT_WINDOW',
+      description: 'Allows floating windows over other apps',
+      requiresManualGrant: true
+    },
+    systemSettings: {
+      name: 'Modify system settings',
+      androidPermission: 'android.permission.WRITE_SETTINGS',
+      description: 'Allows modifying brightness, volume, etc.',
+      requiresManualGrant: true
+    }
+  };
 }
