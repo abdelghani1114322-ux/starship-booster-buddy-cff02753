@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap } from "lucide-react";
+import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap, Crosshair } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Slider } from "./ui/slider";
@@ -33,6 +33,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [isRecording, setIsRecording] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [ping, setPing] = useState(24);
+  const [crosshairEnabled, setCrosshairEnabled] = useState(false);
 
   // Update time every minute
   useEffect(() => {
@@ -590,10 +591,45 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                   {fanMode.toUpperCase()}
                 </span>
               </div>
+              <div className="flex items-center justify-between p-2 bg-muted/10 rounded">
+                <span className="text-xs">Crosshair</span>
+                <span className={`text-xs font-bold ${crosshairEnabled ? "text-primary" : "text-muted-foreground"}`}>
+                  {crosshairEnabled ? "ON" : "OFF"}
+                </span>
+              </div>
             </div>
+
+            {/* Crosshair Toggle */}
+            <Button
+              variant={crosshairEnabled ? "default" : "outline"}
+              className={`w-full ${crosshairEnabled ? "bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(16,185,129,0.4)]" : ""}`}
+              onClick={() => {
+                setCrosshairEnabled(!crosshairEnabled);
+                toast.success(crosshairEnabled ? "Crosshair Disabled" : "Crosshair Enabled", {
+                  description: crosshairEnabled ? "Crosshair hidden" : "Aim assist activated",
+                });
+              }}
+            >
+              <Crosshair className="w-4 h-4 mr-2" />
+              Crosshair: {crosshairEnabled ? "ON" : "OFF"}
+            </Button>
           </div>
         </Card>
       </div>
+
+      {/* Crosshair Overlay */}
+      {crosshairEnabled && (
+        <div className="fixed inset-0 pointer-events-none z-[100] flex items-center justify-center">
+          <div className="relative w-8 h-8">
+            {/* Horizontal line */}
+            <div className="absolute top-1/2 left-0 w-full h-0.5 bg-primary -translate-y-1/2 shadow-[0_0_4px_rgba(16,185,129,0.8)]" />
+            {/* Vertical line */}
+            <div className="absolute left-1/2 top-0 h-full w-0.5 bg-primary -translate-x-1/2 shadow-[0_0_4px_rgba(16,185,129,0.8)]" />
+            {/* Center dot */}
+            <div className="absolute top-1/2 left-1/2 w-1.5 h-1.5 bg-primary rounded-full -translate-x-1/2 -translate-y-1/2 shadow-[0_0_6px_rgba(16,185,129,1)]" />
+          </div>
+        </div>
+      )}
     </>
   );
 };
