@@ -32,6 +32,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [brightness, setBrightness] = useState(80);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
+  const [ping, setPing] = useState(24);
 
   // Update time every minute
   useEffect(() => {
@@ -79,6 +80,18 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
       setRecordingDuration(0);
     }
   }, [isRecording]);
+
+  // Simulate ping updates
+  useEffect(() => {
+    const timer = setInterval(() => {
+      // Simulate realistic ping fluctuation (15-80ms range)
+      setPing(prev => {
+        const change = (Math.random() - 0.5) * 20;
+        return Math.min(80, Math.max(15, Math.round(prev + change)));
+      });
+    }, 2000);
+    return () => clearInterval(timer);
+  }, []);
 
   const toggleRecording = () => {
     setIsRecording(!isRecording);
@@ -291,14 +304,19 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium">Network</span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs text-muted-foreground">Ping:</span>
+                    <span className={`text-sm font-bold ${ping < 30 ? "text-primary" : ping < 60 ? "text-accent" : "text-destructive"}`}>
+                      {ping}ms
+                    </span>
+                  </div>
                   <div className="flex gap-1">
                     <div className="w-1 h-3 bg-primary rounded" />
                     <div className="w-1 h-4 bg-primary rounded" />
                     <div className="w-1 h-5 bg-primary rounded" />
                     <div className="w-1 h-6 bg-primary rounded" />
                   </div>
-                  <span className="text-xs text-primary font-bold">Excellent</span>
                 </div>
               </div>
             </div>
