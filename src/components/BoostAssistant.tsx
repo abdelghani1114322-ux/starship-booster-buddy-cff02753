@@ -267,20 +267,6 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             </div>
           </div>
           
-          {/* Game Shortcuts */}
-          <div className="flex justify-around items-center gap-2 p-3 bg-muted/30 border-b border-primary/20">
-            {gameApps.map((app, index) => (
-              <Button
-                key={index}
-                size="icon"
-                variant="ghost"
-                className={`${app.color} hover:opacity-80 hover:scale-110 h-10 w-10 rounded-lg shadow-lg transition-all`}
-                onClick={() => toast.success(`Launching ${app.name}`)}
-              >
-                <app.icon className="h-5 w-5 text-white" />
-              </Button>
-            ))}
-          </div>
 
           <div className="flex-1 p-6 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
             {/* Circular Gauges */}
@@ -513,6 +499,21 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             <div className="text-xs mt-2 font-medium">
               {fps >= 100 ? "🔥 ULTRA SMOOTH" : fps >= 60 ? "✓ SMOOTH" : "⚠ LOW"}
             </div>
+          </div>
+
+          {/* Game Shortcuts */}
+          <div className="flex justify-around items-center gap-2 p-3 bg-muted/30 border-b border-accent/20">
+            {gameApps.map((app, index) => (
+              <Button
+                key={index}
+                size="icon"
+                variant="ghost"
+                className={`${app.color} hover:opacity-80 hover:scale-110 h-10 w-10 rounded-lg shadow-lg transition-all`}
+                onClick={() => toast.success(`Launching ${app.name}`)}
+              >
+                <app.icon className="h-5 w-5 text-white" />
+              </Button>
+            ))}
           </div>
 
           <div className="flex-1 p-6 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/20 scrollbar-track-transparent">
