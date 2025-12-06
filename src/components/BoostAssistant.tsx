@@ -103,11 +103,32 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     return () => clearInterval(timer);
   }, []);
 
-  const toggleRecording = () => {
-    setIsRecording(!isRecording);
-    toast.success(!isRecording ? "Recording Started 🔴" : "Recording Stopped", {
-      description: !isRecording ? "Screen capture in progress" : `Recorded ${Math.floor(recordingDuration / 60)}:${String(recordingDuration % 60).padStart(2, '0')}`,
-    });
+  const toggleRecording = async () => {
+    if (!isRecording) {
+      try {
+        // Request screen capture permission
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+          audio: true
+        });
+        
+        // Permission granted, start recording
+        stream.getTracks().forEach(track => track.stop()); // Stop preview stream
+        setIsRecording(true);
+        toast.success("Recording Started 🔴", {
+          description: "Screen capture in progress",
+        });
+      } catch (error) {
+        toast.error("Permission Denied", {
+          description: "Screen recording permission was not granted",
+        });
+      }
+    } else {
+      setIsRecording(false);
+      toast.success("Recording Stopped", {
+        description: `Recorded ${Math.floor(recordingDuration / 60)}:${String(recordingDuration % 60).padStart(2, '0')}`,
+      });
+    }
   };
 
   const formatDuration = (seconds: number) => {
