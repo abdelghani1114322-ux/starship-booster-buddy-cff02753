@@ -443,21 +443,6 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           {/* Mode Buttons */}
           <div className="p-4 space-y-2 bg-muted/20 border-t border-primary/20">
             <Button
-              variant={wifiEnabled ? "default" : "outline"}
-              className="w-full"
-              onClick={() => {
-                setWifiEnabled(!wifiEnabled);
-                toast.success(wifiEnabled ? "WiFi Disabled" : "WiFi Enabled");
-              }}
-            >
-              <img 
-                src={wifiEnabled ? wifiOn : wifiOff} 
-                alt="WiFi" 
-                className="w-4 h-4 mr-2"
-              />
-              WiFi: {wifiEnabled ? "ON" : "OFF"}
-            </Button>
-            <Button
               variant={fanMode === "max" ? "default" : "outline"}
               className="w-full"
               onClick={toggleFanMode}
@@ -620,6 +605,23 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 </span>
               </div>
             </div>
+
+            {/* WiFi Toggle */}
+            <Button
+              variant={wifiEnabled ? "default" : "outline"}
+              className="w-full"
+              onClick={() => {
+                setWifiEnabled(!wifiEnabled);
+                toast.success(wifiEnabled ? "WiFi Disabled" : "WiFi Enabled");
+              }}
+            >
+              <img 
+                src={wifiEnabled ? wifiOn : wifiOff} 
+                alt="WiFi" 
+                className="w-4 h-4 mr-2"
+              />
+              WiFi: {wifiEnabled ? "ON" : "OFF"}
+            </Button>
 
             {/* Crosshair Toggle */}
             <Button
