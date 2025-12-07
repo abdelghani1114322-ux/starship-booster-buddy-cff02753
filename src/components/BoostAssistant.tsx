@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap, Crosshair, FolderOpen } from "lucide-react";
+import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap, Crosshair } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Slider } from "./ui/slider";
 import { toast } from "sonner";
-import { requestAllPermissions, checkAllPermissions } from "@/lib/capacitor-permissions";
+
 import wifiOn from "@/assets/wifi-on.webp";
 import wifiOff from "@/assets/wifi-off.webp";
 
@@ -35,14 +35,6 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [ping, setPing] = useState(24);
   const [crosshairEnabled, setCrosshairEnabled] = useState(false);
-  const [filesPermission, setFilesPermission] = useState(false);
-
-  // Check file permission on mount
-  useEffect(() => {
-    checkAllPermissions().then(status => {
-      setFilesPermission(status.filesystem);
-    }).catch(() => {});
-  }, []);
 
   // Update time every minute
   useEffect(() => {
@@ -480,24 +472,6 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             >
               <Flame className="w-4 h-4 mr-2" />
               Diablo Mode
-            </Button>
-            <Button
-              variant={filesPermission ? "default" : "outline"}
-              className={`w-full ${filesPermission ? "bg-primary hover:bg-primary/90" : ""}`}
-              onClick={async () => {
-                try {
-                  const status = await requestAllPermissions();
-                  setFilesPermission(status.filesystem);
-                  toast.success(status.filesystem ? "File Access Granted" : "File Access Denied", {
-                    description: status.filesystem ? "You can now access files" : "Permission was not granted",
-                  });
-                } catch (e) {
-                  toast.error("Permission Error", { description: "Could not request file access" });
-                }
-              }}
-            >
-              <FolderOpen className="w-4 h-4 mr-2" />
-              Files: {filesPermission ? "GRANTED" : "REQUEST"}
             </Button>
           </div>
         </Card>
