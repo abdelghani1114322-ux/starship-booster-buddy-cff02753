@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { AssistantPanel } from "./AssistantPanel";
 import { SpaceBackground } from "./SpaceBackground";
 import rocketImage from "@/assets/rocket.png";
 import { toast } from "sonner";
@@ -136,8 +135,6 @@ export const SpaceBoosterGame = () => {
         )}
       </div>
 
-      {/* Assistant Panel */}
-      <AssistantPanel score={Math.floor(score / 10)} fuel={fuel} boosts={boosts} />
     </div>
   );
 };
