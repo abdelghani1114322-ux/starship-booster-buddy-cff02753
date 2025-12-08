@@ -7,6 +7,11 @@ import { toast } from "sonner";
 
 import wifiOn from "@/assets/wifi-on.webp";
 import wifiOff from "@/assets/wifi-off.webp";
+import pubgIcon from "@/assets/pubg-icon.png";
+import freefireIcon from "@/assets/freefire-icon.png";
+import chromeIcon from "@/assets/chrome-icon.png";
+import youtubeIcon from "@/assets/youtube-icon.png";
+import whatsappIcon from "@/assets/whatsapp-icon.png";
 
 interface BoostAssistantProps {
   cpuUsage: number;
@@ -130,11 +135,11 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   };
 
   const gameApps = [
-    { name: "Game 1", icon: Gamepad2, color: "bg-gradient-to-br from-red-500 to-red-600" },
-    { name: "Game 2", icon: Gamepad2, color: "bg-gradient-to-br from-blue-500 to-blue-600" },
-    { name: "Chrome", icon: Chrome, color: "bg-gradient-to-br from-yellow-500 to-yellow-600" },
-    { name: "YouTube", icon: Youtube, color: "bg-gradient-to-br from-red-600 to-pink-600" },
-    { name: "Chat", icon: MessageSquare, color: "bg-gradient-to-br from-green-500 to-green-600" },
+    { name: "PUBG", icon: pubgIcon },
+    { name: "Free Fire", icon: freefireIcon },
+    { name: "Chrome", icon: chromeIcon },
+    { name: "YouTube", icon: youtubeIcon },
+    { name: "WhatsApp", icon: whatsappIcon },
   ];
 
   const gamingTools = [
@@ -516,10 +521,10 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 key={index}
                 size="icon"
                 variant="ghost"
-                className={`${app.color} hover:opacity-80 hover:scale-110 h-10 w-10 rounded-lg shadow-lg transition-all`}
+                className="hover:opacity-80 hover:scale-110 h-12 w-12 rounded-lg shadow-lg transition-all p-1 bg-muted/20"
                 onClick={() => toast.success(`Launching ${app.name}`)}
               >
-                <app.icon className="h-5 w-5 text-white" />
+                <img src={app.icon} alt={app.name} className="h-8 w-8 object-contain" />
               </Button>
             ))}
           </div>
