@@ -538,6 +538,11 @@ export const GameBoosterDashboard = () => {
           }}
         />
       )}
+
+      {/* Developer Credit */}
+      <div className="fixed bottom-2 left-1/2 -translate-x-1/2 z-30">
+        <p className="text-xs text-muted-foreground/60">Developed by B.Taha</p>
+      </div>
     </div>
   );
 };
