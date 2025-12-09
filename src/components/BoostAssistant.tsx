@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap, Crosshair, Music, X } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap, Crosshair, Music, X, Play, RotateCcw } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Slider } from "./ui/slider";
@@ -43,6 +43,14 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [showEqualizer, setShowEqualizer] = useState(false);
   const [equalizerEnabled, setEqualizerEnabled] = useState(true);
   const [equalizerBands, setEqualizerBands] = useState([0, 2, 4, 2, 0, -2, 0, 3, 5, 4]);
+  const [selectedPreset, setSelectedPreset] = useState<string>("custom");
+  const [isPlayingTest, setIsPlayingTest] = useState(false);
+  
+  // Audio context refs
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const filtersRef = useRef<BiquadFilterNode[]>([]);
+  const oscillatorRef = useRef<OscillatorNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
 
   // Update time every minute
   useEffect(() => {
@@ -155,6 +163,111 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   ];
 
   const equalizerFrequencies = ["31", "62", "125", "250", "500", "1k", "2k", "4k", "8k", "16k"];
+  const frequencyValues = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+
+  const equalizerPresets: Record<string, { name: string; bands: number[] }> = {
+    flat: { name: "Flat", bands: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+    gaming: { name: "Gaming", bands: [4, 3, 1, 0, -1, 0, 2, 4, 5, 4] },
+    bass: { name: "Bass Boost", bands: [8, 6, 4, 2, 0, 0, 0, 0, 0, 0] },
+    vocal: { name: "Vocal", bands: [-2, -1, 0, 2, 4, 4, 3, 1, 0, -1] },
+    treble: { name: "Treble", bands: [0, 0, 0, 0, 0, 2, 4, 6, 8, 8] },
+    rock: { name: "Rock", bands: [5, 4, 2, 0, -1, 0, 2, 4, 5, 5] },
+  };
+
+  // Initialize audio context and filters
+  const initAudioContext = () => {
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      // Create filters for each frequency band
+      filtersRef.current = frequencyValues.map((freq, index) => {
+        const filter = audioContextRef.current!.createBiquadFilter();
+        filter.type = index === 0 ? "lowshelf" : index === frequencyValues.length - 1 ? "highshelf" : "peaking";
+        filter.frequency.value = freq;
+        filter.Q.value = 1;
+        filter.gain.value = equalizerBands[index];
+        return filter;
+      });
+
+      // Chain filters together
+      for (let i = 0; i < filtersRef.current.length - 1; i++) {
+        filtersRef.current[i].connect(filtersRef.current[i + 1]);
+      }
+      filtersRef.current[filtersRef.current.length - 1].connect(audioContextRef.current.destination);
+    }
+  };
+
+  // Update filter gains when bands change
+  useEffect(() => {
+    filtersRef.current.forEach((filter, index) => {
+      if (equalizerEnabled) {
+        filter.gain.value = equalizerBands[index];
+      } else {
+        filter.gain.value = 0;
+      }
+    });
+  }, [equalizerBands, equalizerEnabled]);
+
+  // Play test sound
+  const playTestSound = () => {
+    initAudioContext();
+    
+    if (isPlayingTest) {
+      // Stop current sound
+      if (oscillatorRef.current) {
+        oscillatorRef.current.stop();
+        oscillatorRef.current = null;
+      }
+      setIsPlayingTest(false);
+      return;
+    }
+
+    const ctx = audioContextRef.current!;
+    
+    // Create gain node for volume control
+    gainNodeRef.current = ctx.createGain();
+    gainNodeRef.current.gain.value = 0.3;
+    gainNodeRef.current.connect(filtersRef.current[0]);
+
+    // Play a sweep through frequencies
+    const playFrequencySweep = async () => {
+      setIsPlayingTest(true);
+      
+      for (let i = 0; i < frequencyValues.length; i++) {
+        if (!isPlayingTest && oscillatorRef.current) break;
+        
+        const osc = ctx.createOscillator();
+        osc.type = "sine";
+        osc.frequency.value = frequencyValues[i];
+        osc.connect(gainNodeRef.current!);
+        osc.start();
+        
+        await new Promise(resolve => setTimeout(resolve, 300));
+        osc.stop();
+      }
+      
+      setIsPlayingTest(false);
+    };
+
+    playFrequencySweep();
+  };
+
+  // Apply preset
+  const applyPreset = (presetKey: string) => {
+    const preset = equalizerPresets[presetKey];
+    if (preset) {
+      setEqualizerBands([...preset.bands]);
+      setSelectedPreset(presetKey);
+      toast.success(`${preset.name} preset applied`);
+    }
+  };
+
+  // Reset to flat
+  const resetEqualizer = () => {
+    setEqualizerBands([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    setSelectedPreset("flat");
+    toast.info("Equalizer reset");
+  };
 
   const toggleFanMode = () => {
     const newMode = fanMode === "auto" ? "max" : "auto";
@@ -678,11 +791,11 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           onClick={() => setShowEqualizer(false)}
         >
           <div 
-            className="bg-card border-2 border-primary/40 rounded-xl p-6 shadow-[0_0_40px_rgba(16,185,129,0.3)] w-[400px] max-w-[90vw]"
+            className="bg-card border-2 border-primary/40 rounded-xl p-6 shadow-[0_0_40px_rgba(16,185,129,0.3)] w-[500px] max-w-[95vw]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Music className="w-5 h-5 text-primary" />
                 <span className="font-semibold">Sound Equalizer</span>
@@ -719,8 +832,24 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               </div>
             </div>
 
+            {/* Presets */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              {Object.entries(equalizerPresets).map(([key, preset]) => (
+                <Button
+                  key={key}
+                  size="sm"
+                  variant={selectedPreset === key ? "default" : "outline"}
+                  className={`text-xs ${selectedPreset === key ? "bg-primary" : ""}`}
+                  onClick={() => applyPreset(key)}
+                  disabled={!equalizerEnabled}
+                >
+                  {preset.name}
+                </Button>
+              ))}
+            </div>
+
             {/* Equalizer Sliders */}
-            <div className="relative">
+            <div className="relative mb-4">
               {/* dB Labels */}
               <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-xs text-muted-foreground">
                 <span>+12db</span>
@@ -729,33 +858,49 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               </div>
 
               {/* Sliders */}
-              <div className="ml-12 flex justify-between gap-2">
+              <div className="ml-12 flex justify-between gap-1">
                 {equalizerFrequencies.map((freq, index) => (
                   <div key={freq} className="flex flex-col items-center">
                     {/* Vertical Slider Track */}
-                    <div className="relative h-40 w-4 bg-muted/30 rounded-full flex items-center justify-center">
+                    <div 
+                      className="relative h-40 w-6 bg-muted/30 rounded-lg flex items-center justify-center cursor-pointer"
+                      onClick={(e) => {
+                        if (!equalizerEnabled) return;
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const y = e.clientY - rect.top;
+                        const percent = Math.max(0, Math.min(1, y / rect.height));
+                        const value = Math.round((0.5 - percent) * 24);
+                        setEqualizerBands(prev => {
+                          const newBands = [...prev];
+                          newBands[index] = value;
+                          return newBands;
+                        });
+                        setSelectedPreset("custom");
+                      }}
+                    >
                       {/* Grid lines */}
-                      <div className="absolute inset-0 flex flex-col justify-between py-2">
+                      <div className="absolute inset-0 flex flex-col justify-between py-2 pointer-events-none">
                         {Array.from({ length: 13 }).map((_, i) => (
-                          <div key={i} className="w-full h-px bg-muted/50" />
+                          <div key={i} className={`w-full h-px ${i === 6 ? "bg-primary/50" : "bg-muted/50"}`} />
                         ))}
                       </div>
-                      {/* Slider fill */}
+                      
+                      {/* Slider fill bar */}
                       <div 
-                        className={`absolute bottom-1/2 left-1/2 -translate-x-1/2 w-1.5 rounded-full transition-all ${
-                          equalizerEnabled ? "bg-destructive" : "bg-muted-foreground"
+                        className={`absolute left-1/2 -translate-x-1/2 w-2 rounded-full transition-all duration-150 ${
+                          equalizerEnabled ? "bg-destructive shadow-[0_0_8px_rgba(239,68,68,0.5)]" : "bg-muted-foreground"
                         }`}
                         style={{ 
-                          height: `${Math.abs(equalizerBands[index]) * 4}%`,
-                          bottom: equalizerBands[index] >= 0 ? "50%" : "auto",
-                          top: equalizerBands[index] < 0 ? "50%" : "auto"
+                          height: `${Math.abs(equalizerBands[index]) * 3.5}%`,
+                          top: equalizerBands[index] >= 0 ? `${50 - equalizerBands[index] * 3.5}%` : "50%",
                         }}
                       />
+                      
                       {/* Slider thumb */}
                       <div 
-                        className={`absolute left-1/2 -translate-x-1/2 w-5 h-5 rounded-full border-2 cursor-pointer transition-all ${
+                        className={`absolute left-1/2 w-6 h-4 rounded-md border-2 cursor-grab active:cursor-grabbing transition-all ${
                           equalizerEnabled 
-                            ? "bg-card border-muted-foreground shadow-lg" 
+                            ? "bg-card border-foreground/50 shadow-lg hover:border-primary" 
                             : "bg-muted border-muted-foreground"
                         }`}
                         style={{ 
@@ -764,7 +909,9 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                         }}
                         onMouseDown={(e) => {
                           if (!equalizerEnabled) return;
+                          e.preventDefault();
                           const slider = e.currentTarget.parentElement;
+                          
                           const handleMove = (moveEvent: MouseEvent) => {
                             if (!slider) return;
                             const rect = slider.getBoundingClientRect();
@@ -773,24 +920,81 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                             const value = Math.round((0.5 - percent) * 24);
                             setEqualizerBands(prev => {
                               const newBands = [...prev];
-                              newBands[index] = value;
+                              newBands[index] = Math.max(-12, Math.min(12, value));
                               return newBands;
                             });
+                            setSelectedPreset("custom");
                           };
+                          
                           const handleUp = () => {
                             document.removeEventListener("mousemove", handleMove);
                             document.removeEventListener("mouseup", handleUp);
                           };
+                          
                           document.addEventListener("mousemove", handleMove);
                           document.addEventListener("mouseup", handleUp);
+                        }}
+                        onTouchStart={(e) => {
+                          if (!equalizerEnabled) return;
+                          const slider = e.currentTarget.parentElement;
+                          
+                          const handleMove = (moveEvent: TouchEvent) => {
+                            if (!slider) return;
+                            const rect = slider.getBoundingClientRect();
+                            const y = moveEvent.touches[0].clientY - rect.top;
+                            const percent = Math.max(0, Math.min(1, y / rect.height));
+                            const value = Math.round((0.5 - percent) * 24);
+                            setEqualizerBands(prev => {
+                              const newBands = [...prev];
+                              newBands[index] = Math.max(-12, Math.min(12, value));
+                              return newBands;
+                            });
+                            setSelectedPreset("custom");
+                          };
+                          
+                          const handleEnd = () => {
+                            document.removeEventListener("touchmove", handleMove);
+                            document.removeEventListener("touchend", handleEnd);
+                          };
+                          
+                          document.addEventListener("touchmove", handleMove);
+                          document.addEventListener("touchend", handleEnd);
                         }}
                       />
                     </div>
                     {/* Frequency label */}
-                    <span className="text-xs text-muted-foreground mt-2">{freq}</span>
+                    <span className="text-[10px] text-muted-foreground mt-2">{freq}</span>
+                    {/* dB value */}
+                    <span className={`text-[9px] font-medium ${equalizerBands[index] > 0 ? "text-primary" : equalizerBands[index] < 0 ? "text-destructive" : "text-muted-foreground"}`}>
+                      {equalizerBands[index] > 0 ? "+" : ""}{equalizerBands[index]}
+                    </span>
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-2 justify-center">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={resetEqualizer}
+                disabled={!equalizerEnabled}
+                className="gap-2"
+              >
+                <RotateCcw className="w-4 h-4" />
+                Reset
+              </Button>
+              <Button
+                variant={isPlayingTest ? "destructive" : "default"}
+                size="sm"
+                onClick={playTestSound}
+                disabled={!equalizerEnabled}
+                className="gap-2"
+              >
+                <Play className={`w-4 h-4 ${isPlayingTest ? "animate-pulse" : ""}`} />
+                {isPlayingTest ? "Stop" : "Test Sound"}
+              </Button>
             </div>
           </div>
         </div>
