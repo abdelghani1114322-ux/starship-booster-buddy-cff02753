@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap, Crosshair } from "lucide-react";
+import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap, Crosshair, Music, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Slider } from "./ui/slider";
@@ -40,6 +40,9 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [ping, setPing] = useState(24);
   const [crosshairEnabled, setCrosshairEnabled] = useState(false);
+  const [showEqualizer, setShowEqualizer] = useState(false);
+  const [equalizerEnabled, setEqualizerEnabled] = useState(true);
+  const [equalizerBands, setEqualizerBands] = useState([0, 2, 4, 2, 0, -2, 0, 3, 5, 4]);
 
   // Update time every minute
   useEffect(() => {
@@ -147,9 +150,11 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     { name: "X Sense", icon: Cpu },
     { name: "AI Grabber", icon: Chrome },
     { name: "Macro", icon: Gamepad2 },
-    { name: "Blocked\ntouch", icon: Monitor },
+    { name: "Sounds\nEqualizer", icon: Music, action: () => setShowEqualizer(true) },
     { name: "Vibration\nMapping", icon: Wind },
   ];
+
+  const equalizerFrequencies = ["31", "62", "125", "250", "500", "1k", "2k", "4k", "8k", "16k"];
 
   const toggleFanMode = () => {
     const newMode = fanMode === "auto" ? "max" : "auto";
@@ -568,7 +573,13 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                     key={index}
                     variant="ghost"
                     className="flex flex-col items-center justify-center h-20 p-2 bg-muted/30 hover:bg-primary/20 border border-primary/20 rounded-lg transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]"
-                    onClick={() => toast.success(`${tool.name.replace('\n', ' ')} activated`)}
+                    onClick={() => {
+                      if (tool.action) {
+                        tool.action();
+                      } else {
+                        toast.success(`${tool.name.replace('\n', ' ')} activated`);
+                      }
+                    }}
                   >
                     <tool.icon className="w-5 h-5 mb-1 text-primary" />
                     <span className="text-[9px] font-medium text-center leading-tight whitespace-pre-line">
@@ -656,6 +667,131 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             <div className="absolute left-1/2 top-0 h-full w-0.5 bg-primary -translate-x-1/2 shadow-[0_0_4px_rgba(16,185,129,0.8)]" />
             {/* Center dot */}
             <div className="absolute top-1/2 left-1/2 w-1.5 h-1.5 bg-primary rounded-full -translate-x-1/2 -translate-y-1/2 shadow-[0_0_6px_rgba(16,185,129,1)]" />
+          </div>
+        </div>
+      )}
+
+      {/* Sound Equalizer Overlay */}
+      {showEqualizer && (
+        <div 
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-background/80 backdrop-blur-sm"
+          onClick={() => setShowEqualizer(false)}
+        >
+          <div 
+            className="bg-card border-2 border-primary/40 rounded-xl p-6 shadow-[0_0_40px_rgba(16,185,129,0.3)] w-[400px] max-w-[90vw]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <Music className="w-5 h-5 text-primary" />
+                <span className="font-semibold">Sound Equalizer</span>
+              </div>
+              <div className="flex items-center gap-3">
+                {/* On/Off Toggle */}
+                <div className="flex bg-muted/50 rounded-full overflow-hidden">
+                  <button
+                    className={`px-4 py-1.5 text-sm font-medium transition-all ${
+                      !equalizerEnabled ? "bg-muted text-foreground" : "text-muted-foreground"
+                    }`}
+                    onClick={() => setEqualizerEnabled(false)}
+                  >
+                    Off
+                  </button>
+                  <button
+                    className={`px-4 py-1.5 text-sm font-medium transition-all ${
+                      equalizerEnabled ? "bg-destructive text-destructive-foreground" : "text-muted-foreground"
+                    }`}
+                    onClick={() => setEqualizerEnabled(true)}
+                  >
+                    ON
+                  </button>
+                </div>
+                {/* Close Button */}
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8"
+                  onClick={() => setShowEqualizer(false)}
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Equalizer Sliders */}
+            <div className="relative">
+              {/* dB Labels */}
+              <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-xs text-muted-foreground">
+                <span>+12db</span>
+                <span>0db</span>
+                <span>-12db</span>
+              </div>
+
+              {/* Sliders */}
+              <div className="ml-12 flex justify-between gap-2">
+                {equalizerFrequencies.map((freq, index) => (
+                  <div key={freq} className="flex flex-col items-center">
+                    {/* Vertical Slider Track */}
+                    <div className="relative h-40 w-4 bg-muted/30 rounded-full flex items-center justify-center">
+                      {/* Grid lines */}
+                      <div className="absolute inset-0 flex flex-col justify-between py-2">
+                        {Array.from({ length: 13 }).map((_, i) => (
+                          <div key={i} className="w-full h-px bg-muted/50" />
+                        ))}
+                      </div>
+                      {/* Slider fill */}
+                      <div 
+                        className={`absolute bottom-1/2 left-1/2 -translate-x-1/2 w-1.5 rounded-full transition-all ${
+                          equalizerEnabled ? "bg-destructive" : "bg-muted-foreground"
+                        }`}
+                        style={{ 
+                          height: `${Math.abs(equalizerBands[index]) * 4}%`,
+                          bottom: equalizerBands[index] >= 0 ? "50%" : "auto",
+                          top: equalizerBands[index] < 0 ? "50%" : "auto"
+                        }}
+                      />
+                      {/* Slider thumb */}
+                      <div 
+                        className={`absolute left-1/2 -translate-x-1/2 w-5 h-5 rounded-full border-2 cursor-pointer transition-all ${
+                          equalizerEnabled 
+                            ? "bg-card border-muted-foreground shadow-lg" 
+                            : "bg-muted border-muted-foreground"
+                        }`}
+                        style={{ 
+                          top: `${50 - (equalizerBands[index] / 12) * 50}%`,
+                          transform: "translate(-50%, -50%)"
+                        }}
+                        onMouseDown={(e) => {
+                          if (!equalizerEnabled) return;
+                          const slider = e.currentTarget.parentElement;
+                          const handleMove = (moveEvent: MouseEvent) => {
+                            if (!slider) return;
+                            const rect = slider.getBoundingClientRect();
+                            const y = moveEvent.clientY - rect.top;
+                            const percent = Math.max(0, Math.min(1, y / rect.height));
+                            const value = Math.round((0.5 - percent) * 24);
+                            setEqualizerBands(prev => {
+                              const newBands = [...prev];
+                              newBands[index] = value;
+                              return newBands;
+                            });
+                          };
+                          const handleUp = () => {
+                            document.removeEventListener("mousemove", handleMove);
+                            document.removeEventListener("mouseup", handleUp);
+                          };
+                          document.addEventListener("mousemove", handleMove);
+                          document.addEventListener("mouseup", handleUp);
+                        }}
+                      />
+                    </div>
+                    {/* Frequency label */}
+                    <span className="text-xs text-muted-foreground mt-2">{freq}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
