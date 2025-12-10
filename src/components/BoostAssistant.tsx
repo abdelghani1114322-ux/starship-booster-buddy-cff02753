@@ -163,7 +163,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
   const gamingTools = [
     { name: "ROG Instant\nMaster", icon: Flame },
-    { name: "Crosshair", icon: Crosshair, action: () => setCrosshairEnabled(!crosshairEnabled) },
+    { name: "Aim\nAssistant", icon: Crosshair, action: () => setCrosshairEnabled(!crosshairEnabled) },
     { name: "Tactic X", icon: Target, action: () => setShowTacticX(true) },
     { name: "Macro", icon: Gamepad2 },
     { name: "Sounds\nEqualizer", icon: Music, action: () => setShowEqualizer(true) },
