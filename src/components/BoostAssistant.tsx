@@ -789,16 +789,93 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
         </Card>
       </div>
 
-      {/* Crosshair Overlay */}
+      {/* Crosshair Overlay - Using Aim Assistant Settings */}
       {crosshairEnabled && (
-        <div className="fixed inset-0 pointer-events-none z-[100] flex items-center justify-center">
-          <div className="relative w-8 h-8">
-            {/* Horizontal line */}
-            <div className="absolute top-1/2 left-0 w-full h-0.5 bg-primary -translate-y-1/2 shadow-[0_0_4px_rgba(16,185,129,0.8)]" />
-            {/* Vertical line */}
-            <div className="absolute left-1/2 top-0 h-full w-0.5 bg-primary -translate-x-1/2 shadow-[0_0_4px_rgba(16,185,129,0.8)]" />
-            {/* Center dot */}
-            <div className="absolute top-1/2 left-1/2 w-1.5 h-1.5 bg-primary rounded-full -translate-x-1/2 -translate-y-1/2 shadow-[0_0_6px_rgba(16,185,129,1)]" />
+        <div 
+          className="fixed inset-0 pointer-events-none z-[100] flex items-center justify-center"
+          style={{
+            transform: `translate(${aimSettings.x}px, ${aimSettings.y}px)`,
+          }}
+        >
+          <div 
+            className="relative"
+            style={{
+              width: `${aimSettings.size * 0.5}px`,
+              height: `${aimSettings.size * 0.5}px`,
+              opacity: aimSettings.opacity / 100,
+            }}
+          >
+            {/* Style 0: Full Cross */}
+            {aimSettings.style === 0 && (
+              <>
+                <div 
+                  className="absolute top-1/2 left-0 w-full h-0.5 -translate-y-1/2"
+                  style={{ backgroundColor: aimSettings.color, boxShadow: `0 0 4px ${aimSettings.color}` }}
+                />
+                <div 
+                  className="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2"
+                  style={{ backgroundColor: aimSettings.color, boxShadow: `0 0 4px ${aimSettings.color}` }}
+                />
+              </>
+            )}
+            
+            {/* Style 1: Gap Cross */}
+            {aimSettings.style === 1 && (
+              <>
+                <div 
+                  className="absolute top-0 left-1/2 w-0.5 h-[35%] -translate-x-1/2"
+                  style={{ backgroundColor: aimSettings.color, boxShadow: `0 0 4px ${aimSettings.color}` }}
+                />
+                <div 
+                  className="absolute bottom-0 left-1/2 w-0.5 h-[35%] -translate-x-1/2"
+                  style={{ backgroundColor: aimSettings.color, boxShadow: `0 0 4px ${aimSettings.color}` }}
+                />
+                <div 
+                  className="absolute left-0 top-1/2 h-0.5 w-[35%] -translate-y-1/2"
+                  style={{ backgroundColor: aimSettings.color, boxShadow: `0 0 4px ${aimSettings.color}` }}
+                />
+                <div 
+                  className="absolute right-0 top-1/2 h-0.5 w-[35%] -translate-y-1/2"
+                  style={{ backgroundColor: aimSettings.color, boxShadow: `0 0 4px ${aimSettings.color}` }}
+                />
+              </>
+            )}
+            
+            {/* Style 2: Horizontal Only */}
+            {aimSettings.style === 2 && (
+              <>
+                <div 
+                  className="absolute left-0 top-1/2 h-0.5 w-[35%] -translate-y-1/2"
+                  style={{ backgroundColor: aimSettings.color, boxShadow: `0 0 4px ${aimSettings.color}` }}
+                />
+                <div 
+                  className="absolute right-0 top-1/2 h-0.5 w-[35%] -translate-y-1/2"
+                  style={{ backgroundColor: aimSettings.color, boxShadow: `0 0 4px ${aimSettings.color}` }}
+                />
+              </>
+            )}
+            
+            {/* Style 3: Dot Only */}
+            {aimSettings.style === 3 && (
+              <div 
+                className="absolute top-1/2 left-1/2 w-2 h-2 rounded-full -translate-x-1/2 -translate-y-1/2"
+                style={{ backgroundColor: aimSettings.color, boxShadow: `0 0 6px ${aimSettings.color}` }}
+              />
+            )}
+            
+            {/* Style 4: Circle with Dot */}
+            {aimSettings.style === 4 && (
+              <>
+                <div 
+                  className="absolute top-1/2 left-1/2 w-[70%] h-[70%] rounded-full -translate-x-1/2 -translate-y-1/2 border-2"
+                  style={{ borderColor: aimSettings.color, boxShadow: `0 0 4px ${aimSettings.color}` }}
+                />
+                <div 
+                  className="absolute top-1/2 left-1/2 w-1.5 h-1.5 rounded-full -translate-x-1/2 -translate-y-1/2"
+                  style={{ backgroundColor: aimSettings.color, boxShadow: `0 0 6px ${aimSettings.color}` }}
+                />
+              </>
+            )}
           </div>
         </div>
       )}
