@@ -806,26 +806,37 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-xl font-bold text-primary">TactiX™</h2>
-                <p className="text-xs text-muted-foreground">Touch Optimization Experience</p>
+              <div className="flex items-center gap-3">
+                <Target className="w-6 h-6 text-primary" />
+                <div>
+                  <h2 className="text-xl font-bold text-primary">TactiX™</h2>
+                  <p className="text-xs text-muted-foreground">Touch Optimization Experience</p>
+                </div>
               </div>
               <div className="flex items-center gap-3">
                 {/* On/Off Toggle */}
-                <div className="flex bg-muted/50 rounded-full overflow-hidden">
+                <div className="flex bg-muted/50 rounded-full overflow-hidden border border-primary/20">
                   <button
-                    className={`px-3 py-1 text-xs font-medium transition-all ${
+                    className={`px-3 py-1.5 text-xs font-medium transition-all ${
                       !tacticXEnabled ? "bg-muted text-foreground" : "text-muted-foreground"
                     }`}
-                    onClick={() => setTacticXEnabled(false)}
+                    onClick={() => {
+                      setTacticXEnabled(false);
+                      toast.info("Tactic X Disabled");
+                    }}
                   >
                     Off
                   </button>
                   <button
-                    className={`px-3 py-1 text-xs font-medium transition-all ${
+                    className={`px-3 py-1.5 text-xs font-medium transition-all ${
                       tacticXEnabled ? "bg-primary text-primary-foreground" : "text-muted-foreground"
                     }`}
-                    onClick={() => setTacticXEnabled(true)}
+                    onClick={() => {
+                      setTacticXEnabled(true);
+                      toast.success("Tactic X Enabled 🎮", {
+                        description: "Touch optimization active",
+                      });
+                    }}
                   >
                     ON
                   </button>
@@ -834,7 +845,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-8 w-8"
+                  className="h-8 w-8 hover:bg-destructive/20"
                   onClick={() => setShowTacticX(false)}
                 >
                   <X className="w-5 h-5" />
@@ -843,22 +854,43 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             </div>
 
             {/* Sliders */}
-            <div className="space-y-6">
+            <div className="space-y-5">
               {/* Swipe Responsive */}
               <div className="space-y-2">
-                <span className="text-sm font-medium text-foreground/80">Swipe Responsive</span>
-                <div className="relative">
-                  <Slider
-                    value={[tacticXSettings.swipeResponsive]}
-                    onValueChange={(value) => setTacticXSettings(prev => ({ ...prev, swipeResponsive: value[0] }))}
-                    max={100}
-                    step={25}
-                    disabled={!tacticXEnabled}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between mt-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-foreground/80">Swipe Responsive</span>
+                  <span className="text-xs text-primary font-semibold">{tacticXLabels[tacticXSettings.swipeResponsive / 25]}</span>
+                </div>
+                <div className="relative pt-1">
+                  {/* Custom track with step markers */}
+                  <div className="relative h-2 bg-muted/40 rounded-full">
+                    {/* Active fill */}
+                    <div 
+                      className={`absolute h-full rounded-full transition-all ${tacticXEnabled ? "bg-gradient-to-r from-primary/60 to-primary" : "bg-muted-foreground/30"}`}
+                      style={{ width: `${tacticXSettings.swipeResponsive}%` }}
+                    />
+                    {/* Step markers */}
+                    <div className="absolute inset-0 flex justify-between items-center px-0">
+                      {tacticXLabels.map((_, i) => (
+                        <div 
+                          key={i} 
+                          className={`w-3 h-3 rounded-full border-2 cursor-pointer transition-all ${
+                            tacticXSettings.swipeResponsive >= i * 25 
+                              ? tacticXEnabled ? "bg-primary border-primary shadow-[0_0_6px_rgba(16,185,129,0.5)]" : "bg-muted-foreground border-muted-foreground"
+                              : "bg-card border-muted-foreground/50"
+                          }`}
+                          onClick={() => tacticXEnabled && setTacticXSettings(prev => ({ ...prev, swipeResponsive: i * 25 }))}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-between mt-2">
                     {tacticXLabels.map((label, i) => (
-                      <span key={i} className={`text-[10px] ${tacticXSettings.swipeResponsive === i * 25 ? "text-primary font-semibold" : "text-muted-foreground"}`}>
+                      <span 
+                        key={i} 
+                        className={`text-[10px] cursor-pointer transition-colors ${tacticXSettings.swipeResponsive === i * 25 ? "text-primary font-semibold" : "text-muted-foreground"}`}
+                        onClick={() => tacticXEnabled && setTacticXSettings(prev => ({ ...prev, swipeResponsive: i * 25 }))}
+                      >
                         {label}
                       </span>
                     ))}
@@ -868,19 +900,37 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
               {/* Sensitivity Continuous Tap */}
               <div className="space-y-2">
-                <span className="text-sm font-medium text-foreground/80">Sensitivity Continuous Tap</span>
-                <div className="relative">
-                  <Slider
-                    value={[tacticXSettings.sensitivityContinuousTap]}
-                    onValueChange={(value) => setTacticXSettings(prev => ({ ...prev, sensitivityContinuousTap: value[0] }))}
-                    max={100}
-                    step={25}
-                    disabled={!tacticXEnabled}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between mt-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-foreground/80">Sensitivity Continuous Tap</span>
+                  <span className="text-xs text-primary font-semibold">{tacticXLabels[tacticXSettings.sensitivityContinuousTap / 25]}</span>
+                </div>
+                <div className="relative pt-1">
+                  <div className="relative h-2 bg-muted/40 rounded-full">
+                    <div 
+                      className={`absolute h-full rounded-full transition-all ${tacticXEnabled ? "bg-gradient-to-r from-primary/60 to-primary" : "bg-muted-foreground/30"}`}
+                      style={{ width: `${tacticXSettings.sensitivityContinuousTap}%` }}
+                    />
+                    <div className="absolute inset-0 flex justify-between items-center px-0">
+                      {tacticXLabels.map((_, i) => (
+                        <div 
+                          key={i} 
+                          className={`w-3 h-3 rounded-full border-2 cursor-pointer transition-all ${
+                            tacticXSettings.sensitivityContinuousTap >= i * 25 
+                              ? tacticXEnabled ? "bg-primary border-primary shadow-[0_0_6px_rgba(16,185,129,0.5)]" : "bg-muted-foreground border-muted-foreground"
+                              : "bg-card border-muted-foreground/50"
+                          }`}
+                          onClick={() => tacticXEnabled && setTacticXSettings(prev => ({ ...prev, sensitivityContinuousTap: i * 25 }))}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-between mt-2">
                     {tacticXLabels.map((label, i) => (
-                      <span key={i} className={`text-[10px] ${tacticXSettings.sensitivityContinuousTap === i * 25 ? "text-primary font-semibold" : "text-muted-foreground"}`}>
+                      <span 
+                        key={i} 
+                        className={`text-[10px] cursor-pointer transition-colors ${tacticXSettings.sensitivityContinuousTap === i * 25 ? "text-primary font-semibold" : "text-muted-foreground"}`}
+                        onClick={() => tacticXEnabled && setTacticXSettings(prev => ({ ...prev, sensitivityContinuousTap: i * 25 }))}
+                      >
                         {label}
                       </span>
                     ))}
@@ -890,19 +940,37 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
               {/* Aiming Accuracy */}
               <div className="space-y-2">
-                <span className="text-sm font-medium text-foreground/80">Aiming Accuracy</span>
-                <div className="relative">
-                  <Slider
-                    value={[tacticXSettings.aimingAccuracy]}
-                    onValueChange={(value) => setTacticXSettings(prev => ({ ...prev, aimingAccuracy: value[0] }))}
-                    max={100}
-                    step={25}
-                    disabled={!tacticXEnabled}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between mt-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-foreground/80">Aiming Accuracy</span>
+                  <span className="text-xs text-primary font-semibold">{tacticXLabels[tacticXSettings.aimingAccuracy / 25]}</span>
+                </div>
+                <div className="relative pt-1">
+                  <div className="relative h-2 bg-muted/40 rounded-full">
+                    <div 
+                      className={`absolute h-full rounded-full transition-all ${tacticXEnabled ? "bg-gradient-to-r from-primary/60 to-primary" : "bg-muted-foreground/30"}`}
+                      style={{ width: `${tacticXSettings.aimingAccuracy}%` }}
+                    />
+                    <div className="absolute inset-0 flex justify-between items-center px-0">
+                      {tacticXLabels.map((_, i) => (
+                        <div 
+                          key={i} 
+                          className={`w-3 h-3 rounded-full border-2 cursor-pointer transition-all ${
+                            tacticXSettings.aimingAccuracy >= i * 25 
+                              ? tacticXEnabled ? "bg-primary border-primary shadow-[0_0_6px_rgba(16,185,129,0.5)]" : "bg-muted-foreground border-muted-foreground"
+                              : "bg-card border-muted-foreground/50"
+                          }`}
+                          onClick={() => tacticXEnabled && setTacticXSettings(prev => ({ ...prev, aimingAccuracy: i * 25 }))}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-between mt-2">
                     {tacticXLabels.map((label, i) => (
-                      <span key={i} className={`text-[10px] ${tacticXSettings.aimingAccuracy === i * 25 ? "text-primary font-semibold" : "text-muted-foreground"}`}>
+                      <span 
+                        key={i} 
+                        className={`text-[10px] cursor-pointer transition-colors ${tacticXSettings.aimingAccuracy === i * 25 ? "text-primary font-semibold" : "text-muted-foreground"}`}
+                        onClick={() => tacticXEnabled && setTacticXSettings(prev => ({ ...prev, aimingAccuracy: i * 25 }))}
+                      >
                         {label}
                       </span>
                     ))}
@@ -912,19 +980,37 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
               {/* Tap Stability */}
               <div className="space-y-2">
-                <span className="text-sm font-medium text-foreground/80">Tap Stability</span>
-                <div className="relative">
-                  <Slider
-                    value={[tacticXSettings.tapStability]}
-                    onValueChange={(value) => setTacticXSettings(prev => ({ ...prev, tapStability: value[0] }))}
-                    max={100}
-                    step={25}
-                    disabled={!tacticXEnabled}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between mt-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-foreground/80">Tap Stability</span>
+                  <span className="text-xs text-primary font-semibold">{tacticXLabels[tacticXSettings.tapStability / 25]}</span>
+                </div>
+                <div className="relative pt-1">
+                  <div className="relative h-2 bg-muted/40 rounded-full">
+                    <div 
+                      className={`absolute h-full rounded-full transition-all ${tacticXEnabled ? "bg-gradient-to-r from-primary/60 to-primary" : "bg-muted-foreground/30"}`}
+                      style={{ width: `${tacticXSettings.tapStability}%` }}
+                    />
+                    <div className="absolute inset-0 flex justify-between items-center px-0">
+                      {tacticXLabels.map((_, i) => (
+                        <div 
+                          key={i} 
+                          className={`w-3 h-3 rounded-full border-2 cursor-pointer transition-all ${
+                            tacticXSettings.tapStability >= i * 25 
+                              ? tacticXEnabled ? "bg-primary border-primary shadow-[0_0_6px_rgba(16,185,129,0.5)]" : "bg-muted-foreground border-muted-foreground"
+                              : "bg-card border-muted-foreground/50"
+                          }`}
+                          onClick={() => tacticXEnabled && setTacticXSettings(prev => ({ ...prev, tapStability: i * 25 }))}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-between mt-2">
                     {tacticXLabels.map((label, i) => (
-                      <span key={i} className={`text-[10px] ${tacticXSettings.tapStability === i * 25 ? "text-primary font-semibold" : "text-muted-foreground"}`}>
+                      <span 
+                        key={i} 
+                        className={`text-[10px] cursor-pointer transition-colors ${tacticXSettings.tapStability === i * 25 ? "text-primary font-semibold" : "text-muted-foreground"}`}
+                        onClick={() => tacticXEnabled && setTacticXSettings(prev => ({ ...prev, tapStability: i * 25 }))}
+                      >
                         {label}
                       </span>
                     ))}
