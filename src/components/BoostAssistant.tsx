@@ -1211,51 +1211,51 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                   {/* Circle background */}
                   <div className="absolute inset-0 rounded-full border-2 border-muted-foreground/30" />
                   
-                  {/* Center dot */}
+                  {/* Center dot - shows position visually scaled to fit circle */}
                   <div 
-                    className="absolute w-4 h-4 rounded-full bg-primary"
+                    className="absolute w-4 h-4 rounded-full bg-primary transition-all"
                     style={{ 
-                      left: `calc(50% + ${aimSettings.x}px - 8px)`, 
-                      top: `calc(50% + ${aimSettings.y}px - 8px)` 
+                      left: `calc(50% + ${(aimSettings.x / 200) * 50}px - 8px)`, 
+                      top: `calc(50% + ${(aimSettings.y / 200) * 50}px - 8px)` 
                     }}
                   />
                   
                   {/* Arrow buttons */}
                   <button 
-                    className="absolute top-0 left-1/2 -translate-x-1/2 text-primary hover:scale-110 transition-transform"
-                    onClick={() => setAimSettings(prev => ({ ...prev, y: Math.max(-50, prev.y - 5) }))}
+                    className="absolute top-0 left-1/2 -translate-x-1/2 text-primary hover:scale-125 active:scale-95 transition-transform p-1"
+                    onClick={() => setAimSettings(prev => ({ ...prev, y: Math.max(-200, prev.y - 10) }))}
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 4L6 14h12L12 4z"/>
                     </svg>
                   </button>
                   <button 
-                    className="absolute bottom-0 left-1/2 -translate-x-1/2 text-primary hover:scale-110 transition-transform"
-                    onClick={() => setAimSettings(prev => ({ ...prev, y: Math.min(50, prev.y + 5) }))}
+                    className="absolute bottom-0 left-1/2 -translate-x-1/2 text-primary hover:scale-125 active:scale-95 transition-transform p-1"
+                    onClick={() => setAimSettings(prev => ({ ...prev, y: Math.min(200, prev.y + 10) }))}
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 20L6 10h12L12 20z"/>
                     </svg>
                   </button>
                   <button 
-                    className="absolute left-0 top-1/2 -translate-y-1/2 text-primary hover:scale-110 transition-transform"
-                    onClick={() => setAimSettings(prev => ({ ...prev, x: Math.max(-50, prev.x - 5) }))}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 text-primary hover:scale-125 active:scale-95 transition-transform p-1"
+                    onClick={() => setAimSettings(prev => ({ ...prev, x: Math.max(-200, prev.x - 10) }))}
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M4 12L14 6v12L4 12z"/>
                     </svg>
                   </button>
                   <button 
-                    className="absolute right-0 top-1/2 -translate-y-1/2 text-primary hover:scale-110 transition-transform"
-                    onClick={() => setAimSettings(prev => ({ ...prev, x: Math.min(50, prev.x + 5) }))}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 text-primary hover:scale-125 active:scale-95 transition-transform p-1"
+                    onClick={() => setAimSettings(prev => ({ ...prev, x: Math.min(200, prev.x + 10) }))}
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M20 12L10 6v12L20 12z"/>
                     </svg>
                   </button>
                   
-                  {/* Degree indicator */}
-                  <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground">
+                  {/* Center label */}
+                  <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground pointer-events-none">
                     0°
                   </div>
                 </div>
