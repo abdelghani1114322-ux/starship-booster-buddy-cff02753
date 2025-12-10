@@ -40,6 +40,15 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [ping, setPing] = useState(24);
   const [crosshairEnabled, setCrosshairEnabled] = useState(false);
+  const [showAimAssistant, setShowAimAssistant] = useState(false);
+  const [aimSettings, setAimSettings] = useState({
+    style: 0,
+    x: 0,
+    y: 0,
+    size: 100,
+    opacity: 100,
+    color: "#10b981",
+  });
   const [showEqualizer, setShowEqualizer] = useState(false);
   const [equalizerEnabled, setEqualizerEnabled] = useState(true);
   const [equalizerBands, setEqualizerBands] = useState([0, 2, 4, 2, 0, -2, 0, 3, 5, 4]);
@@ -163,7 +172,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
   const gamingTools = [
     { name: "ROG Instant\nMaster", icon: Flame },
-    { name: "Aim\nAssistant", icon: Crosshair, action: () => setCrosshairEnabled(!crosshairEnabled) },
+    { name: "Aim\nAssistant", icon: Crosshair, action: () => setShowAimAssistant(true) },
     { name: "Tactic X", icon: Target, action: () => setShowTacticX(true) },
     { name: "Macro", icon: Gamepad2 },
     { name: "Sounds\nEqualizer", icon: Music, action: () => setShowEqualizer(true) },
@@ -1016,6 +1025,242 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                     ))}
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Aim Assistant Overlay */}
+      {showAimAssistant && (
+        <div 
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-background/80 backdrop-blur-sm"
+          onClick={() => setShowAimAssistant(false)}
+        >
+          <div 
+            className="bg-card border-2 border-primary/40 rounded-xl p-5 shadow-[0_0_40px_rgba(16,185,129,0.3)] w-[420px] max-w-[95vw]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <span className="text-xl font-bold text-primary">Aim</span>
+                <span className="text-xl font-medium text-foreground/70">Assistance</span>
+              </div>
+              <div className="flex items-center gap-3">
+                {/* Reset Button */}
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8"
+                  onClick={() => {
+                    setAimSettings({ style: 0, x: 0, y: 0, size: 100, opacity: 100, color: "#10b981" });
+                    toast.info("Aim settings reset");
+                  }}
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </Button>
+                {/* On/Off Toggle */}
+                <div className="flex bg-muted/50 rounded-full overflow-hidden border border-primary/20">
+                  <button
+                    className={`px-3 py-1 text-xs font-medium transition-all ${
+                      !crosshairEnabled ? "bg-muted text-foreground" : "text-muted-foreground"
+                    }`}
+                    onClick={() => {
+                      setCrosshairEnabled(false);
+                      toast.info("Aim Assistant Disabled");
+                    }}
+                  >
+                    Off
+                  </button>
+                  <button
+                    className={`px-3 py-1 text-xs font-medium transition-all ${
+                      crosshairEnabled ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                    }`}
+                    onClick={() => {
+                      setCrosshairEnabled(true);
+                      toast.success("Aim Assistant Enabled 🎯");
+                    }}
+                  >
+                    ON
+                  </button>
+                </div>
+                {/* Close Button */}
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 hover:bg-destructive/20"
+                  onClick={() => setShowAimAssistant(false)}
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              {/* Left Side - Crosshair Styles */}
+              <div className="flex flex-col gap-2">
+                {[
+                  { id: 0, icon: <><line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" strokeWidth="2"/><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="2"/></> },
+                  { id: 1, icon: <><line x1="12" y1="5" x2="12" y2="9" stroke="currentColor" strokeWidth="2"/><line x1="12" y1="15" x2="12" y2="19" stroke="currentColor" strokeWidth="2"/><line x1="5" y1="12" x2="9" y2="12" stroke="currentColor" strokeWidth="2"/><line x1="15" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="2"/></> },
+                  { id: 2, icon: <><line x1="5" y1="12" x2="9" y2="12" stroke="currentColor" strokeWidth="2"/><line x1="15" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="2"/></> },
+                  { id: 3, icon: <circle cx="12" cy="12" r="3" fill="currentColor"/> },
+                  { id: 4, icon: <><circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="2" fill="none"/><circle cx="12" cy="12" r="2" fill="currentColor"/></> },
+                ].map((style) => (
+                  <button
+                    key={style.id}
+                    className={`w-14 h-14 rounded-lg border-2 flex items-center justify-center transition-all ${
+                      aimSettings.style === style.id
+                        ? "border-primary bg-primary/20 text-primary"
+                        : "border-muted-foreground/30 bg-muted/20 text-muted-foreground hover:border-primary/50"
+                    }`}
+                    onClick={() => setAimSettings(prev => ({ ...prev, style: style.id }))}
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                      {style.icon}
+                    </svg>
+                  </button>
+                ))}
+              </div>
+
+              {/* Center - Position Control */}
+              <div className="flex-1 flex flex-col items-center gap-3">
+                <div className="text-xs text-muted-foreground">
+                  X = {aimSettings.x} &nbsp;&nbsp; Y = {aimSettings.y}
+                </div>
+                
+                {/* Position Control Pad */}
+                <div className="relative w-32 h-32">
+                  {/* Circle background */}
+                  <div className="absolute inset-0 rounded-full border-2 border-muted-foreground/30" />
+                  
+                  {/* Center dot */}
+                  <div 
+                    className="absolute w-4 h-4 rounded-full bg-primary"
+                    style={{ 
+                      left: `calc(50% + ${aimSettings.x}px - 8px)`, 
+                      top: `calc(50% + ${aimSettings.y}px - 8px)` 
+                    }}
+                  />
+                  
+                  {/* Arrow buttons */}
+                  <button 
+                    className="absolute top-0 left-1/2 -translate-x-1/2 text-primary hover:scale-110 transition-transform"
+                    onClick={() => setAimSettings(prev => ({ ...prev, y: Math.max(-50, prev.y - 5) }))}
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 4L6 14h12L12 4z"/>
+                    </svg>
+                  </button>
+                  <button 
+                    className="absolute bottom-0 left-1/2 -translate-x-1/2 text-primary hover:scale-110 transition-transform"
+                    onClick={() => setAimSettings(prev => ({ ...prev, y: Math.min(50, prev.y + 5) }))}
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 20L6 10h12L12 20z"/>
+                    </svg>
+                  </button>
+                  <button 
+                    className="absolute left-0 top-1/2 -translate-y-1/2 text-primary hover:scale-110 transition-transform"
+                    onClick={() => setAimSettings(prev => ({ ...prev, x: Math.max(-50, prev.x - 5) }))}
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M4 12L14 6v12L4 12z"/>
+                    </svg>
+                  </button>
+                  <button 
+                    className="absolute right-0 top-1/2 -translate-y-1/2 text-primary hover:scale-110 transition-transform"
+                    onClick={() => setAimSettings(prev => ({ ...prev, x: Math.min(50, prev.x + 5) }))}
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M20 12L10 6v12L20 12z"/>
+                    </svg>
+                  </button>
+                  
+                  {/* Degree indicator */}
+                  <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground">
+                    0°
+                  </div>
+                </div>
+
+                {/* Size label */}
+                <div className="text-right text-xs text-muted-foreground w-full pr-4">
+                  Size<br/><span className="text-primary font-semibold">{aimSettings.size}%</span>
+                </div>
+              </div>
+
+              {/* Right Side - Size Slider (vertical) */}
+              <div className="flex flex-col items-center">
+                <div 
+                  className="relative w-4 h-32 bg-muted/30 rounded-full cursor-pointer"
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const y = e.clientY - rect.top;
+                    const percent = Math.max(0, Math.min(100, 100 - (y / rect.height) * 100));
+                    setAimSettings(prev => ({ ...prev, size: Math.round(percent) }));
+                  }}
+                >
+                  <div 
+                    className="absolute bottom-0 left-0 right-0 bg-primary rounded-full transition-all"
+                    style={{ height: `${aimSettings.size}%` }}
+                  />
+                  <div 
+                    className="absolute left-1/2 w-6 h-4 -translate-x-1/2 bg-primary rounded-sm"
+                    style={{ bottom: `calc(${aimSettings.size}% - 8px)` }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Opacity Slider */}
+            <div className="mt-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">Opacity</span>
+                <span className="text-xs text-primary font-semibold">{aimSettings.opacity}%</span>
+              </div>
+              <div 
+                className="relative h-3 bg-muted/30 rounded-full cursor-pointer"
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = e.clientX - rect.left;
+                  const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+                  setAimSettings(prev => ({ ...prev, opacity: Math.round(percent) }));
+                }}
+              >
+                <div 
+                  className="absolute top-0 left-0 bottom-0 bg-primary rounded-full transition-all"
+                  style={{ width: `${aimSettings.opacity}%` }}
+                />
+                <div 
+                  className="absolute top-1/2 w-5 h-5 -translate-y-1/2 bg-primary rounded-md border-2 border-background"
+                  style={{ left: `calc(${aimSettings.opacity}% - 10px)` }}
+                />
+              </div>
+            </div>
+
+            {/* Color Options */}
+            <div className="mt-4 flex items-center gap-3">
+              <Crosshair className="w-6 h-6 text-muted-foreground" />
+              <div className="flex gap-2">
+                {[
+                  { color: "#ffffff", name: "White" },
+                  { color: "#ef4444", name: "Red" },
+                  { color: "#f97316", name: "Orange" },
+                  { color: "#eab308", name: "Yellow" },
+                  { color: "#10b981", name: "Green" },
+                ].map((option) => (
+                  <button
+                    key={option.color}
+                    className={`w-12 h-12 rounded-lg border-2 transition-all ${
+                      aimSettings.color === option.color
+                        ? "border-primary scale-110"
+                        : "border-transparent hover:border-muted-foreground/50"
+                    }`}
+                    style={{ backgroundColor: option.color }}
+                    onClick={() => setAimSettings(prev => ({ ...prev, color: option.color }))}
+                    title={option.name}
+                  />
+                ))}
               </div>
             </div>
           </div>
