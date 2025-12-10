@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap, Crosshair, Music, X, Play, RotateCcw } from "lucide-react";
+import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap, Crosshair, Music, X, Play, RotateCcw, Target } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Slider } from "./ui/slider";
@@ -45,6 +45,14 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [equalizerBands, setEqualizerBands] = useState([0, 2, 4, 2, 0, -2, 0, 3, 5, 4]);
   const [selectedPreset, setSelectedPreset] = useState<string>("custom");
   const [isPlayingTest, setIsPlayingTest] = useState(false);
+  const [showTacticX, setShowTacticX] = useState(false);
+  const [tacticXEnabled, setTacticXEnabled] = useState(false);
+  const [tacticXSettings, setTacticXSettings] = useState({
+    swipeResponsive: 50,
+    sensitivityContinuousTap: 50,
+    aimingAccuracy: 50,
+    tapStability: 50,
+  });
   
   // Audio context refs
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -156,11 +164,13 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const gamingTools = [
     { name: "ROG Instant\nMaster", icon: Flame },
     { name: "X Sense", icon: Cpu },
-    { name: "AI Grabber", icon: Chrome },
+    { name: "Tactic X", icon: Target, action: () => setShowTacticX(true) },
     { name: "Macro", icon: Gamepad2 },
     { name: "Sounds\nEqualizer", icon: Music, action: () => setShowEqualizer(true) },
     { name: "Vibration\nMapping", icon: Wind },
   ];
+
+  const tacticXLabels = ["Lowest", "Low", "Regular", "High", "Higest"];
 
   const equalizerFrequencies = ["31", "62", "125", "250", "500", "1k", "2k", "4k", "8k", "16k"];
   const frequencyValues = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
@@ -780,6 +790,148 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             <div className="absolute left-1/2 top-0 h-full w-0.5 bg-primary -translate-x-1/2 shadow-[0_0_4px_rgba(16,185,129,0.8)]" />
             {/* Center dot */}
             <div className="absolute top-1/2 left-1/2 w-1.5 h-1.5 bg-primary rounded-full -translate-x-1/2 -translate-y-1/2 shadow-[0_0_6px_rgba(16,185,129,1)]" />
+          </div>
+        </div>
+      )}
+
+      {/* Tactic X Overlay */}
+      {showTacticX && (
+        <div 
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-background/80 backdrop-blur-sm"
+          onClick={() => setShowTacticX(false)}
+        >
+          <div 
+            className="bg-card border-2 border-primary/40 rounded-xl p-6 shadow-[0_0_40px_rgba(16,185,129,0.3)] w-[450px] max-w-[95vw]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-bold text-primary">TactiX™</h2>
+                <p className="text-xs text-muted-foreground">Touch Optimization Experience</p>
+              </div>
+              <div className="flex items-center gap-3">
+                {/* On/Off Toggle */}
+                <div className="flex bg-muted/50 rounded-full overflow-hidden">
+                  <button
+                    className={`px-3 py-1 text-xs font-medium transition-all ${
+                      !tacticXEnabled ? "bg-muted text-foreground" : "text-muted-foreground"
+                    }`}
+                    onClick={() => setTacticXEnabled(false)}
+                  >
+                    Off
+                  </button>
+                  <button
+                    className={`px-3 py-1 text-xs font-medium transition-all ${
+                      tacticXEnabled ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                    }`}
+                    onClick={() => setTacticXEnabled(true)}
+                  >
+                    ON
+                  </button>
+                </div>
+                {/* Close Button */}
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8"
+                  onClick={() => setShowTacticX(false)}
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Sliders */}
+            <div className="space-y-6">
+              {/* Swipe Responsive */}
+              <div className="space-y-2">
+                <span className="text-sm font-medium text-foreground/80">Swipe Responsive</span>
+                <div className="relative">
+                  <Slider
+                    value={[tacticXSettings.swipeResponsive]}
+                    onValueChange={(value) => setTacticXSettings(prev => ({ ...prev, swipeResponsive: value[0] }))}
+                    max={100}
+                    step={25}
+                    disabled={!tacticXEnabled}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between mt-1">
+                    {tacticXLabels.map((label, i) => (
+                      <span key={i} className={`text-[10px] ${tacticXSettings.swipeResponsive === i * 25 ? "text-primary font-semibold" : "text-muted-foreground"}`}>
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Sensitivity Continuous Tap */}
+              <div className="space-y-2">
+                <span className="text-sm font-medium text-foreground/80">Sensitivity Continuous Tap</span>
+                <div className="relative">
+                  <Slider
+                    value={[tacticXSettings.sensitivityContinuousTap]}
+                    onValueChange={(value) => setTacticXSettings(prev => ({ ...prev, sensitivityContinuousTap: value[0] }))}
+                    max={100}
+                    step={25}
+                    disabled={!tacticXEnabled}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between mt-1">
+                    {tacticXLabels.map((label, i) => (
+                      <span key={i} className={`text-[10px] ${tacticXSettings.sensitivityContinuousTap === i * 25 ? "text-primary font-semibold" : "text-muted-foreground"}`}>
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Aiming Accuracy */}
+              <div className="space-y-2">
+                <span className="text-sm font-medium text-foreground/80">Aiming Accuracy</span>
+                <div className="relative">
+                  <Slider
+                    value={[tacticXSettings.aimingAccuracy]}
+                    onValueChange={(value) => setTacticXSettings(prev => ({ ...prev, aimingAccuracy: value[0] }))}
+                    max={100}
+                    step={25}
+                    disabled={!tacticXEnabled}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between mt-1">
+                    {tacticXLabels.map((label, i) => (
+                      <span key={i} className={`text-[10px] ${tacticXSettings.aimingAccuracy === i * 25 ? "text-primary font-semibold" : "text-muted-foreground"}`}>
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Tap Stability */}
+              <div className="space-y-2">
+                <span className="text-sm font-medium text-foreground/80">Tap Stability</span>
+                <div className="relative">
+                  <Slider
+                    value={[tacticXSettings.tapStability]}
+                    onValueChange={(value) => setTacticXSettings(prev => ({ ...prev, tapStability: value[0] }))}
+                    max={100}
+                    step={25}
+                    disabled={!tacticXEnabled}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between mt-1">
+                    {tacticXLabels.map((label, i) => (
+                      <span key={i} className={`text-[10px] ${tacticXSettings.tapStability === i * 25 ? "text-primary font-semibold" : "text-muted-foreground"}`}>
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
