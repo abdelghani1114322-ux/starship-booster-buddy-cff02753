@@ -329,17 +329,18 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     
     return (
       <div className="relative flex flex-col items-center">
-        <div className="relative w-[120px] h-[100px]">
-          {/* MHz text at top */}
+        <div className="relative w-[120px] h-[110px]">
+          {/* MHz value at top */}
           <div 
-            className="absolute top-0 left-1/2 -translate-x-1/2 text-sm font-semibold"
+            className="absolute top-0 left-1/2 -translate-x-1/2 text-center"
             style={{ color: goldColor }}
           >
-            MHz
+            <span className="text-xl font-bold" style={{ textShadow: `0 0 8px ${goldGlow}` }}>{mhzValue}</span>
+            <span className="text-xs ml-1">MHz</span>
           </div>
           
           {/* Orbital rings */}
-          <svg className="absolute inset-0 mt-4" width="120" height="80" viewBox="0 0 120 80">
+          <svg className="absolute inset-0 mt-6" width="120" height="80" viewBox="0 0 120 80">
             {/* Outermost ring */}
             <ellipse
               cx="60"
