@@ -887,16 +887,16 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           onClick={() => setShowTacticX(false)}
         >
           <div 
-            className="bg-card border-2 border-primary/40 rounded-xl p-6 shadow-[0_0_40px_rgba(16,185,129,0.3)] w-[450px] max-w-[95vw]"
+            className="bg-card border-2 border-primary/40 rounded-xl p-3 shadow-[0_0_40px_rgba(16,185,129,0.3)] w-[340px] max-w-[95vw] max-h-[85vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <Target className="w-6 h-6 text-primary" />
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Target className="w-5 h-5 text-primary" />
                 <div>
-                  <h2 className="text-xl font-bold text-primary">TactiX™</h2>
-                  <p className="text-xs text-muted-foreground">Touch Optimization Experience</p>
+                  <h2 className="text-base font-bold text-primary">TactiX™</h2>
+                  <p className="text-[10px] text-muted-foreground">Touch Optimization</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -940,7 +940,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             </div>
 
             {/* Sliders */}
-            <div className="space-y-5">
+            <div className="space-y-3">
               {/* Swipe Responsive */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -1115,11 +1115,11 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           onClick={() => setShowAimAssistant(false)}
         >
           <div 
-            className="bg-card border-2 border-primary/40 rounded-xl p-5 shadow-[0_0_40px_rgba(16,185,129,0.3)] w-[420px] max-w-[95vw]"
+            className="bg-card border-2 border-primary/40 rounded-xl p-3 shadow-[0_0_40px_rgba(16,185,129,0.3)] w-[320px] max-w-[95vw] max-h-[85vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <span className="text-xl font-bold text-primary">Aim</span>
                 <span className="text-xl font-medium text-foreground/70">Assistance</span>
@@ -1174,9 +1174,9 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               </div>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               {/* Left Side - Crosshair Styles */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1.5">
                 {[
                   { id: 0, icon: <><line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" strokeWidth="2"/><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="2"/></> },
                   { id: 1, icon: <><line x1="12" y1="5" x2="12" y2="9" stroke="currentColor" strokeWidth="2"/><line x1="12" y1="15" x2="12" y2="19" stroke="currentColor" strokeWidth="2"/><line x1="5" y1="12" x2="9" y2="12" stroke="currentColor" strokeWidth="2"/><line x1="15" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="2"/></> },
@@ -1186,14 +1186,14 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 ].map((style) => (
                   <button
                     key={style.id}
-                    className={`w-14 h-14 rounded-lg border-2 flex items-center justify-center transition-all ${
+                    className={`w-10 h-10 rounded-lg border-2 flex items-center justify-center transition-all ${
                       aimSettings.style === style.id
                         ? "border-primary bg-primary/20 text-primary"
                         : "border-muted-foreground/30 bg-muted/20 text-muted-foreground hover:border-primary/50"
                     }`}
                     onClick={() => setAimSettings(prev => ({ ...prev, style: style.id }))}
                   >
-                    <svg width="24" height="24" viewBox="0 0 24 24">
+                    <svg width="18" height="18" viewBox="0 0 24 24">
                       {style.icon}
                     </svg>
                   </button>
@@ -1201,13 +1201,13 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               </div>
 
               {/* Center - Position Control */}
-              <div className="flex-1 flex flex-col items-center gap-3">
-                <div className="text-xs text-muted-foreground">
-                  X = {aimSettings.x} &nbsp;&nbsp; Y = {aimSettings.y}
+              <div className="flex-1 flex flex-col items-center gap-2">
+                <div className="text-[10px] text-muted-foreground">
+                  X = {aimSettings.x} &nbsp; Y = {aimSettings.y}
                 </div>
                 
                 {/* Position Control Pad */}
-                <div className="relative w-32 h-32">
+                <div className="relative w-24 h-24">
                   {/* Circle background */}
                   <div className="absolute inset-0 rounded-full border-2 border-muted-foreground/30" />
                   
@@ -1351,11 +1351,11 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           onClick={() => setShowEqualizer(false)}
         >
           <div 
-            className="bg-card border-2 border-primary/40 rounded-xl p-6 shadow-[0_0_40px_rgba(16,185,129,0.3)] w-[500px] max-w-[95vw]"
+            className="bg-card border-2 border-primary/40 rounded-xl p-3 shadow-[0_0_40px_rgba(16,185,129,0.3)] w-[380px] max-w-[95vw] max-h-[85vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Music className="w-5 h-5 text-primary" />
                 <span className="font-semibold">Sound Equalizer</span>
@@ -1393,7 +1393,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             </div>
 
             {/* Presets */}
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap gap-1.5 mb-3">
               {Object.entries(equalizerPresets).map(([key, preset]) => (
                 <Button
                   key={key}
@@ -1409,21 +1409,21 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             </div>
 
             {/* Equalizer Sliders */}
-            <div className="relative mb-4">
+            <div className="relative mb-3">
               {/* dB Labels */}
-              <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-xs text-muted-foreground">
-                <span>+12db</span>
-                <span>0db</span>
-                <span>-12db</span>
+              <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-[10px] text-muted-foreground">
+                <span>+12</span>
+                <span>0</span>
+                <span>-12</span>
               </div>
 
               {/* Sliders */}
-              <div className="ml-12 flex justify-between gap-1">
+              <div className="ml-8 flex justify-between gap-0.5">
                 {equalizerFrequencies.map((freq, index) => (
                   <div key={freq} className="flex flex-col items-center">
                     {/* Vertical Slider Track */}
                     <div 
-                      className="relative h-40 w-6 bg-muted/30 rounded-lg flex items-center justify-center cursor-pointer"
+                      className="relative h-28 w-5 bg-muted/30 rounded-lg flex items-center justify-center cursor-pointer"
                       onClick={(e) => {
                         if (!equalizerEnabled) return;
                         const rect = e.currentTarget.getBoundingClientRect();
@@ -1458,7 +1458,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                       
                       {/* Slider thumb */}
                       <div 
-                        className={`absolute left-1/2 w-6 h-4 rounded-md border-2 cursor-grab active:cursor-grabbing transition-all ${
+                        className={`absolute left-1/2 w-5 h-3 rounded-md border-2 cursor-grab active:cursor-grabbing transition-all ${
                           equalizerEnabled 
                             ? "bg-card border-foreground/50 shadow-lg hover:border-primary" 
                             : "bg-muted border-muted-foreground"
