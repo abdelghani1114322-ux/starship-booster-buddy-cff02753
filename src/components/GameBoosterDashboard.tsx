@@ -26,6 +26,8 @@ export const GameBoosterDashboard = () => {
   const [gpuMHz, setGpuMHz] = useState(675);
   const [memoryUsed, setMemoryUsed] = useState(4.8);
   const [storageUsed, setStorageUsed] = useState(22.86);
+  const [batteryLevel, setBatteryLevel] = useState(85);
+  const [batteryTimeRemaining, setBatteryTimeRemaining] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number>(0);
   const touchStartY = useRef<number>(0);
@@ -69,6 +71,52 @@ export const GameBoosterDashboard = () => {
     }, 2000);
     return () => clearInterval(interval);
   }, []);
+
+  // Real battery monitoring
+  useEffect(() => {
+    const updateBattery = async () => {
+      if ('getBattery' in navigator) {
+        try {
+          const battery = await (navigator as any).getBattery();
+          setBatteryLevel(Math.round(battery.level * 100));
+          
+          // Get discharge time in seconds, convert to minutes
+          const dischargingTime = battery.dischargingTime;
+          if (dischargingTime && dischargingTime !== Infinity) {
+            setBatteryTimeRemaining(Math.round(dischargingTime / 60));
+          } else {
+            // Estimate based on battery level (rough estimate: 1% = ~5 min avg usage)
+            setBatteryTimeRemaining(Math.round(battery.level * 100 * 5));
+          }
+
+          battery.addEventListener('levelchange', () => {
+            setBatteryLevel(Math.round(battery.level * 100));
+          });
+          battery.addEventListener('dischargingtimechange', () => {
+            const time = battery.dischargingTime;
+            if (time && time !== Infinity) {
+              setBatteryTimeRemaining(Math.round(time / 60));
+            }
+          });
+        } catch (error) {
+          // Fallback: estimate based on default level
+          setBatteryTimeRemaining(batteryLevel * 5);
+        }
+      } else {
+        // Fallback for browsers without Battery API
+        setBatteryTimeRemaining(batteryLevel * 5);
+      }
+    };
+    updateBattery();
+  }, [batteryLevel]);
+
+  // Helper to format remaining time
+  const formatRemainingTime = (minutes: number | null) => {
+    if (!minutes) return "Calculating...";
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours} hours ${mins} minutes`;
+  };
 
   const handleModeChange = (mode: "saving" | "balance" | "boost") => {
     setPerformanceMode(mode);
@@ -699,7 +747,7 @@ export const GameBoosterDashboard = () => {
             {/* Remaining Time */}
             <div className="text-center mt-4 pt-4 border-t border-muted/20">
               <div className="text-xs text-muted-foreground mb-1">Remaining time</div>
-              <div className="text-cyan-400 font-semibold">138 hours 35 minutes</div>
+              <div className="text-cyan-400 font-semibold">{formatRemainingTime(batteryTimeRemaining)}</div>
             </div>
           </div>
         </div>
