@@ -72,6 +72,8 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     fpsInfo: true,
     timeInfo: false,
   });
+  const [showGraphiqueSettings, setShowGraphiqueSettings] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState<string>("hunter");
   
   // Audio context refs
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -186,7 +188,16 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     { name: "Tactic X", icon: Target, action: () => setShowTacticX(true) },
     { name: "Macro", icon: Gamepad2 },
     { name: "Sounds\nEqualizer", icon: Music, action: () => setShowEqualizer(true) },
-    { name: "Vibration\nMapping", icon: Wind },
+    { name: "Graphique\nSettings", icon: Wind, action: () => setShowGraphiqueSettings(true) },
+  ];
+
+  const graphiqueFilters = [
+    { id: "hunter", name: "Hunter", description: "Enhanced contrast for clear vision" },
+    { id: "nightvision", name: "Night Vision", description: "For scene exploration" },
+    { id: "eagleeye", name: "Eagle Eye", description: "Enhanced enemy recognition" },
+    { id: "ultraclear", name: "Ultra-Clear", description: "Improved visual experience" },
+    { id: "pure", name: "Pure", description: "Assist with screen clarity" },
+    { id: "cyberpunk", name: "Cyberpunk", description: "Live picture recognition" },
   ];
 
   const tacticXLabels = ["Lowest", "Low", "Regular", "High", "Higest"];
@@ -1396,7 +1407,72 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
         </div>
       )}
 
-      {/* Aim Assistant Overlay */}
+      {/* Graphique Settings Overlay */}
+      {showGraphiqueSettings && (
+        <div 
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-background/80 backdrop-blur-sm"
+          onClick={() => setShowGraphiqueSettings(false)}
+        >
+          <div 
+            className="bg-card border-2 border-border/50 rounded-xl p-3 shadow-[0_0_40px_rgba(0,0,0,0.4)] w-[280px] max-w-[90vw] max-h-[70vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-semibold text-foreground">hunting-filter</span>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-7 w-7 hover:bg-destructive/20"
+                onClick={() => setShowGraphiqueSettings(false)}
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+
+            {/* Filter Options */}
+            <div className="space-y-2">
+              {graphiqueFilters.map((filter) => (
+                <button
+                  key={filter.id}
+                  onClick={() => {
+                    setSelectedFilter(filter.id);
+                    toast.success(`${filter.name} filter applied`);
+                  }}
+                  className={`w-full flex items-center gap-3 p-2 rounded-lg transition-all ${
+                    selectedFilter === filter.id 
+                      ? "bg-muted/40 border border-red-500/50" 
+                      : "bg-muted/20 hover:bg-muted/30 border border-transparent"
+                  }`}
+                >
+                  {/* Filter thumbnail */}
+                  <div className="w-16 h-10 rounded overflow-hidden bg-gradient-to-br from-green-800 via-emerald-600 to-green-900 flex-shrink-0">
+                    <div className={`w-full h-full ${
+                      filter.id === "hunter" ? "bg-gradient-to-br from-blue-400/30 via-transparent to-orange-400/30" :
+                      filter.id === "nightvision" ? "bg-green-500/40 grayscale" :
+                      filter.id === "eagleeye" ? "bg-blue-500/30 contrast-125" :
+                      filter.id === "ultraclear" ? "bg-yellow-400/20 saturate-150" :
+                      filter.id === "pure" ? "bg-white/10" :
+                      "bg-gradient-to-br from-pink-500/40 via-purple-500/30 to-cyan-500/40"
+                    }`} />
+                  </div>
+                  {/* Filter info */}
+                  <div className="text-left flex-1 min-w-0">
+                    <div className={`text-sm font-medium ${selectedFilter === filter.id ? "text-red-400" : "text-foreground"}`}>
+                      {filter.name}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground truncate">
+                      {filter.description}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+
       {showAimAssistant && (
         <div 
           className="fixed inset-0 z-[200] flex items-center justify-center bg-background/80 backdrop-blur-sm"
