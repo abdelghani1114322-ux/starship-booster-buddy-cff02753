@@ -73,7 +73,42 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     timeInfo: false,
   });
   const [showGraphiqueSettings, setShowGraphiqueSettings] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState<string>("hunter");
+  const [selectedFilter, setSelectedFilter] = useState<string>("none");
+  const [filterEnabled, setFilterEnabled] = useState(false);
+
+  // Apply filter effect to document
+  useEffect(() => {
+    const root = document.documentElement;
+    if (filterEnabled && selectedFilter !== "none") {
+      let filterStyle = "";
+      switch (selectedFilter) {
+        case "hunter":
+          filterStyle = "contrast(1.15) saturate(1.2) hue-rotate(-10deg)";
+          break;
+        case "nightvision":
+          filterStyle = "sepia(0.3) hue-rotate(80deg) saturate(1.5) brightness(0.9)";
+          break;
+        case "eagleeye":
+          filterStyle = "contrast(1.25) saturate(1.1) brightness(1.05)";
+          break;
+        case "ultraclear":
+          filterStyle = "contrast(1.1) saturate(1.3) brightness(1.1)";
+          break;
+        case "pure":
+          filterStyle = "grayscale(0.1) contrast(1.05) brightness(1.05)";
+          break;
+        case "cyberpunk":
+          filterStyle = "saturate(1.5) hue-rotate(320deg) contrast(1.1)";
+          break;
+      }
+      root.style.filter = filterStyle;
+    } else {
+      root.style.filter = "";
+    }
+    return () => {
+      root.style.filter = "";
+    };
+  }, [filterEnabled, selectedFilter]);
   
   // Audio context refs
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -1430,6 +1465,20 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               </Button>
             </div>
 
+            {/* Master Toggle */}
+            <div className="flex items-center justify-between mb-3 p-2 bg-muted/30 rounded-lg">
+              <span className="text-xs font-medium text-foreground">Enable Filter</span>
+              <button
+                onClick={() => {
+                  setFilterEnabled(!filterEnabled);
+                  toast.success(filterEnabled ? "Filter disabled" : "Filter enabled");
+                }}
+                className={`w-10 h-5 rounded-full transition-all ${filterEnabled ? "bg-red-500" : "bg-muted"}`}
+              >
+                <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${filterEnabled ? "translate-x-5" : "translate-x-0.5"}`} />
+              </button>
+            </div>
+
             {/* Filter Options */}
             <div className="space-y-2">
               {graphiqueFilters.map((filter) => (
@@ -1437,6 +1486,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                   key={filter.id}
                   onClick={() => {
                     setSelectedFilter(filter.id);
+                    if (!filterEnabled) setFilterEnabled(true);
                     toast.success(`${filter.name} filter applied`);
                   }}
                   className={`w-full flex items-center gap-3 p-2 rounded-lg transition-all ${
