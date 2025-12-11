@@ -684,16 +684,6 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             />
           </div>
 
-          {/* FPS Display */}
-          <div className="p-4 bg-muted/30 border-b border-accent/20 text-center">
-            <div className="text-xs text-muted-foreground mb-1">FRAMES PER SECOND</div>
-            <div className={`text-5xl font-bold tracking-tight ${fps >= 100 ? "text-primary" : fps >= 60 ? "text-accent" : "text-destructive"}`}>
-              {Math.round(fps)}
-            </div>
-            <div className="text-xs mt-1 font-medium">
-              {fps >= 100 ? "🔥 ULTRA SMOOTH" : fps >= 60 ? "✓ SMOOTH" : "⚠ LOW"}
-            </div>
-          </div>
 
           {/* Game Shortcuts */}
           <div className="flex justify-around items-center gap-2 p-3 bg-muted/30 border-b border-accent/20">
