@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { Zap, Cpu, MemoryStick, Gauge, Monitor, Settings, TrendingUp, PanelLeftOpen, Battery, Grid3X3 } from "lucide-react";
+import { Zap, Cpu, MemoryStick, Gauge, Monitor, Settings, TrendingUp, PanelLeftOpen, Battery, Grid3X3, X, HardDrive, Thermometer, Clock } from "lucide-react";
 import { BoostAssistant } from "./BoostAssistant";
 import { toast } from "sonner";
 import wifiOn from "@/assets/wifi-on.webp";
@@ -19,6 +19,13 @@ export const GameBoosterDashboard = () => {
   const [optimizationScore, setOptimizationScore] = useState(72);
   const [showPanels, setShowPanels] = useState(false);
   const [wifiEnabled, setWifiEnabled] = useState(false);
+  const [showGamesLobby, setShowGamesLobby] = useState(false);
+  const [cpuTemp, setCpuTemp] = useState(47);
+  const [gpuTemp, setGpuTemp] = useState(46);
+  const [cpuMHz, setCpuMHz] = useState(710);
+  const [gpuMHz, setGpuMHz] = useState(675);
+  const [memoryUsed, setMemoryUsed] = useState(4.8);
+  const [storageUsed, setStorageUsed] = useState(22.86);
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number>(0);
   const touchStartY = useRef<number>(0);
@@ -49,6 +56,19 @@ export const GameBoosterDashboard = () => {
 
     return () => clearInterval(interval);
   }, [performanceMode]);
+
+  // Simulate temperature and MHz updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCpuTemp(prev => Math.max(40, Math.min(70, prev + (Math.random() - 0.5) * 4)));
+      setGpuTemp(prev => Math.max(38, Math.min(65, prev + (Math.random() - 0.5) * 3)));
+      setCpuMHz(prev => Math.max(600, Math.min(1200, prev + (Math.random() - 0.5) * 50)));
+      setGpuMHz(prev => Math.max(500, Math.min(1000, prev + (Math.random() - 0.5) * 40)));
+      setMemoryUsed(prev => Math.max(3, Math.min(7, prev + (Math.random() - 0.5) * 0.3)));
+      setStorageUsed(prev => Math.max(20, Math.min(30, prev + (Math.random() - 0.5) * 0.5)));
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleModeChange = (mode: "saving" | "balance" | "boost") => {
     setPerformanceMode(mode);
@@ -514,7 +534,10 @@ export const GameBoosterDashboard = () => {
 
         {/* Gravity X Feature */}
         <div className="flex justify-center mt-8 mb-12">
-          <div className="relative p-6 bg-card/60 backdrop-blur rounded-2xl border border-border hover:border-primary/40 transition-all">
+          <button 
+            onClick={() => setShowGamesLobby(true)}
+            className="relative p-6 bg-card/60 backdrop-blur rounded-2xl border border-border hover:border-red-500/60 transition-all hover:scale-105 cursor-pointer"
+          >
             <div className="flex items-center gap-6">
               <span 
                 className="text-sm font-bold tracking-widest text-muted-foreground"
@@ -572,9 +595,115 @@ export const GameBoosterDashboard = () => {
                 </svg>
               </div>
             </div>
-          </div>
+          </button>
         </div>
       </div>
+
+      {/* Games Lobby Overlay */}
+      {showGamesLobby && (
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="relative w-full max-w-md bg-gradient-to-b from-slate-900 to-slate-950 rounded-2xl border border-red-500/30 p-6">
+            {/* Close Button */}
+            <button 
+              onClick={() => setShowGamesLobby(false)}
+              className="absolute top-4 right-4 p-2 rounded-full bg-muted/20 hover:bg-muted/40 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Header */}
+            <h2 className="text-center text-lg font-bold mb-6 text-red-400">Games Lobby</h2>
+
+            {/* Main Stats Layout */}
+            <div className="relative">
+              {/* Left Column - CPU */}
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 space-y-3 text-left">
+                <div className="text-red-400 font-bold text-sm">CPU</div>
+                <div className="text-cyan-400 text-sm">{Math.round(cpuTemp)}°C</div>
+                <div className="text-white font-semibold">{Math.round(cpuMHz)}MHz</div>
+                <div className="mt-4">
+                  <div className="text-cyan-400 text-sm">{memoryUsed.toFixed(1)}GB</div>
+                  <div className="text-xs text-muted-foreground">8GB</div>
+                  <div className="text-xs text-muted-foreground">Memory<br/>Used</div>
+                </div>
+              </div>
+
+              {/* Right Column - GPU */}
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 space-y-3 text-right">
+                <div className="text-red-400 font-bold text-sm">GPU</div>
+                <div className="text-cyan-400 text-sm">{Math.round(gpuTemp)}°C</div>
+                <div className="text-white font-semibold">{Math.round(gpuMHz)}MHz</div>
+                <div className="mt-4">
+                  <div className="text-cyan-400 text-sm">{storageUsed.toFixed(2)}GB</div>
+                  <div className="text-xs text-muted-foreground">128GB</div>
+                  <div className="text-xs text-muted-foreground">Storage<br/>Used</div>
+                </div>
+              </div>
+
+              {/* Center Temperature Gauge */}
+              <div className="flex justify-center py-8">
+                <div className="relative">
+                  <svg className="w-40 h-40" viewBox="0 0 100 100">
+                    {/* Outer decorative rings */}
+                    <circle cx="50" cy="50" r="48" fill="none" stroke="#334155" strokeWidth="1" />
+                    <circle cx="50" cy="50" r="44" fill="none" stroke="#475569" strokeWidth="2" />
+                    {/* Tech dots */}
+                    {Array.from({ length: 24 }).map((_, i) => (
+                      <circle
+                        key={i}
+                        cx={50 + 46 * Math.cos((i * 15 * Math.PI) / 180)}
+                        cy={50 + 46 * Math.sin((i * 15 * Math.PI) / 180)}
+                        r="1.5"
+                        fill={i % 2 === 0 ? "#ef4444" : "#334155"}
+                      />
+                    ))}
+                    {/* Progress arc */}
+                    <circle 
+                      cx="50" cy="50" r="38" 
+                      fill="none" 
+                      stroke="#1e293b" 
+                      strokeWidth="6"
+                    />
+                    <circle 
+                      cx="50" cy="50" r="38" 
+                      fill="none" 
+                      stroke="url(#tempGradient)" 
+                      strokeWidth="6"
+                      strokeLinecap="round"
+                      strokeDasharray={`${((cpuTemp + gpuTemp) / 2 / 100) * 238} 238`}
+                      transform="rotate(-90 50 50)"
+                      style={{ filter: 'drop-shadow(0 0 4px #ef4444)' }}
+                    />
+                    {/* Inner circle */}
+                    <circle cx="50" cy="50" r="30" fill="#0f172a" />
+                    <circle cx="50" cy="50" r="28" fill="none" stroke="#ef4444" strokeWidth="1" opacity="0.5" />
+                    <defs>
+                      <linearGradient id="tempGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#06b6d4" />
+                        <stop offset="50%" stopColor="#ef4444" />
+                        <stop offset="100%" stopColor="#ef4444" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  {/* Temperature Value */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-4xl font-bold text-red-400" style={{ textShadow: '0 0 10px #ef4444' }}>
+                      {Math.round((cpuTemp + gpuTemp) / 2)}
+                    </span>
+                    <span className="text-lg text-red-400">°C</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Remaining Time */}
+            <div className="text-center mt-4 pt-4 border-t border-muted/20">
+              <div className="text-xs text-muted-foreground mb-1">Remaining time</div>
+              <div className="text-cyan-400 font-semibold">138 hours 35 minutes</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Floating Assistant */}
       <BoostAssistant 
