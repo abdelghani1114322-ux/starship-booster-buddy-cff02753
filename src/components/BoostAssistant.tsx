@@ -715,22 +715,6 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               </div>
             </div>
 
-            {/* Performance Score */}
-            <div className="p-4 bg-muted/20 rounded-lg border border-primary/20">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold">Performance Score</span>
-                <span className="text-2xl font-bold text-primary">
-                  {Math.round((100 - cpuUsage + 100 - ramUsage + fps) / 3)}
-                </span>
-              </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-primary via-accent to-secondary transition-all duration-500"
-                  style={{ width: `${Math.round((100 - cpuUsage + 100 - ramUsage + fps) / 3)}%` }}
-                />
-              </div>
-            </div>
-
             {/* Gaming Tools */}
             <div className="p-4 bg-muted/20 rounded-lg border border-accent/20">
               <div className="text-xs font-semibold mb-3 text-center text-primary">GAMING TOOLS</div>
