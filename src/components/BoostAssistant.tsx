@@ -61,6 +61,17 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     aimingAccuracy: 50,
     tapStability: 50,
   });
+  const [showMonitor, setShowMonitor] = useState(false);
+  const [monitorSettings, setMonitorSettings] = useState({
+    enabled: false,
+    cpuUsage: true,
+    gpuUsage: false,
+    ramUsage: false,
+    batteryInfo: true,
+    tempInfo: true,
+    fpsInfo: true,
+    timeInfo: false,
+  });
   
   // Audio context refs
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -170,7 +181,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   ];
 
   const gamingTools = [
-    { name: "ROG Instant\nMaster", icon: Flame },
+    { name: "ROG Instant\nMaster", icon: Flame, action: () => setShowMonitor(true) },
     { name: "Aim\nAssistant", icon: Crosshair, action: () => setShowAimAssistant(true) },
     { name: "Tactic X", icon: Target, action: () => setShowTacticX(true) },
     { name: "Macro", icon: Gamepad2 },
@@ -1193,6 +1204,195 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                     ))}
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Monitor Info Overlay */}
+      {showMonitor && (
+        <div 
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-background/80 backdrop-blur-sm"
+          onClick={() => setShowMonitor(false)}
+        >
+          <div 
+            className="bg-card border-2 border-primary/40 rounded-xl p-4 shadow-[0_0_40px_rgba(16,185,129,0.3)] w-[340px] max-w-[95vw] max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xl font-bold text-primary">Monitor</span>
+                <span className="text-xl font-medium text-foreground/70">Info</span>
+              </div>
+              <div className="flex items-center gap-3">
+                {/* Master Toggle */}
+                <button
+                  onClick={() => setMonitorSettings(prev => ({ ...prev, enabled: !prev.enabled }))}
+                  className={`w-12 h-6 rounded-full transition-all ${
+                    monitorSettings.enabled ? "bg-primary" : "bg-muted"
+                  } relative`}
+                >
+                  <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${
+                    monitorSettings.enabled ? "left-6" : "left-0.5"
+                  }`} />
+                </button>
+                {/* Close Button */}
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 hover:bg-destructive/20"
+                  onClick={() => setShowMonitor(false)}
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Monitor Options */}
+            <div className="space-y-1">
+              {/* CPU Usage */}
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 flex items-center justify-center bg-muted/30 rounded">
+                    <Cpu className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  <span className="text-sm font-medium text-foreground">CPU Usage</span>
+                </div>
+                <button
+                  onClick={() => setMonitorSettings(prev => ({ ...prev, cpuUsage: !prev.cpuUsage }))}
+                  className={`w-12 h-6 rounded-full transition-all ${
+                    monitorSettings.cpuUsage ? "bg-primary" : "bg-muted"
+                  } relative`}
+                >
+                  <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${
+                    monitorSettings.cpuUsage ? "left-6" : "left-0.5"
+                  }`} />
+                </button>
+              </div>
+
+              {/* GPU Usage */}
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 flex items-center justify-center bg-muted/30 rounded">
+                    <Monitor className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-foreground">GPU Usage [Adreno]</span>
+                    <p className="text-[10px] text-muted-foreground">Using RAM Usage for GPU (Fake GPU)</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setMonitorSettings(prev => ({ ...prev, gpuUsage: !prev.gpuUsage }))}
+                  className={`w-12 h-6 rounded-full transition-all ${
+                    monitorSettings.gpuUsage ? "bg-primary" : "bg-muted"
+                  } relative`}
+                >
+                  <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${
+                    monitorSettings.gpuUsage ? "left-6" : "left-0.5"
+                  }`} />
+                </button>
+              </div>
+
+              {/* RAM Usage */}
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 flex items-center justify-center bg-muted/30 rounded">
+                    <span className="text-xs font-bold text-muted-foreground">RAM</span>
+                  </div>
+                  <span className="text-sm font-medium text-foreground">RAM Usage</span>
+                </div>
+                <button
+                  onClick={() => setMonitorSettings(prev => ({ ...prev, ramUsage: !prev.ramUsage }))}
+                  className={`w-12 h-6 rounded-full transition-all ${
+                    monitorSettings.ramUsage ? "bg-primary" : "bg-muted"
+                  } relative`}
+                >
+                  <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${
+                    monitorSettings.ramUsage ? "left-6" : "left-0.5"
+                  }`} />
+                </button>
+              </div>
+
+              {/* Battery Info */}
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 flex items-center justify-center bg-muted/30 rounded">
+                    <Battery className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  <span className="text-sm font-medium text-foreground">Battery Info</span>
+                </div>
+                <button
+                  onClick={() => setMonitorSettings(prev => ({ ...prev, batteryInfo: !prev.batteryInfo }))}
+                  className={`w-12 h-6 rounded-full transition-all ${
+                    monitorSettings.batteryInfo ? "bg-primary" : "bg-muted"
+                  } relative`}
+                >
+                  <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${
+                    monitorSettings.batteryInfo ? "left-6" : "left-0.5"
+                  }`} />
+                </button>
+              </div>
+
+              {/* Temp Info */}
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 flex items-center justify-center bg-muted/30 rounded">
+                    <Thermometer className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  <span className="text-sm font-medium text-foreground">Temp Info</span>
+                </div>
+                <button
+                  onClick={() => setMonitorSettings(prev => ({ ...prev, tempInfo: !prev.tempInfo }))}
+                  className={`w-12 h-6 rounded-full transition-all ${
+                    monitorSettings.tempInfo ? "bg-primary" : "bg-muted"
+                  } relative`}
+                >
+                  <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${
+                    monitorSettings.tempInfo ? "left-6" : "left-0.5"
+                  }`} />
+                </button>
+              </div>
+
+              {/* FPS Info */}
+              <div className="flex items-center justify-between py-3 border-b border-border/30">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 flex items-center justify-center bg-muted/30 rounded">
+                    <span className="text-[10px] font-bold text-muted-foreground border border-muted-foreground px-1 rounded">FPS</span>
+                  </div>
+                  <span className="text-sm font-medium text-foreground">FPS Info [Realtime]</span>
+                </div>
+                <button
+                  onClick={() => setMonitorSettings(prev => ({ ...prev, fpsInfo: !prev.fpsInfo }))}
+                  className={`w-12 h-6 rounded-full transition-all ${
+                    monitorSettings.fpsInfo ? "bg-primary" : "bg-muted"
+                  } relative`}
+                >
+                  <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${
+                    monitorSettings.fpsInfo ? "left-6" : "left-0.5"
+                  }`} />
+                </button>
+              </div>
+
+              {/* Time Info */}
+              <div className="flex items-center justify-between py-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 flex items-center justify-center bg-muted/30 rounded">
+                    <span className="text-xs text-muted-foreground">⏰</span>
+                  </div>
+                  <span className="text-sm font-medium text-foreground">Time Info</span>
+                </div>
+                <button
+                  onClick={() => setMonitorSettings(prev => ({ ...prev, timeInfo: !prev.timeInfo }))}
+                  className={`w-12 h-6 rounded-full transition-all ${
+                    monitorSettings.timeInfo ? "bg-primary" : "bg-muted"
+                  } relative`}
+                >
+                  <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${
+                    monitorSettings.timeInfo ? "left-6" : "left-0.5"
+                  }`} />
+                </button>
               </div>
             </div>
           </div>
