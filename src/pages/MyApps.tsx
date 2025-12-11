@@ -116,7 +116,8 @@ export default function MyApps() {
     setApps(mockApps);
   };
 
-  const handleToggleOptimize = (packageName: string) => {
+  const handleToggleOptimize = (e: React.MouseEvent, packageName: string) => {
+    e.stopPropagation(); // Prevent app launch when toggling
     setApps((prevApps) =>
       prevApps.map((app) =>
         app.packageName === packageName
@@ -132,6 +133,22 @@ export default function MyApps() {
           ? `${app.appName} removed from boost`
           : `${app.appName} added to boost list`
       );
+    }
+  };
+
+  const handleLaunchApp = async (packageName: string, appName: string) => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        // Use Browser plugin or direct window location for Android intent
+        window.location.href = `intent://#Intent;package=${packageName};end`;
+        toast.success(`Launching ${appName}...`);
+      } catch (error) {
+        toast.error(`Cannot launch ${appName}`);
+      }
+    } else {
+      toast.info(`Would launch: ${appName}`, {
+        description: "App launching works on native Android only"
+      });
     }
   };
 
@@ -191,8 +208,8 @@ export default function MyApps() {
             {filteredApps.map((app) => (
               <div
                 key={app.packageName}
-                onClick={() => handleToggleOptimize(app.packageName)}
-                className={`flex items-center gap-4 p-3 rounded-lg bg-card/60 border border-border cursor-pointer transition-all hover:border-primary/50 ${
+                onClick={() => handleLaunchApp(app.packageName, app.appName)}
+                className={`flex items-center gap-4 p-3 rounded-lg bg-card/60 border border-border cursor-pointer transition-all hover:border-primary/50 active:scale-[0.98] ${
                   app.isOptimized ? "border-primary/30 bg-primary/5" : ""
                 }`}
               >
@@ -229,12 +246,17 @@ export default function MyApps() {
                   </p>
                 </div>
 
-                {/* Optimized Badge */}
-                {app.isOptimized && (
-                  <div className="shrink-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                    <Zap className="h-4 w-4 text-primary-foreground" />
-                  </div>
-                )}
+                {/* Boost Toggle Button */}
+                <button
+                  onClick={(e) => handleToggleOptimize(e, app.packageName)}
+                  className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                    app.isOptimized 
+                      ? "bg-primary shadow-[0_0_10px_rgba(16,185,129,0.5)]" 
+                      : "bg-muted hover:bg-muted/80"
+                  }`}
+                >
+                  <Zap className={`h-5 w-5 ${app.isOptimized ? "text-primary-foreground" : "text-muted-foreground"}`} />
+                </button>
               </div>
             ))}
           </div>
