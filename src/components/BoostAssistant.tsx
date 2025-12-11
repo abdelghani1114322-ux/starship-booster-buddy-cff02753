@@ -384,7 +384,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           </div>
         </button>
         
-        {/* Dropdown Menu */}
+        {/* Dropdown Menu - Horizontal */}
         {isOpen && (
           <>
             {/* Backdrop */}
@@ -392,13 +392,13 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               className="fixed inset-0 z-40" 
               onClick={() => setIsOpen(false)}
             />
-            {/* Dropdown */}
-            <div className="absolute left-1/2 -translate-x-1/2 top-[60px] z-50 w-32 bg-[#2a2a3e] rounded-lg border border-border/50 overflow-hidden shadow-xl">
+            {/* Dropdown - Horizontal layout */}
+            <div className="absolute left-1/2 -translate-x-1/2 top-[60px] z-50 flex gap-1 bg-[#2a2a3e] rounded-lg border border-border/50 overflow-hidden shadow-xl p-1">
               {modes.map((mode) => (
                 <button
                   key={mode}
                   onClick={() => handleModeSelect(mode)}
-                  className={`w-full px-4 py-3 text-left text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 text-sm font-medium transition-colors rounded-md ${
                     performanceMode === mode 
                       ? "text-red-400 bg-muted/30" 
                       : "text-muted-foreground hover:bg-muted/20 hover:text-foreground"
