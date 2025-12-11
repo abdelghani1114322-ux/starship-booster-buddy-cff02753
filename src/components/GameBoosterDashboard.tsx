@@ -360,69 +360,6 @@ export const GameBoosterDashboard = () => {
           </div>
         </div>
 
-        {/* Gravity X Feature */}
-        <div className="flex justify-center mb-8">
-          <div className="relative p-6 bg-card/60 backdrop-blur rounded-2xl border border-border hover:border-primary/40 transition-all">
-            <div className="flex items-center gap-6">
-              <span 
-                className="text-sm font-bold tracking-widest text-muted-foreground"
-                style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}
-              >
-                Gravity X
-              </span>
-              <div className="relative">
-                {/* Outer tech rings */}
-                <svg className="w-32 h-32" viewBox="0 0 100 100">
-                  {/* Outer decorative ring */}
-                  <circle cx="50" cy="50" r="48" fill="none" stroke="hsl(var(--muted))" strokeWidth="1" opacity="0.3" />
-                  <circle cx="50" cy="50" r="44" fill="none" stroke="hsl(var(--muted))" strokeWidth="2" opacity="0.4" />
-                  {/* Tech details - dots around */}
-                  {Array.from({ length: 12 }).map((_, i) => (
-                    <circle
-                      key={i}
-                      cx={50 + 46 * Math.cos((i * 30 * Math.PI) / 180)}
-                      cy={50 + 46 * Math.sin((i * 30 * Math.PI) / 180)}
-                      r="2"
-                      fill="#ef4444"
-                      opacity="0.6"
-                    />
-                  ))}
-                  {/* Middle glowing ring */}
-                  <circle 
-                    cx="50" cy="50" r="36" 
-                    fill="none" 
-                    stroke="#64748b" 
-                    strokeWidth="3" 
-                    opacity="0.6"
-                  />
-                  <circle 
-                    cx="50" cy="50" r="32" 
-                    fill="none" 
-                    stroke="#ef4444" 
-                    strokeWidth="2" 
-                    opacity="0.8"
-                    style={{ filter: 'drop-shadow(0 0 6px #ef4444)' }}
-                  />
-                  {/* Inner circle background */}
-                  <circle cx="50" cy="50" r="26" fill="#1a1a2e" />
-                  <circle 
-                    cx="50" cy="50" r="24" 
-                    fill="none" 
-                    stroke="#ef4444" 
-                    strokeWidth="1.5"
-                    opacity="0.5"
-                  />
-                  {/* X symbol */}
-                  <g style={{ filter: 'drop-shadow(0 0 8px #ef4444)' }}>
-                    <line x1="38" y1="38" x2="62" y2="62" stroke="#ef4444" strokeWidth="4" strokeLinecap="round" />
-                    <line x1="62" y1="38" x2="38" y2="62" stroke="#ef4444" strokeWidth="4" strokeLinecap="round" />
-                  </g>
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Performance Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* CPU Usage */}
@@ -573,6 +510,69 @@ export const GameBoosterDashboard = () => {
             <Settings className="h-5 w-5" />
             <span className="text-sm">Advanced</span>
           </Button>
+        </div>
+
+        {/* Gravity X Feature */}
+        <div className="flex justify-center mt-8 mb-12">
+          <div className="relative p-6 bg-card/60 backdrop-blur rounded-2xl border border-border hover:border-primary/40 transition-all">
+            <div className="flex items-center gap-6">
+              <span 
+                className="text-sm font-bold tracking-widest text-muted-foreground"
+                style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}
+              >
+                Gravity X
+              </span>
+              <div className="relative">
+                {/* Outer tech rings */}
+                <svg className="w-32 h-32" viewBox="0 0 100 100">
+                  {/* Outer decorative ring */}
+                  <circle cx="50" cy="50" r="48" fill="none" stroke="hsl(var(--muted))" strokeWidth="1" opacity="0.3" />
+                  <circle cx="50" cy="50" r="44" fill="none" stroke="hsl(var(--muted))" strokeWidth="2" opacity="0.4" />
+                  {/* Tech details - dots around */}
+                  {Array.from({ length: 12 }).map((_, i) => (
+                    <circle
+                      key={i}
+                      cx={50 + 46 * Math.cos((i * 30 * Math.PI) / 180)}
+                      cy={50 + 46 * Math.sin((i * 30 * Math.PI) / 180)}
+                      r="2"
+                      fill="#ef4444"
+                      opacity="0.6"
+                    />
+                  ))}
+                  {/* Middle glowing ring */}
+                  <circle 
+                    cx="50" cy="50" r="36" 
+                    fill="none" 
+                    stroke="#64748b" 
+                    strokeWidth="3" 
+                    opacity="0.6"
+                  />
+                  <circle 
+                    cx="50" cy="50" r="32" 
+                    fill="none" 
+                    stroke="#ef4444" 
+                    strokeWidth="2" 
+                    opacity="0.8"
+                    style={{ filter: 'drop-shadow(0 0 6px #ef4444)' }}
+                  />
+                  {/* Inner circle background */}
+                  <circle cx="50" cy="50" r="26" fill="#1a1a2e" />
+                  <circle 
+                    cx="50" cy="50" r="24" 
+                    fill="none" 
+                    stroke="#ef4444" 
+                    strokeWidth="1.5"
+                    opacity="0.5"
+                  />
+                  {/* X symbol */}
+                  <g style={{ filter: 'drop-shadow(0 0 8px #ef4444)' }}>
+                    <line x1="38" y1="38" x2="62" y2="62" stroke="#ef4444" strokeWidth="4" strokeLinecap="round" />
+                    <line x1="62" y1="38" x2="38" y2="62" stroke="#ef4444" strokeWidth="4" strokeLinecap="round" />
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
