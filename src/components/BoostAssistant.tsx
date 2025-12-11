@@ -321,6 +321,99 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     }
   };
 
+  // Performance Mode Dropdown Component
+  const PerformanceModeDropdown = ({ 
+    performanceMode, 
+    setPerformanceMode 
+  }: { 
+    performanceMode: "saving" | "balance" | "boost"; 
+    setPerformanceMode: (mode: "saving" | "balance" | "boost") => void;
+  }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    
+    const modeLabels: Record<"saving" | "balance" | "boost", string> = {
+      saving: "Eco",
+      balance: "Balance",
+      boost: "Rise",
+    };
+    
+    const modes: Array<"saving" | "balance" | "boost"> = ["saving", "balance", "boost"];
+    
+    const handleModeSelect = (mode: "saving" | "balance" | "boost") => {
+      setPerformanceMode(mode);
+      setIsOpen(false);
+      if (mode === "boost") {
+        toast.success("Rise Mode Activated! 🚀", { description: "Maximum performance" });
+      } else if (mode === "balance") {
+        toast.info("Balance Mode", { description: "Optimal performance" });
+      } else {
+        toast.success("Eco Mode", { description: "Battery-saving enabled" });
+      }
+    };
+    
+    return (
+      <div className="p-4 relative">
+        {/* Selected Mode Button */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="relative mx-auto flex items-center justify-center"
+        >
+          {/* Hexagonal container with red accent border */}
+          <div className="relative">
+            <svg width="120" height="50" viewBox="0 0 120 50">
+              {/* Hexagonal shape */}
+              <path
+                d="M20 0 L100 0 L115 25 L100 50 L20 50 L5 25 Z"
+                fill="#1a1a2e"
+                stroke="#ef4444"
+                strokeWidth="2"
+                style={{ filter: 'drop-shadow(0 0 6px rgba(239, 68, 68, 0.5))' }}
+              />
+              {/* Pointer/chevron at bottom */}
+              <path
+                d="M50 50 L60 60 L70 50"
+                fill="none"
+                stroke="#ef4444"
+                strokeWidth="2"
+                style={{ filter: 'drop-shadow(0 0 4px rgba(239, 68, 68, 0.5))' }}
+              />
+            </svg>
+            <span className="absolute inset-0 flex items-center justify-center text-white font-semibold text-sm">
+              {modeLabels[performanceMode]}
+            </span>
+          </div>
+        </button>
+        
+        {/* Dropdown Menu */}
+        {isOpen && (
+          <>
+            {/* Backdrop */}
+            <div 
+              className="fixed inset-0 z-40" 
+              onClick={() => setIsOpen(false)}
+            />
+            {/* Dropdown */}
+            <div className="absolute left-1/2 -translate-x-1/2 top-[60px] z-50 w-32 bg-[#2a2a3e] rounded-lg border border-border/50 overflow-hidden shadow-xl">
+              {modes.map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => handleModeSelect(mode)}
+                  className={`w-full px-4 py-3 text-left text-sm font-medium transition-colors ${
+                    performanceMode === mode 
+                      ? "text-red-400 bg-muted/30" 
+                      : "text-muted-foreground hover:bg-muted/20 hover:text-foreground"
+                  }`}
+                >
+                  {modeLabels[mode]}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
+
   // MHz Gauge Component - Golden orbital ring design
   const MHzGauge = ({ value, label }: { value: number; label: string; color: string }) => {
     const mhzValue = Math.round((value / 100) * 2000);
@@ -571,60 +664,11 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               </div>
             </div>
 
-            {/* Performance Mode Selector */}
-            <div className="p-4 bg-muted/20 rounded-lg border border-primary/20">
-              <div className="text-xs font-semibold mb-3 text-center text-primary">PERFORMANCE MODE</div>
-              <div className="space-y-2">
-                <Button
-                  size="sm"
-                  variant={performanceMode === "saving" ? "default" : "outline"}
-                  className={`w-full ${
-                    performanceMode === "saving"
-                      ? "bg-green-600 hover:bg-green-700 shadow-[0_0_15px_rgba(34,197,94,0.4)]"
-                      : ""
-                  }`}
-                  onClick={() => {
-                    setPerformanceMode("saving");
-                    toast.success("Saving Mode", { description: "Battery-saving enabled" });
-                  }}
-                >
-                  <Battery className="w-4 h-4 mr-2" />
-                  Saving
-                </Button>
-                <Button
-                  size="sm"
-                  variant={performanceMode === "balance" ? "default" : "outline"}
-                  className={`w-full ${
-                    performanceMode === "balance"
-                      ? "bg-yellow-600 hover:bg-yellow-700 shadow-[0_0_15px_rgba(234,179,8,0.4)]"
-                      : ""
-                  }`}
-                  onClick={() => {
-                    setPerformanceMode("balance");
-                    toast.info("Balance Mode", { description: "Optimal performance" });
-                  }}
-                >
-                  <Gauge className="w-4 h-4 mr-2" />
-                  Balance
-                </Button>
-                <Button
-                  size="sm"
-                  variant={performanceMode === "boost" ? "default" : "outline"}
-                  className={`w-full ${
-                    performanceMode === "boost"
-                      ? "bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(16,185,129,0.4)]"
-                      : ""
-                  }`}
-                  onClick={() => {
-                    setPerformanceMode("boost");
-                    toast.success("Boost Mode Activated! 🚀", { description: "Maximum performance" });
-                  }}
-                >
-                  <Zap className="w-4 h-4 mr-2" />
-                  Boost
-                </Button>
-              </div>
-            </div>
+            {/* Performance Mode Selector - Dropdown Style */}
+            <PerformanceModeDropdown 
+              performanceMode={performanceMode}
+              setPerformanceMode={setPerformanceMode}
+            />
           </div>
 
           {/* Mode Buttons */}
