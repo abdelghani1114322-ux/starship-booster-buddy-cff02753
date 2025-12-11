@@ -322,7 +322,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     }
   };
 
-  // MHz Gauge Component - styled like reference image with glowing rings
+  // MHz Gauge Component - styled like reference image with glowing rings (compact)
   const MHzGauge = ({ value, label, color }: { value: number; label: string; color: string }) => {
     // Convert percentage to MHz (simulated: 100% = 2000 MHz, scaled down for display)
     const mhzValue = Math.round((value / 100) * 2000);
@@ -330,79 +330,79 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     return (
       <div className="relative flex flex-col items-center">
         {/* Outer glow ring container */}
-        <div className="relative w-[160px] h-[160px]">
+        <div className="relative w-[100px] h-[100px]">
           {/* Multiple glowing rings for depth effect */}
-          <svg className="absolute inset-0" width="160" height="160" viewBox="0 0 160 160">
+          <svg className="absolute inset-0" width="100" height="100" viewBox="0 0 100 100">
             {/* Outer glow ring */}
             <ellipse
-              cx="80"
-              cy="120"
-              rx="70"
-              ry="25"
+              cx="50"
+              cy="75"
+              rx="44"
+              ry="16"
               fill="none"
               stroke={color}
-              strokeWidth="2"
+              strokeWidth="1.5"
               opacity="0.3"
-              style={{ filter: `drop-shadow(0 0 10px ${color})` }}
-            />
-            <ellipse
-              cx="80"
-              cy="110"
-              rx="60"
-              ry="20"
-              fill="none"
-              stroke={color}
-              strokeWidth="2"
-              opacity="0.5"
               style={{ filter: `drop-shadow(0 0 8px ${color})` }}
             />
             <ellipse
-              cx="80"
-              cy="100"
-              rx="50"
-              ry="18"
+              cx="50"
+              cy="68"
+              rx="38"
+              ry="13"
               fill="none"
               stroke={color}
-              strokeWidth="3"
+              strokeWidth="1.5"
+              opacity="0.5"
+              style={{ filter: `drop-shadow(0 0 6px ${color})` }}
+            />
+            <ellipse
+              cx="50"
+              cy="62"
+              rx="32"
+              ry="11"
+              fill="none"
+              stroke={color}
+              strokeWidth="2"
               opacity="0.7"
-              style={{ filter: `drop-shadow(0 0 12px ${color})` }}
+              style={{ filter: `drop-shadow(0 0 10px ${color})` }}
             />
             {/* Inner bright ring */}
             <ellipse
-              cx="80"
-              cy="90"
-              rx="40"
-              ry="15"
+              cx="50"
+              cy="56"
+              rx="25"
+              ry="9"
               fill="none"
               stroke={color}
-              strokeWidth="3"
+              strokeWidth="2"
               opacity="1"
-              style={{ filter: `drop-shadow(0 0 15px ${color}) drop-shadow(0 0 25px ${color})` }}
+              style={{ filter: `drop-shadow(0 0 12px ${color}) drop-shadow(0 0 20px ${color})` }}
             />
           </svg>
           
           {/* Center content */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <div className="absolute inset-0 flex flex-col items-center justify-center -mt-2">
             {/* MHz Value */}
             <div 
-              className="text-4xl font-bold tracking-tight"
+              className="text-2xl font-bold tracking-tight"
               style={{ 
                 color: '#fff',
-                textShadow: `0 0 10px ${color}, 0 0 20px ${color}`,
+                textShadow: `0 0 8px ${color}, 0 0 16px ${color}`,
               }}
             >
               {mhzValue}
             </div>
             {/* MHz Label */}
-            <div className="text-sm text-muted-foreground font-medium -mt-1">MHz</div>
+            <div className="text-[10px] text-muted-foreground font-medium -mt-1">MHz</div>
           </div>
           
           {/* Label at bottom */}
           <div 
-            className="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm font-bold tracking-wider"
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 text-xs font-bold tracking-wider"
             style={{ 
               color: color,
-              textShadow: `0 0 8px ${color}`,
+              textShadow: `0 0 6px ${color}`,
             }}
           >
             {label}
@@ -675,13 +675,22 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             ))}
           </div>
           
-          {/* FPS Display - Large and Prominent */}
-          <div className="p-6 bg-muted/30 border-b border-accent/20 text-center">
+          {/* GPU MHz Gauge - At Top */}
+          <div className="flex justify-center items-center py-3 bg-muted/30 border-b border-accent/20">
+            <MHzGauge 
+              value={gpuUsage} 
+              label="GPU" 
+              color="#ef4444"
+            />
+          </div>
+
+          {/* FPS Display */}
+          <div className="p-4 bg-muted/30 border-b border-accent/20 text-center">
             <div className="text-xs text-muted-foreground mb-1">FRAMES PER SECOND</div>
-            <div className={`text-6xl font-bold tracking-tight ${fps >= 100 ? "text-primary" : fps >= 60 ? "text-accent" : "text-destructive"}`}>
+            <div className={`text-5xl font-bold tracking-tight ${fps >= 100 ? "text-primary" : fps >= 60 ? "text-accent" : "text-destructive"}`}>
               {Math.round(fps)}
             </div>
-            <div className="text-xs mt-2 font-medium">
+            <div className="text-xs mt-1 font-medium">
               {fps >= 100 ? "🔥 ULTRA SMOOTH" : fps >= 60 ? "✓ SMOOTH" : "⚠ LOW"}
             </div>
           </div>
@@ -702,15 +711,6 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           </div>
 
           <div className="flex-1 p-6 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/20 scrollbar-track-transparent">
-            {/* GPU MHz Gauge */}
-            <div className="flex justify-center items-center">
-              <MHzGauge 
-                value={gpuUsage} 
-                label="GPU" 
-                color="#ef4444"
-              />
-            </div>
-
             {/* RAM Usage */}
             <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
               <div className="flex items-center justify-between">
