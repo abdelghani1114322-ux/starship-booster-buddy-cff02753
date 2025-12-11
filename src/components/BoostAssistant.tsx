@@ -321,87 +321,93 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     }
   };
 
-  // MHz Gauge Component - styled like reference image with glowing rings (compact)
-  const MHzGauge = ({ value, label, color }: { value: number; label: string; color: string }) => {
-    // Convert percentage to MHz (simulated: 100% = 2000 MHz, scaled down for display)
+  // MHz Gauge Component - Golden orbital ring design
+  const MHzGauge = ({ value, label }: { value: number; label: string; color: string }) => {
     const mhzValue = Math.round((value / 100) * 2000);
+    const goldColor = "#d4a520";
+    const goldGlow = "#ffd700";
     
     return (
       <div className="relative flex flex-col items-center">
-        {/* Outer glow ring container */}
-        <div className="relative w-[100px] h-[100px]">
-          {/* Multiple glowing rings for depth effect */}
-          <svg className="absolute inset-0" width="100" height="100" viewBox="0 0 100 100">
-            {/* Outer glow ring */}
+        <div className="relative w-[120px] h-[100px]">
+          {/* MHz text at top */}
+          <div 
+            className="absolute top-0 left-1/2 -translate-x-1/2 text-sm font-semibold"
+            style={{ color: goldColor }}
+          >
+            MHz
+          </div>
+          
+          {/* Orbital rings */}
+          <svg className="absolute inset-0 mt-4" width="120" height="80" viewBox="0 0 120 80">
+            {/* Outermost ring */}
             <ellipse
-              cx="50"
-              cy="75"
-              rx="44"
+              cx="60"
+              cy="40"
+              rx="55"
+              ry="20"
+              fill="none"
+              stroke={goldColor}
+              strokeWidth="2"
+              opacity="0.4"
+              style={{ filter: `drop-shadow(0 0 4px ${goldGlow})` }}
+            />
+            {/* Second ring */}
+            <ellipse
+              cx="60"
+              cy="40"
+              rx="45"
               ry="16"
               fill="none"
-              stroke={color}
-              strokeWidth="1.5"
-              opacity="0.3"
-              style={{ filter: `drop-shadow(0 0 8px ${color})` }}
-            />
-            <ellipse
-              cx="50"
-              cy="68"
-              rx="38"
-              ry="13"
-              fill="none"
-              stroke={color}
-              strokeWidth="1.5"
-              opacity="0.5"
-              style={{ filter: `drop-shadow(0 0 6px ${color})` }}
-            />
-            <ellipse
-              cx="50"
-              cy="62"
-              rx="32"
-              ry="11"
-              fill="none"
-              stroke={color}
+              stroke={goldColor}
               strokeWidth="2"
-              opacity="0.7"
-              style={{ filter: `drop-shadow(0 0 10px ${color})` }}
+              opacity="0.6"
+              style={{ filter: `drop-shadow(0 0 6px ${goldGlow})` }}
             />
-            {/* Inner bright ring */}
+            {/* Third ring */}
             <ellipse
-              cx="50"
-              cy="56"
+              cx="60"
+              cy="40"
+              rx="35"
+              ry="12"
+              fill="none"
+              stroke={goldColor}
+              strokeWidth="2.5"
+              opacity="0.8"
+              style={{ filter: `drop-shadow(0 0 8px ${goldGlow})` }}
+            />
+            {/* Fourth ring */}
+            <ellipse
+              cx="60"
+              cy="40"
               rx="25"
               ry="9"
               fill="none"
-              stroke={color}
-              strokeWidth="2"
+              stroke={goldGlow}
+              strokeWidth="2.5"
+              opacity="0.9"
+              style={{ filter: `drop-shadow(0 0 10px ${goldGlow})` }}
+            />
+            {/* Innermost bright ring */}
+            <ellipse
+              cx="60"
+              cy="40"
+              rx="15"
+              ry="5"
+              fill="none"
+              stroke={goldGlow}
+              strokeWidth="3"
               opacity="1"
-              style={{ filter: `drop-shadow(0 0 12px ${color}) drop-shadow(0 0 20px ${color})` }}
+              style={{ filter: `drop-shadow(0 0 12px ${goldGlow}) drop-shadow(0 0 20px ${goldGlow})` }}
             />
           </svg>
           
-          {/* Center content */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center -mt-2">
-            {/* MHz Value - with transition animation */}
-            <div 
-              className="text-2xl font-bold tracking-tight transition-all duration-300"
-              style={{ 
-                color: '#fff',
-                textShadow: `0 0 8px ${color}, 0 0 16px ${color}`,
-              }}
-            >
-              {mhzValue}
-            </div>
-            {/* MHz Label */}
-            <div className="text-[10px] text-muted-foreground font-medium -mt-1">MHz</div>
-          </div>
-          
           {/* Label at bottom */}
           <div 
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 text-xs font-bold tracking-wider"
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 text-sm font-bold tracking-wider"
             style={{ 
-              color: color,
-              textShadow: `0 0 6px ${color}`,
+              color: goldColor,
+              textShadow: `0 0 8px ${goldGlow}`,
             }}
           >
             {label}
