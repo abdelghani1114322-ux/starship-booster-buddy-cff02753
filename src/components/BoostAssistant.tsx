@@ -1449,38 +1449,38 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           onClick={() => setShowGraphiqueSettings(false)}
         >
           <div 
-            className="bg-card border-2 border-border/50 rounded-xl p-3 shadow-[0_0_40px_rgba(0,0,0,0.4)] w-[280px] max-w-[90vw] max-h-[70vh] overflow-y-auto"
+            className="bg-card border-2 border-border/50 rounded-xl p-2 shadow-[0_0_40px_rgba(0,0,0,0.4)] w-[240px] max-w-[85vw] max-h-[60vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-semibold text-foreground">hunting-filter</span>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-foreground">hunting-filter</span>
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-7 w-7 hover:bg-destructive/20"
+                className="h-6 w-6 hover:bg-destructive/20"
                 onClick={() => setShowGraphiqueSettings(false)}
               >
-                <X className="w-4 h-4" />
+                <X className="w-3 h-3" />
               </Button>
             </div>
 
             {/* Master Toggle */}
-            <div className="flex items-center justify-between mb-3 p-2 bg-muted/30 rounded-lg">
-              <span className="text-xs font-medium text-foreground">Enable Filter</span>
+            <div className="flex items-center justify-between mb-2 p-1.5 bg-muted/30 rounded-lg">
+              <span className="text-[10px] font-medium text-foreground">Enable Filter</span>
               <button
                 onClick={() => {
                   setFilterEnabled(!filterEnabled);
                   toast.success(filterEnabled ? "Filter disabled" : "Filter enabled");
                 }}
-                className={`w-10 h-5 rounded-full transition-all ${filterEnabled ? "bg-red-500" : "bg-muted"}`}
+                className={`w-8 h-4 rounded-full transition-all ${filterEnabled ? "bg-red-500" : "bg-muted"}`}
               >
-                <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${filterEnabled ? "translate-x-5" : "translate-x-0.5"}`} />
+                <div className={`w-3 h-3 rounded-full bg-white shadow transition-transform ${filterEnabled ? "translate-x-4" : "translate-x-0.5"}`} />
               </button>
             </div>
 
             {/* Filter Options */}
-            <div className="space-y-2">
+            <div className="space-y-1">
               {graphiqueFilters.map((filter) => (
                 <button
                   key={filter.id}
@@ -1489,14 +1489,14 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                     if (!filterEnabled) setFilterEnabled(true);
                     toast.success(`${filter.name} filter applied`);
                   }}
-                  className={`w-full flex items-center gap-3 p-2 rounded-lg transition-all ${
+                  className={`w-full flex items-center gap-2 p-1.5 rounded-lg transition-all ${
                     selectedFilter === filter.id 
                       ? "bg-muted/40 border border-red-500/50" 
                       : "bg-muted/20 hover:bg-muted/30 border border-transparent"
                   }`}
                 >
                   {/* Filter thumbnail */}
-                  <div className="w-16 h-10 rounded overflow-hidden bg-gradient-to-br from-green-800 via-emerald-600 to-green-900 flex-shrink-0">
+                  <div className="w-12 h-7 rounded overflow-hidden bg-gradient-to-br from-green-800 via-emerald-600 to-green-900 flex-shrink-0">
                     <div className={`w-full h-full ${
                       filter.id === "hunter" ? "bg-gradient-to-br from-blue-400/30 via-transparent to-orange-400/30" :
                       filter.id === "nightvision" ? "bg-green-500/40 grayscale" :
@@ -1508,10 +1508,10 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                   </div>
                   {/* Filter info */}
                   <div className="text-left flex-1 min-w-0">
-                    <div className={`text-sm font-medium ${selectedFilter === filter.id ? "text-red-400" : "text-foreground"}`}>
+                    <div className={`text-[11px] font-medium ${selectedFilter === filter.id ? "text-red-400" : "text-foreground"}`}>
                       {filter.name}
                     </div>
-                    <div className="text-[10px] text-muted-foreground truncate">
+                    <div className="text-[9px] text-muted-foreground truncate">
                       {filter.description}
                     </div>
                   </div>
