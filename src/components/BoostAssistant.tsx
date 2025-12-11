@@ -509,32 +509,23 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               </div>
             </div>
 
-            {/* Volume and Brightness Controls - Horizontal */}
-            <div className="space-y-4 p-4 bg-muted/20 rounded-lg border border-accent/20">
-              {/* Volume Control */}
-              <div className="flex items-center gap-3">
-                <Volume2 className="w-5 h-5 text-accent flex-shrink-0" />
-                <Slider
-                  value={[volume]}
-                  onValueChange={(value) => setVolume(value[0])}
-                  max={100}
-                  step={1}
-                  className="flex-1"
-                />
-                <span className="text-xs font-medium w-10 text-right">{volume}%</span>
-              </div>
-
-              {/* Brightness Control */}
+            {/* Brightness Control - LED Bar Style */}
+            <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
               <div className="flex items-center gap-3">
                 <Sun className="w-5 h-5 text-accent flex-shrink-0" />
-                <Slider
-                  value={[brightness]}
-                  onValueChange={(value) => setBrightness(value[0])}
-                  max={100}
-                  step={1}
-                  className="flex-1"
-                />
-                <span className="text-xs font-medium w-10 text-right">{brightness}%</span>
+                <div className="flex-1 flex gap-1">
+                  {Array.from({ length: 10 }).map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setBrightness((i + 1) * 10)}
+                      className={`flex-1 h-4 rounded-sm transition-all ${
+                        i < Math.ceil(brightness / 10) 
+                          ? 'bg-accent shadow-[0_0_8px_hsl(var(--accent))]' 
+                          : 'bg-muted/50'
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -702,6 +693,26 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           </div>
 
           <div className="flex-1 p-6 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/20 scrollbar-track-transparent">
+            {/* Volume Control - LED Bar Style */}
+            <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
+              <div className="flex items-center gap-3">
+                <Volume2 className="w-5 h-5 text-accent flex-shrink-0" />
+                <div className="flex-1 flex gap-1">
+                  {Array.from({ length: 10 }).map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setVolume((i + 1) * 10)}
+                      className={`flex-1 h-4 rounded-sm transition-all ${
+                        i < Math.ceil(volume / 10) 
+                          ? 'bg-foreground shadow-[0_0_8px_hsl(var(--foreground)/0.5)]' 
+                          : 'bg-muted/50'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
             {/* RAM Usage */}
             <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
               <div className="flex items-center justify-between">
