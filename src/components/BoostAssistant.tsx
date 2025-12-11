@@ -12,6 +12,12 @@ import freefireIcon from "@/assets/freefire-icon.png";
 import chromeIcon from "@/assets/chrome-icon.png";
 import youtubeIcon from "@/assets/youtube-icon.png";
 import whatsappIcon from "@/assets/whatsapp-icon.png";
+import filterHunter from "@/assets/filter-hunter.jpg";
+import filterNightvision from "@/assets/filter-nightvision.jpg";
+import filterEagleeye from "@/assets/filter-eagleeye.jpg";
+import filterUltraclear from "@/assets/filter-ultraclear.jpg";
+import filterPure from "@/assets/filter-pure.jpg";
+import filterCyberpunk from "@/assets/filter-cyberpunk.jpg";
 
 interface BoostAssistantProps {
   cpuUsage: number;
@@ -1496,16 +1502,18 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                   }`}
                 >
                   {/* Filter thumbnail */}
-                  <div className="w-12 h-7 rounded overflow-hidden bg-gradient-to-br from-green-800 via-emerald-600 to-green-900 flex-shrink-0">
-                    <div className={`w-full h-full ${
-                      filter.id === "hunter" ? "bg-gradient-to-br from-blue-400/30 via-transparent to-orange-400/30" :
-                      filter.id === "nightvision" ? "bg-green-500/40 grayscale" :
-                      filter.id === "eagleeye" ? "bg-blue-500/30 contrast-125" :
-                      filter.id === "ultraclear" ? "bg-yellow-400/20 saturate-150" :
-                      filter.id === "pure" ? "bg-white/10" :
-                      "bg-gradient-to-br from-pink-500/40 via-purple-500/30 to-cyan-500/40"
-                    }`} />
-                  </div>
+                  <img 
+                    src={
+                      filter.id === "hunter" ? filterHunter :
+                      filter.id === "nightvision" ? filterNightvision :
+                      filter.id === "eagleeye" ? filterEagleeye :
+                      filter.id === "ultraclear" ? filterUltraclear :
+                      filter.id === "pure" ? filterPure :
+                      filterCyberpunk
+                    }
+                    alt={filter.name}
+                    className="w-12 h-7 rounded object-cover flex-shrink-0"
+                  />
                   {/* Filter info */}
                   <div className="text-left flex-1 min-w-0">
                     <div className={`text-[11px] font-medium ${selectedFilter === filter.id ? "text-red-400" : "text-foreground"}`}>
