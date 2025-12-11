@@ -510,22 +510,22 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             </div>
 
             {/* Brightness Control - Vertical LED Bar Style */}
-            <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
-              <div className="flex flex-col items-center gap-2">
-                <div className="flex flex-col-reverse gap-1 h-32">
+            <div className="p-2 bg-muted/20 rounded-lg border border-accent/20">
+              <div className="flex flex-col items-center gap-1">
+                <div className="flex flex-col-reverse gap-0.5 h-20">
                   {Array.from({ length: 10 }).map((_, i) => (
                     <button
                       key={i}
                       onClick={() => setBrightness((i + 1) * 10)}
-                      className={`w-10 h-2.5 rounded-sm transition-all ${
+                      className={`w-6 h-1.5 rounded-sm transition-all ${
                         i < Math.ceil(brightness / 10) 
-                          ? 'bg-accent shadow-[0_0_8px_hsl(var(--accent))]' 
+                          ? 'bg-accent shadow-[0_0_6px_hsl(var(--accent))]' 
                           : 'bg-muted/50'
                       }`}
                     />
                   ))}
                 </div>
-                <Sun className="w-5 h-5 text-accent" />
+                <Sun className="w-4 h-4 text-accent" />
               </div>
             </div>
 
@@ -694,22 +694,22 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
           <div className="flex-1 p-6 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/20 scrollbar-track-transparent">
             {/* Volume Control - Vertical LED Bar Style */}
-            <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
-              <div className="flex flex-col items-center gap-2">
-                <div className="flex flex-col-reverse gap-1 h-32">
+            <div className="p-2 bg-muted/20 rounded-lg border border-accent/20">
+              <div className="flex flex-col items-center gap-1">
+                <div className="flex flex-col-reverse gap-0.5 h-20">
                   {Array.from({ length: 10 }).map((_, i) => (
                     <button
                       key={i}
                       onClick={() => setVolume((i + 1) * 10)}
-                      className={`w-10 h-2.5 rounded-sm transition-all ${
+                      className={`w-6 h-1.5 rounded-sm transition-all ${
                         i < Math.ceil(volume / 10) 
-                          ? 'bg-foreground shadow-[0_0_8px_hsl(var(--foreground)/0.5)]' 
+                          ? 'bg-foreground shadow-[0_0_6px_hsl(var(--foreground)/0.5)]' 
                           : 'bg-muted/50'
                       }`}
                     />
                   ))}
                 </div>
-                <Volume2 className="w-5 h-5 text-accent" />
+                <Volume2 className="w-4 h-4 text-accent" />
               </div>
             </div>
 
