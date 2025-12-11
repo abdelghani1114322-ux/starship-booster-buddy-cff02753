@@ -675,17 +675,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             ))}
           </div>
           
-          {/* GPU MHz Gauge - At Top */}
-          <div className="flex justify-center items-center py-3 bg-muted/30 border-b border-accent/20">
-            <MHzGauge 
-              value={gpuUsage} 
-              label="GPU" 
-              color="#ef4444"
-            />
-          </div>
-
-
-          {/* Game Shortcuts */}
+          {/* Game Shortcuts - At Top */}
           <div className="flex justify-around items-center gap-2 p-3 bg-muted/30 border-b border-accent/20">
             {gameApps.map((app, index) => (
               <Button
@@ -698,6 +688,15 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 <img src={app.icon} alt={app.name} className="h-8 w-8 object-contain" />
               </Button>
             ))}
+          </div>
+
+          {/* GPU MHz Gauge */}
+          <div className="flex justify-center items-center py-3 bg-muted/30 border-b border-accent/20">
+            <MHzGauge 
+              value={gpuUsage} 
+              label="GPU" 
+              color="#ef4444"
+            />
           </div>
 
           <div className="flex-1 p-6 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/20 scrollbar-track-transparent">
