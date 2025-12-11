@@ -141,7 +141,7 @@ export default function MyApps() {
       <header className="bg-card/80 border-b border-border shrink-0">
         <div className="text-center py-1 bg-gradient-to-r from-primary/20 via-transparent to-primary/20 border-b border-border">
           <span className="text-xs text-muted-foreground">
-            By <span className="font-semibold text-primary">Chermodsc | Aldo</span>
+            by <span className="font-semibold text-primary">B.Taha</span>
           </span>
         </div>
         <div className="px-4 py-3">
