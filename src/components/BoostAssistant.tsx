@@ -329,18 +329,17 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     
     return (
       <div className="relative flex flex-col items-center">
-        <div className="relative w-[120px] h-[110px]">
-          {/* MHz value at top */}
+        <div className="relative w-[120px] h-[120px]">
+          {/* MHz text at top */}
           <div 
-            className="absolute top-0 left-1/2 -translate-x-1/2 text-center"
+            className="absolute top-0 left-1/2 -translate-x-1/2 text-xs font-semibold"
             style={{ color: goldColor }}
           >
-            <span className="text-xl font-bold" style={{ textShadow: `0 0 8px ${goldGlow}` }}>{mhzValue}</span>
-            <span className="text-xs ml-1">MHz</span>
+            MHz
           </div>
           
           {/* Orbital rings */}
-          <svg className="absolute inset-0 mt-6" width="120" height="80" viewBox="0 0 120 80">
+          <svg className="absolute inset-0 mt-4" width="120" height="80" viewBox="0 0 120 80">
             {/* Outermost ring */}
             <ellipse
               cx="60"
@@ -402,6 +401,17 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               style={{ filter: `drop-shadow(0 0 12px ${goldGlow}) drop-shadow(0 0 20px ${goldGlow})` }}
             />
           </svg>
+          
+          {/* MHz value in center */}
+          <div 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-bold"
+            style={{ 
+              color: '#fff',
+              textShadow: `0 0 8px ${goldGlow}, 0 0 16px ${goldGlow}`,
+            }}
+          >
+            {mhzValue}
+          </div>
           
           {/* Label at bottom */}
           <div 
