@@ -26,7 +26,6 @@ interface BoostAssistantProps {
 }
 
 export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceMode, isVisible, wifiEnabled, setWifiEnabled, setPerformanceMode }: BoostAssistantProps) => {
-  if (!isVisible) return null;
   const [fanMode, setFanMode] = useState<"auto" | "max">("auto");
   const [diabloMode, setDiabloMode] = useState(false);
   const [cpuTemp, setCpuTemp] = useState(65);
@@ -383,9 +382,9 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           
           {/* Center content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center -mt-2">
-            {/* MHz Value */}
+            {/* MHz Value - with transition animation */}
             <div 
-              className="text-2xl font-bold tracking-tight"
+              className="text-2xl font-bold tracking-tight transition-all duration-300"
               style={{ 
                 color: '#fff',
                 textShadow: `0 0 8px ${color}, 0 0 16px ${color}`,
@@ -411,6 +410,9 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
       </div>
     );
   };
+
+  // Early return AFTER all hooks
+  if (!isVisible) return null;
 
   return (
     <>
