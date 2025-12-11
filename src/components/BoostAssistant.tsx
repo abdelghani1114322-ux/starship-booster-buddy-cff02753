@@ -181,7 +181,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   ];
 
   const gamingTools = [
-    { name: "ROG Instant\nMaster", icon: Flame, action: () => setShowMonitor(true) },
+    { name: "Monitor", icon: Flame, action: () => setShowMonitor(true) },
     { name: "Aim\nAssistant", icon: Crosshair, action: () => setShowAimAssistant(true) },
     { name: "Tactic X", icon: Target, action: () => setShowTacticX(true) },
     { name: "Macro", icon: Gamepad2 },
