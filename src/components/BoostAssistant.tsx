@@ -726,6 +726,67 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               </div>
             </div>
 
+            {/* Gravity X */}
+            <div className="p-4 bg-muted/20 rounded-lg border border-accent/20">
+              <div className="flex items-center gap-4">
+                <span 
+                  className="text-xs font-bold tracking-widest text-muted-foreground"
+                  style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}
+                >
+                  Gravity X
+                </span>
+                <div className="relative flex-1 flex justify-center">
+                  {/* Outer tech rings */}
+                  <svg className="w-24 h-24" viewBox="0 0 100 100">
+                    {/* Outer decorative ring */}
+                    <circle cx="50" cy="50" r="48" fill="none" stroke="hsl(var(--muted))" strokeWidth="1" opacity="0.3" />
+                    <circle cx="50" cy="50" r="44" fill="none" stroke="hsl(var(--muted))" strokeWidth="2" opacity="0.4" />
+                    {/* Tech details - dots around */}
+                    {Array.from({ length: 12 }).map((_, i) => (
+                      <circle
+                        key={i}
+                        cx={50 + 46 * Math.cos((i * 30 * Math.PI) / 180)}
+                        cy={50 + 46 * Math.sin((i * 30 * Math.PI) / 180)}
+                        r="2"
+                        fill="#ef4444"
+                        opacity="0.6"
+                      />
+                    ))}
+                    {/* Middle glowing ring */}
+                    <circle 
+                      cx="50" cy="50" r="36" 
+                      fill="none" 
+                      stroke="#64748b" 
+                      strokeWidth="3" 
+                      opacity="0.6"
+                    />
+                    <circle 
+                      cx="50" cy="50" r="32" 
+                      fill="none" 
+                      stroke="#ef4444" 
+                      strokeWidth="2" 
+                      opacity="0.8"
+                      style={{ filter: 'drop-shadow(0 0 6px #ef4444)' }}
+                    />
+                    {/* Inner circle background */}
+                    <circle cx="50" cy="50" r="26" fill="#1a1a2e" />
+                    <circle 
+                      cx="50" cy="50" r="24" 
+                      fill="none" 
+                      stroke="#ef4444" 
+                      strokeWidth="1.5"
+                      opacity="0.5"
+                    />
+                    {/* X symbol */}
+                    <g style={{ filter: 'drop-shadow(0 0 8px #ef4444)' }}>
+                      <line x1="38" y1="38" x2="62" y2="62" stroke="#ef4444" strokeWidth="4" strokeLinecap="round" />
+                      <line x1="62" y1="38" x2="38" y2="62" stroke="#ef4444" strokeWidth="4" strokeLinecap="round" />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
             {/* Gaming Tools */}
             <div className="p-4 bg-muted/20 rounded-lg border border-accent/20">
               <div className="text-xs font-semibold mb-3 text-center text-primary">GAMING TOOLS</div>
