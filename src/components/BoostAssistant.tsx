@@ -592,7 +592,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     <>
       {/* LEFT PANEL - CPU, GPU, Modes */}
       <div 
-        className="fixed left-0 top-0 bottom-0 z-50 w-[200px] sm:w-[240px] lg:w-80 landscape:w-[160px] landscape:sm:w-[180px]"
+        className="fixed left-0 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px] max-h-[calc(100vh-2rem)] landscape:top-0 landscape:bottom-0 landscape:translate-y-0 landscape:h-auto landscape:w-[160px]"
         onClick={(e) => e.stopPropagation()}
       >
         <Card className="h-full bg-gradient-to-b from-card/95 to-card/90 backdrop-blur-xl border-2 border-primary/40 shadow-[0_0_40px_rgba(16,185,129,0.3)] p-0 flex flex-col overflow-hidden relative select-none">
@@ -627,30 +627,31 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           </div>
           
           {/* Time and Battery */}
-          <div className="flex items-center justify-between px-3 landscape:px-2 py-2 landscape:py-1 bg-muted/30 border-b border-primary/20">
-            <div className="flex items-center gap-2 landscape:gap-1">
-              <span className="text-xs landscape:text-[10px] font-semibold">{currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
+          <div className="flex items-center justify-between px-6 py-3 landscape:px-2 landscape:py-1 bg-muted/30 border-b border-primary/20">
+            <div className="flex items-center gap-3 landscape:gap-1">
+              <span className="text-sm landscape:text-[10px] font-semibold">{currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
               <div className="flex items-center gap-1">
-                <span className="text-[10px] landscape:text-[8px] text-muted-foreground">FPS</span>
-                <span className={`text-sm landscape:text-xs font-bold ${fps >= 100 ? "text-primary" : fps >= 60 ? "text-accent" : "text-destructive"}`}>
+                <span className="text-xs landscape:text-[8px] text-muted-foreground">FPS</span>
+                <span className={`text-lg landscape:text-xs font-bold ${fps >= 100 ? "text-primary" : fps >= 60 ? "text-accent" : "text-destructive"}`}>
                   {Math.round(fps)}
                 </span>
               </div>
             </div>
-            <div className="flex items-center gap-1">
-              <div className="text-[10px] landscape:text-[8px] font-medium">{Math.round(batteryLevel)}%</div>
-              <div className="w-6 landscape:w-5 h-3 landscape:h-2.5 border border-primary rounded-sm relative overflow-hidden">
+            <div className="flex items-center gap-2 landscape:gap-1">
+              <div className="text-xs landscape:text-[8px] font-medium">{Math.round(batteryLevel)}%</div>
+              <div className="w-8 h-4 landscape:w-5 landscape:h-2.5 border-2 landscape:border border-primary rounded-sm relative overflow-hidden">
                 <div 
                   className={`h-full transition-all ${isCharging ? 'bg-gradient-to-r from-primary to-accent animate-pulse' : 'bg-primary'}`}
                   style={{ width: `${batteryLevel}%` }}
                 />
+                <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-1 h-2 bg-primary rounded-r landscape:hidden" />
               </div>
-              {isCharging && <span className="text-[8px] text-accent">⚡</span>}
+              {isCharging && <span className="text-[10px] landscape:text-[8px] text-accent">⚡</span>}
             </div>
           </div>
           
 
-          <div className="flex-1 p-3 landscape:p-2 space-y-2 landscape:space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+          <div className="flex-1 p-6 space-y-4 landscape:p-2 landscape:space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
             {/* CPU MHz Gauge */}
             <div className="flex justify-center items-center">
               <MHzGauge 
@@ -735,21 +736,21 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           </div>
 
           {/* Mode Buttons */}
-          <div className="p-2 landscape:p-1.5 space-y-1 bg-muted/20 border-t border-primary/20">
+          <div className="p-4 space-y-2 landscape:p-1.5 landscape:space-y-1 bg-muted/20 border-t border-primary/20">
             <Button
               variant={fanMode === "max" ? "default" : "outline"}
-              className="w-full h-8 landscape:h-6 text-xs landscape:text-[10px]"
+              className="w-full landscape:h-6 landscape:text-[10px]"
               onClick={toggleFanMode}
             >
-              <Wind className="w-3 h-3 mr-1" />
+              <Wind className="w-4 h-4 mr-2 landscape:w-3 landscape:h-3 landscape:mr-1" />
               Fan: {fanMode.toUpperCase()}
             </Button>
             <Button
               variant={diabloMode ? "default" : "outline"}
-              className={`w-full h-8 landscape:h-6 text-xs landscape:text-[10px] ${diabloMode ? "bg-destructive hover:bg-destructive/90 shadow-[0_0_20px_rgba(239,68,68,0.5)]" : ""}`}
+              className={`w-full landscape:h-6 landscape:text-[10px] ${diabloMode ? "bg-destructive hover:bg-destructive/90 shadow-[0_0_20px_rgba(239,68,68,0.5)]" : ""}`}
               onClick={toggleDiabloMode}
             >
-              <Flame className="w-3 h-3 mr-1" />
+              <Flame className="w-4 h-4 mr-2 landscape:w-3 landscape:h-3 landscape:mr-1" />
               Diablo Mode
             </Button>
           </div>
@@ -758,7 +759,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
       {/* RIGHT PANEL - RAM, FPS, Gaming Info */}
       <div 
-        className="fixed right-0 top-0 bottom-0 z-50 w-[200px] sm:w-[240px] lg:w-80 landscape:w-[160px] landscape:sm:w-[180px]"
+        className="fixed right-0 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px] max-h-[calc(100vh-2rem)] landscape:top-0 landscape:bottom-0 landscape:translate-y-0 landscape:h-auto landscape:w-[160px]"
         onClick={(e) => e.stopPropagation()}
       >
         <Card className="h-full bg-gradient-to-b from-card/95 to-card/90 backdrop-blur-xl border-2 border-accent/40 shadow-[0_0_40px_rgba(59,130,246,0.3)] p-0 flex flex-col overflow-hidden relative select-none">
@@ -816,16 +817,16 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             />
           </div>
 
-          <div className="flex-1 p-3 landscape:p-2 space-y-2 landscape:space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/20 scrollbar-track-transparent">
+          <div className="flex-1 p-6 space-y-4 landscape:p-2 landscape:space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/20 scrollbar-track-transparent">
             {/* Volume Control - Vertical LED Bar Style */}
-            <div className="p-1.5 bg-muted/20 rounded-lg border border-accent/20">
-              <div className="flex flex-col items-center gap-0.5">
-                <div className="flex flex-col-reverse gap-0.5 h-12 landscape:h-10">
+            <div className="p-2 landscape:p-1.5 bg-muted/20 rounded-lg border border-accent/20">
+              <div className="flex flex-col items-center gap-1 landscape:gap-0.5">
+                <div className="flex flex-col-reverse gap-0.5 h-20 landscape:h-10">
                   {Array.from({ length: 10 }).map((_, i) => (
                     <button
                       key={i}
                       onClick={() => setVolume((i + 1) * 10)}
-                      className={`w-5 h-1 rounded-sm transition-all ${
+                      className={`w-6 h-1.5 landscape:w-5 landscape:h-1 rounded-sm transition-all ${
                         i < Math.ceil(volume / 10) 
                           ? 'bg-foreground shadow-[0_0_6px_hsl(var(--foreground)/0.5)]' 
                           : 'bg-muted/50'
@@ -833,32 +834,32 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                     />
                   ))}
                 </div>
-                <Volume2 className="w-3 h-3 text-accent" />
+                <Volume2 className="w-4 h-4 landscape:w-3 landscape:h-3 text-accent" />
               </div>
             </div>
 
             {/* RAM Usage */}
-            <div className="p-2 landscape:p-1.5 bg-muted/20 rounded-lg border border-accent/20">
+            <div className="p-3 landscape:p-1.5 bg-muted/20 rounded-lg border border-accent/20">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1">
-                  <Monitor className="w-4 h-4 landscape:w-3 landscape:h-3 text-primary" />
-                  <span className="font-semibold text-xs landscape:text-[10px]">RAM</span>
+                <div className="flex items-center gap-2 landscape:gap-1">
+                  <Monitor className="w-5 h-5 landscape:w-3 landscape:h-3 text-primary" />
+                  <span className="font-semibold text-sm landscape:text-[10px]">RAM</span>
                 </div>
-                <span className={`text-lg landscape:text-sm font-bold ${getStatusColor(ramUsage)}`}>
+                <span className={`text-2xl landscape:text-sm font-bold ${getStatusColor(ramUsage)}`}>
                   {Math.round(ramUsage)}%
                 </span>
               </div>
             </div>
 
             {/* Gaming Tools */}
-            <div className="p-2 landscape:p-1.5 bg-muted/20 rounded-lg border border-accent/20">
-              <div className="text-[10px] landscape:text-[8px] font-semibold mb-1.5 text-center text-primary">GAMING TOOLS</div>
-              <div className="grid grid-cols-3 gap-1">
+            <div className="p-4 landscape:p-1.5 bg-muted/20 rounded-lg border border-accent/20">
+              <div className="text-xs landscape:text-[8px] font-semibold mb-3 landscape:mb-1.5 text-center text-primary">GAMING TOOLS</div>
+              <div className="grid grid-cols-3 gap-2 landscape:gap-1">
                 {gamingTools.map((tool, index) => (
                   <Button
                     key={index}
                     variant="ghost"
-                    className="flex flex-col items-center justify-center h-14 landscape:h-10 p-1 bg-muted/30 hover:bg-primary/20 border border-primary/20 rounded-lg transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                    className="flex flex-col items-center justify-center h-20 landscape:h-10 p-2 landscape:p-1 bg-muted/30 hover:bg-primary/20 border border-primary/20 rounded-lg transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]"
                     onClick={() => {
                       if (tool.action) {
                         tool.action();
@@ -867,8 +868,8 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                       }
                     }}
                   >
-                    <tool.icon className="w-4 h-4 landscape:w-3 landscape:h-3 mb-0.5 text-primary" />
-                    <span className="text-[8px] landscape:text-[6px] font-medium text-center leading-tight whitespace-pre-line">
+                    <tool.icon className="w-5 h-5 landscape:w-3 landscape:h-3 mb-1 landscape:mb-0.5 text-primary" />
+                    <span className="text-[9px] landscape:text-[6px] font-medium text-center leading-tight whitespace-pre-line">
                       {tool.name}
                     </span>
                   </Button>
