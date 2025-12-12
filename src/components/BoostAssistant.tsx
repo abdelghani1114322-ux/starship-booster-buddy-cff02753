@@ -1290,62 +1290,88 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
       {/* Floating Monitor Display - Shows enabled stats on screen */}
       {monitorSettings.enabled && !showMonitor && !showGraphiqueSettings && !showAimAssistant && !showEqualizer && !showTacticX && (
-        <div className="fixed top-2 left-2 z-[150] bg-black/80 backdrop-blur-sm rounded-lg p-2 border border-primary/30 shadow-lg">
-          <div className="flex flex-col gap-1 text-[10px] font-mono">
+        <div className="fixed top-2 left-1/2 -translate-x-1/2 z-[150] bg-gradient-to-r from-slate-800/95 via-slate-700/95 to-slate-800/95 backdrop-blur-md rounded-lg px-3 py-2 border border-slate-600/50 shadow-lg">
+          <div className="flex items-center gap-4 text-xs font-medium">
+            {/* Move Icon */}
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-red-600 to-red-800 border border-red-500/50">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="5 9 2 12 5 15" />
+                <polyline points="9 5 12 2 15 5" />
+                <polyline points="15 19 12 22 9 19" />
+                <polyline points="19 9 22 12 19 15" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <line x1="12" y1="2" x2="12" y2="22" />
+              </svg>
+            </div>
+
+            {/* CPU Usage */}
             {monitorSettings.cpuUsage && (
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">CPU:</span>
-                <span className={`font-bold ${cpuUsage > 80 ? "text-red-400" : cpuUsage > 50 ? "text-yellow-400" : "text-green-400"}`}>
-                  {cpuUsage}%
-                </span>
+              <div className="flex items-center gap-1.5">
+                <div className="w-6 h-6 rounded border border-slate-500/70 bg-slate-800/80 flex items-center justify-center">
+                  <span className="text-[8px] font-bold text-cyan-400">CPU</span>
+                </div>
+                <span className="text-white/90">{cpuUsage} %</span>
               </div>
             )}
-            {monitorSettings.gpuUsage && (
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">GPU:</span>
-                <span className={`font-bold ${gpuUsage > 80 ? "text-red-400" : gpuUsage > 50 ? "text-yellow-400" : "text-green-400"}`}>
-                  {gpuUsage}%
-                </span>
-              </div>
-            )}
+
+            {/* RAM Usage */}
             {monitorSettings.ramUsage && (
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">RAM:</span>
-                <span className={`font-bold ${ramUsage > 80 ? "text-red-400" : ramUsage > 50 ? "text-yellow-400" : "text-green-400"}`}>
-                  {ramUsage}%
-                </span>
+              <div className="flex items-center gap-1.5">
+                <div className="w-7 h-6 rounded border border-slate-500/70 bg-slate-800/80 flex items-center justify-center">
+                  <span className="text-[8px] font-bold text-cyan-400">RAM</span>
+                </div>
+                <span className="text-white/90">{ramUsage} %</span>
               </div>
             )}
+
+            {/* Battery Info */}
             {monitorSettings.batteryInfo && (
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">BAT:</span>
-                <span className={`font-bold ${isCharging ? "text-green-400" : batteryLevel < 20 ? "text-red-400" : "text-white"}`}>
-                  {batteryLevel}%{isCharging ? "⚡" : ""}
-                </span>
+              <div className="flex items-center gap-1.5">
+                <div className="relative w-5 h-6">
+                  {/* Battery outline */}
+                  <div className="absolute bottom-0 w-5 h-5 rounded-sm border-2 border-white/70 overflow-hidden">
+                    {/* Battery fill */}
+                    <div 
+                      className={`absolute bottom-0 left-0 right-0 transition-all ${
+                        batteryLevel > 20 ? 'bg-green-500' : 'bg-red-500'
+                      }`}
+                      style={{ height: `${batteryLevel}%` }}
+                    />
+                  </div>
+                  {/* Battery cap */}
+                  <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-2 h-1 bg-white/70 rounded-t-sm" />
+                </div>
+                <span className="text-white/90">{Math.round(batteryLevel)} %</span>
               </div>
             )}
+
+            {/* Temperature Info */}
             {monitorSettings.tempInfo && (
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">TEMP:</span>
-                <span className={`font-bold ${cpuTemp > 75 ? "text-red-400" : cpuTemp > 60 ? "text-yellow-400" : "text-green-400"}`}>
-                  {cpuTemp}°C
-                </span>
+              <div className="flex items-center gap-1.5">
+                <div className="relative w-4 h-6 flex items-center justify-center">
+                  {/* Thermometer */}
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-5 text-white/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
+                  </svg>
+                </div>
+                <span className="text-white/90">{cpuTemp} °C</span>
               </div>
             )}
+
+            {/* FPS Info */}
             {monitorSettings.fpsInfo && (
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">FPS:</span>
-                <span className={`font-bold ${fps >= 55 ? "text-green-400" : fps >= 30 ? "text-yellow-400" : "text-red-400"}`}>
-                  {fps}
-                </span>
+              <div className="flex items-center gap-1.5">
+                <div className="w-7 h-6 rounded border border-slate-500/70 bg-slate-800/80 flex items-center justify-center">
+                  <span className="text-[8px] font-bold text-cyan-400">FPS</span>
+                </div>
+                <span className="text-white/90">{fps}</span>
               </div>
             )}
+
+            {/* Time Info */}
             {monitorSettings.timeInfo && (
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">TIME:</span>
-                <span className="font-bold text-white">
-                  {currentTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-white/90">{currentTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
               </div>
             )}
           </div>
