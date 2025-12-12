@@ -1299,22 +1299,22 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           onClick={() => setShowMacro(false)}
         >
           <div 
-            className="bg-gradient-to-b from-slate-900 to-slate-800 border-2 border-red-500/40 rounded-xl p-4 shadow-[0_0_40px_rgba(239,68,68,0.3)] w-[360px] max-w-[95vw] max-h-[85vh] overflow-y-auto"
+            className="bg-gradient-to-b from-slate-900 to-slate-800 border-2 border-red-500/40 rounded-xl p-4 landscape:p-2 shadow-[0_0_40px_rgba(239,68,68,0.3)] w-[360px] landscape:w-[280px] max-w-[95vw] max-h-[85vh] landscape:max-h-[75vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-white">Game Boost</h2>
+            <div className="flex items-center justify-between mb-4 landscape:mb-2">
+              <h2 className="text-lg landscape:text-sm font-bold text-white">Game Boost</h2>
               <button 
                 onClick={() => setShowMacro(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
+                className="w-8 h-8 landscape:w-6 landscape:h-6 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
               >
-                <X className="w-5 h-5 text-white/70" />
+                <X className="w-5 h-5 landscape:w-4 landscape:h-4 text-white/70" />
               </button>
             </div>
 
             {/* Tabs */}
-            <div className="flex justify-center gap-6 mb-6">
+            <div className="flex justify-center gap-6 landscape:gap-3 mb-6 landscape:mb-3">
               {[
                 { id: "performance", label: "Performance" },
                 { id: "display", label: "Display" },
@@ -1323,7 +1323,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 <button
                   key={tab.id}
                   onClick={() => setMacroTab(tab.id as typeof macroTab)}
-                  className={`text-sm font-medium pb-1 border-b-2 transition-all ${
+                  className={`text-sm landscape:text-xs font-medium pb-1 border-b-2 transition-all ${
                     macroTab === tab.id 
                       ? "text-white border-red-500" 
                       : "text-white/50 border-transparent hover:text-white/70"
@@ -1338,15 +1338,15 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             {macroTab === "performance" && (
               <>
                 {/* Center Logo with CPU/GPU */}
-                <div className="flex items-center justify-center gap-4 mb-6">
+                <div className="flex items-center justify-center gap-4 landscape:gap-2 mb-6 landscape:mb-3">
                   {/* CPU Bars */}
                   <div className="flex flex-col items-center gap-1">
-                    <span className="text-xs text-white/70 mb-1">CPU</span>
+                    <span className="text-xs landscape:text-[10px] text-white/70 mb-1">CPU</span>
                     <div className="flex gap-0.5">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <div
                           key={i}
-                          className={`w-2 h-6 rounded-sm transition-all ${
+                          className={`w-2 h-6 landscape:w-1.5 landscape:h-4 rounded-sm transition-all ${
                             i < (macroMode === "cpu" || macroMode === "super" ? 5 : macroMode === "auto" ? 3 : 2)
                               ? "bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.5)]"
                               : "bg-slate-700"
@@ -1358,28 +1358,28 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
                   {/* Center Logo */}
                   <div className="relative">
-                    <div className="w-20 h-20 rounded-full border-4 border-red-500/50 bg-gradient-to-b from-slate-800 to-slate-900 flex items-center justify-center shadow-[0_0_30px_rgba(239,68,68,0.3)]">
-                      <div className="w-16 h-16 rounded-full border-2 border-red-500 bg-gradient-to-b from-red-900/50 to-red-950 flex items-center justify-center">
-                        <svg viewBox="0 0 24 24" className="w-8 h-8 text-red-500" fill="currentColor">
+                    <div className="w-20 h-20 landscape:w-14 landscape:h-14 rounded-full border-4 landscape:border-2 border-red-500/50 bg-gradient-to-b from-slate-800 to-slate-900 flex items-center justify-center shadow-[0_0_30px_rgba(239,68,68,0.3)]">
+                      <div className="w-16 h-16 landscape:w-11 landscape:h-11 rounded-full border-2 landscape:border border-red-500 bg-gradient-to-b from-red-900/50 to-red-950 flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" className="w-8 h-8 landscape:w-5 landscape:h-5 text-red-500" fill="currentColor">
                           <path d="M12 2C11 2 10 3 10 4V8C10 8 8 8 8 10V12C8 12 6 12 6 14V20C6 21 7 22 8 22H16C17 22 18 21 18 20V14C18 12 16 12 16 12V10C16 8 14 8 14 8V4C14 3 13 2 12 2Z" />
                         </svg>
                       </div>
                     </div>
-                    {/* Animated particles */}
-                    <div className="absolute -top-1 left-1/2 w-1 h-3 bg-red-500 rounded-full animate-pulse" style={{ transform: 'translateX(-50%) rotate(-30deg)' }} />
-                    <div className="absolute -top-1 right-2 w-1 h-3 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s', transform: 'rotate(30deg)' }} />
-                    <div className="absolute -bottom-1 left-3 w-1 h-3 bg-cyan-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s', transform: 'rotate(-30deg)' }} />
-                    <div className="absolute -bottom-1 right-3 w-1 h-3 bg-cyan-400 rounded-full animate-pulse" style={{ animationDelay: '0.6s', transform: 'rotate(30deg)' }} />
+                    {/* Animated particles - hidden in landscape */}
+                    <div className="absolute -top-1 left-1/2 w-1 h-3 bg-red-500 rounded-full animate-pulse landscape:hidden" style={{ transform: 'translateX(-50%) rotate(-30deg)' }} />
+                    <div className="absolute -top-1 right-2 w-1 h-3 bg-red-500 rounded-full animate-pulse landscape:hidden" style={{ animationDelay: '0.2s', transform: 'rotate(30deg)' }} />
+                    <div className="absolute -bottom-1 left-3 w-1 h-3 bg-cyan-400 rounded-full animate-pulse landscape:hidden" style={{ animationDelay: '0.4s', transform: 'rotate(-30deg)' }} />
+                    <div className="absolute -bottom-1 right-3 w-1 h-3 bg-cyan-400 rounded-full animate-pulse landscape:hidden" style={{ animationDelay: '0.6s', transform: 'rotate(30deg)' }} />
                   </div>
 
                   {/* GPU Bars */}
                   <div className="flex flex-col items-center gap-1">
-                    <span className="text-xs text-white/70 mb-1">GPU</span>
+                    <span className="text-xs landscape:text-[10px] text-white/70 mb-1">GPU</span>
                     <div className="flex gap-0.5">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <div
                           key={i}
-                          className={`w-2 h-6 rounded-sm transition-all ${
+                          className={`w-2 h-6 landscape:w-1.5 landscape:h-4 rounded-sm transition-all ${
                             i < (macroMode === "gpu" || macroMode === "super" ? 5 : macroMode === "auto" ? 3 : 2)
                               ? "bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.5)]"
                               : "bg-slate-700"
@@ -1391,7 +1391,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 </div>
 
                 {/* Mode Buttons */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-2 gap-3 landscape:gap-1.5 mb-4 landscape:mb-2">
                   {[
                     { id: "auto", label: "Auto" },
                     { id: "gpu", label: "GPU Turbo" },
@@ -1404,7 +1404,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                         setMacroMode(mode.id as typeof macroMode);
                         toast.success(`${mode.label} Activated`);
                       }}
-                      className={`py-3 px-4 rounded-lg font-medium text-sm transition-all ${
+                      className={`py-3 px-4 landscape:py-1.5 landscape:px-2 rounded-lg font-medium text-sm landscape:text-[10px] transition-all ${
                         macroMode === mode.id
                           ? "bg-gradient-to-r from-red-600 to-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]"
                           : "bg-slate-700/80 text-white/80 hover:bg-slate-600/80"
@@ -1416,7 +1416,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 </div>
 
                 {/* Description */}
-                <p className="text-xs text-white/50 text-center">
+                <p className="text-xs landscape:text-[9px] text-white/50 text-center">
                   {macroMode === "auto" && "Automatically optimizes CPU and GPU for best performance"}
                   {macroMode === "gpu" && "Priority to use GPU core, 3D games for high quality images"}
                   {macroMode === "cpu" && "Priority to use CPU core for faster processing"}
@@ -1427,18 +1427,18 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
             {/* Display Tab Content */}
             {macroTab === "display" && (
-              <div className="space-y-4">
+              <div className="space-y-4 landscape:space-y-2">
                 {/* Resolution */}
-                <div className="space-y-2">
+                <div className="space-y-2 landscape:space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/80">Resolution</span>
-                    <span className="text-xs text-red-400">Auto</span>
+                    <span className="text-sm landscape:text-xs text-white/80">Resolution</span>
+                    <span className="text-xs landscape:text-[10px] text-red-400">Auto</span>
                   </div>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 gap-2 landscape:gap-1">
                     {["720p", "1080p", "Max"].map((res) => (
                       <button
                         key={res}
-                        className="py-2 px-3 rounded-lg text-xs font-medium bg-slate-700/80 text-white/80 hover:bg-slate-600/80 transition-all"
+                        className="py-2 px-3 landscape:py-1 landscape:px-2 rounded-lg text-xs landscape:text-[10px] font-medium bg-slate-700/80 text-white/80 hover:bg-slate-600/80 transition-all"
                       >
                         {res}
                       </button>
@@ -1447,16 +1447,16 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 </div>
 
                 {/* Frame Rate */}
-                <div className="space-y-2">
+                <div className="space-y-2 landscape:space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/80">Frame Rate</span>
-                    <span className="text-xs text-red-400">60 FPS</span>
+                    <span className="text-sm landscape:text-xs text-white/80">Frame Rate</span>
+                    <span className="text-xs landscape:text-[10px] text-red-400">60 FPS</span>
                   </div>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-4 gap-2 landscape:gap-1">
                     {["30", "60", "90", "120"].map((fps) => (
                       <button
                         key={fps}
-                        className={`py-2 px-3 rounded-lg text-xs font-medium transition-all ${
+                        className={`py-2 px-3 landscape:py-1 landscape:px-1.5 rounded-lg text-xs landscape:text-[10px] font-medium transition-all ${
                           fps === "60" 
                             ? "bg-gradient-to-r from-red-600 to-red-500 text-white" 
                             : "bg-slate-700/80 text-white/80 hover:bg-slate-600/80"
@@ -1469,18 +1469,18 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 </div>
 
                 {/* HDR */}
-                <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
-                  <span className="text-sm text-white/80">HDR Mode</span>
-                  <div className="w-10 h-5 rounded-full bg-slate-600 relative cursor-pointer">
-                    <div className="absolute left-0.5 top-0.5 w-4 h-4 rounded-full bg-white transition-all" />
+                <div className="flex items-center justify-between p-3 landscape:p-2 bg-slate-700/50 rounded-lg">
+                  <span className="text-sm landscape:text-xs text-white/80">HDR Mode</span>
+                  <div className="w-10 h-5 landscape:w-8 landscape:h-4 rounded-full bg-slate-600 relative cursor-pointer">
+                    <div className="absolute left-0.5 top-0.5 w-4 h-4 landscape:w-3 landscape:h-3 rounded-full bg-white transition-all" />
                   </div>
                 </div>
 
                 {/* Anti-Aliasing */}
-                <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
-                  <span className="text-sm text-white/80">Anti-Aliasing</span>
-                  <div className="w-10 h-5 rounded-full bg-red-500 relative cursor-pointer">
-                    <div className="absolute right-0.5 top-0.5 w-4 h-4 rounded-full bg-white transition-all" />
+                <div className="flex items-center justify-between p-3 landscape:p-2 bg-slate-700/50 rounded-lg">
+                  <span className="text-sm landscape:text-xs text-white/80">Anti-Aliasing</span>
+                  <div className="w-10 h-5 landscape:w-8 landscape:h-4 rounded-full bg-red-500 relative cursor-pointer">
+                    <div className="absolute right-0.5 top-0.5 w-4 h-4 landscape:w-3 landscape:h-3 rounded-full bg-white transition-all" />
                   </div>
                 </div>
               </div>
@@ -1488,48 +1488,48 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
             {/* Audio Tab Content */}
             {macroTab === "audio" && (
-              <div className="space-y-4">
+              <div className="space-y-4 landscape:space-y-2">
                 {/* Master Volume */}
-                <div className="space-y-2">
+                <div className="space-y-2 landscape:space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/80">Master Volume</span>
-                    <span className="text-xs text-red-400">80%</span>
+                    <span className="text-sm landscape:text-xs text-white/80">Master Volume</span>
+                    <span className="text-xs landscape:text-[10px] text-red-400">80%</span>
                   </div>
-                  <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                  <div className="h-2 landscape:h-1.5 bg-slate-700 rounded-full overflow-hidden">
                     <div className="h-full w-4/5 bg-gradient-to-r from-red-600 to-red-400 rounded-full" />
                   </div>
                 </div>
 
                 {/* Game Sound */}
-                <div className="space-y-2">
+                <div className="space-y-2 landscape:space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/80">Game Sound</span>
-                    <span className="text-xs text-red-400">100%</span>
+                    <span className="text-sm landscape:text-xs text-white/80">Game Sound</span>
+                    <span className="text-xs landscape:text-[10px] text-red-400">100%</span>
                   </div>
-                  <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                  <div className="h-2 landscape:h-1.5 bg-slate-700 rounded-full overflow-hidden">
                     <div className="h-full w-full bg-gradient-to-r from-red-600 to-red-400 rounded-full" />
                   </div>
                 </div>
 
                 {/* Voice Chat */}
-                <div className="space-y-2">
+                <div className="space-y-2 landscape:space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/80">Voice Chat</span>
-                    <span className="text-xs text-red-400">70%</span>
+                    <span className="text-sm landscape:text-xs text-white/80">Voice Chat</span>
+                    <span className="text-xs landscape:text-[10px] text-red-400">70%</span>
                   </div>
-                  <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                  <div className="h-2 landscape:h-1.5 bg-slate-700 rounded-full overflow-hidden">
                     <div className="h-full w-[70%] bg-gradient-to-r from-red-600 to-red-400 rounded-full" />
                   </div>
                 </div>
 
                 {/* Audio Presets */}
-                <div className="space-y-2">
-                  <span className="text-sm text-white/80">Audio Preset</span>
-                  <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-2 landscape:space-y-1">
+                  <span className="text-sm landscape:text-xs text-white/80">Audio Preset</span>
+                  <div className="grid grid-cols-2 gap-2 landscape:gap-1">
                     {["Gaming", "Music", "Movie", "Voice"].map((preset) => (
                       <button
                         key={preset}
-                        className={`py-2 px-3 rounded-lg text-xs font-medium transition-all ${
+                        className={`py-2 px-3 landscape:py-1 landscape:px-2 rounded-lg text-xs landscape:text-[10px] font-medium transition-all ${
                           preset === "Gaming" 
                             ? "bg-gradient-to-r from-red-600 to-red-500 text-white" 
                             : "bg-slate-700/80 text-white/80 hover:bg-slate-600/80"
@@ -1542,10 +1542,10 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 </div>
 
                 {/* Surround Sound */}
-                <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
-                  <span className="text-sm text-white/80">Surround Sound</span>
-                  <div className="w-10 h-5 rounded-full bg-red-500 relative cursor-pointer">
-                    <div className="absolute right-0.5 top-0.5 w-4 h-4 rounded-full bg-white transition-all" />
+                <div className="flex items-center justify-between p-3 landscape:p-2 bg-slate-700/50 rounded-lg">
+                  <span className="text-sm landscape:text-xs text-white/80">Surround Sound</span>
+                  <div className="w-10 h-5 landscape:w-8 landscape:h-4 rounded-full bg-red-500 relative cursor-pointer">
+                    <div className="absolute right-0.5 top-0.5 w-4 h-4 landscape:w-3 landscape:h-3 rounded-full bg-white transition-all" />
                   </div>
                 </div>
               </div>
