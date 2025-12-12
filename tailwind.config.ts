@@ -93,6 +93,10 @@ export default {
           "0%, 100%": { boxShadow: "0 0 20px hsl(188 100% 50% / 0.5)" },
           "50%": { boxShadow: "0 0 40px hsl(188 100% 50% / 0.8)" },
         },
+        "shimmer": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -103,6 +107,7 @@ export default {
         "boost": "boost 0.6s ease-out forwards",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
         "spin-slow": "spin 3s linear infinite",
+        "shimmer": "shimmer 1.5s infinite",
       },
       backgroundImage: {
         "gradient-space": "var(--gradient-space)",
