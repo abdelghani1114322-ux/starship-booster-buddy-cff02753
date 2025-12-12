@@ -81,6 +81,9 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [showGraphiqueSettings, setShowGraphiqueSettings] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<string>("none");
   const [filterEnabled, setFilterEnabled] = useState(false);
+  const [showMacro, setShowMacro] = useState(false);
+  const [macroTab, setMacroTab] = useState<"performance" | "display" | "audio">("performance");
+  const [macroMode, setMacroMode] = useState<"auto" | "gpu" | "cpu" | "super">("auto");
 
   // Apply filter effect to document
   useEffect(() => {
@@ -227,7 +230,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     { name: "Monitor", icon: Flame, action: () => setShowMonitor(true) },
     { name: "Aim\nAssistant", icon: Crosshair, action: () => setShowAimAssistant(true) },
     { name: "Tactic X", icon: Target, action: () => setShowTacticX(true) },
-    { name: "Macro", icon: Gamepad2 },
+    { name: "Macro", icon: Gamepad2, action: () => setShowMacro(true) },
     { name: "Sounds\nEqualizer", icon: Music, action: () => setShowEqualizer(true) },
     { name: "Graphique\nSettings", icon: Wind, action: () => setShowGraphiqueSettings(true) },
   ];
@@ -1289,8 +1292,139 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
         </div>
       )}
 
+      {/* Macro / Game Boost Overlay */}
+      {showMacro && (
+        <div 
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-background/80 backdrop-blur-sm"
+          onClick={() => setShowMacro(false)}
+        >
+          <div 
+            className="bg-gradient-to-b from-slate-900 to-slate-800 border-2 border-red-500/40 rounded-xl p-4 shadow-[0_0_40px_rgba(239,68,68,0.3)] w-[360px] max-w-[95vw] max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-white">Game Boost</h2>
+              <button 
+                onClick={() => setShowMacro(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
+              >
+                <X className="w-5 h-5 text-white/70" />
+              </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex justify-center gap-6 mb-6">
+              {[
+                { id: "performance", label: "Performance" },
+                { id: "display", label: "Display" },
+                { id: "audio", label: "Audio" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setMacroTab(tab.id as typeof macroTab)}
+                  className={`text-sm font-medium pb-1 border-b-2 transition-all ${
+                    macroTab === tab.id 
+                      ? "text-white border-red-500" 
+                      : "text-white/50 border-transparent hover:text-white/70"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Center Logo with CPU/GPU */}
+            <div className="flex items-center justify-center gap-4 mb-6">
+              {/* CPU Bars */}
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-xs text-white/70 mb-1">CPU</span>
+                <div className="flex gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={`w-2 h-6 rounded-sm transition-all ${
+                        i < (macroMode === "cpu" || macroMode === "super" ? 5 : macroMode === "auto" ? 3 : 2)
+                          ? "bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.5)]"
+                          : "bg-slate-700"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Center Logo */}
+              <div className="relative">
+                <div className="w-20 h-20 rounded-full border-4 border-red-500/50 bg-gradient-to-b from-slate-800 to-slate-900 flex items-center justify-center shadow-[0_0_30px_rgba(239,68,68,0.3)]">
+                  <div className="w-16 h-16 rounded-full border-2 border-red-500 bg-gradient-to-b from-red-900/50 to-red-950 flex items-center justify-center">
+                    <svg viewBox="0 0 24 24" className="w-8 h-8 text-red-500" fill="currentColor">
+                      <path d="M12 2C11 2 10 3 10 4V8C10 8 8 8 8 10V12C8 12 6 12 6 14V20C6 21 7 22 8 22H16C17 22 18 21 18 20V14C18 12 16 12 16 12V10C16 8 14 8 14 8V4C14 3 13 2 12 2Z" />
+                    </svg>
+                  </div>
+                </div>
+                {/* Animated particles */}
+                <div className="absolute -top-1 left-1/2 w-1 h-3 bg-red-500 rounded-full animate-pulse" style={{ transform: 'translateX(-50%) rotate(-30deg)' }} />
+                <div className="absolute -top-1 right-2 w-1 h-3 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s', transform: 'rotate(30deg)' }} />
+                <div className="absolute -bottom-1 left-3 w-1 h-3 bg-cyan-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s', transform: 'rotate(-30deg)' }} />
+                <div className="absolute -bottom-1 right-3 w-1 h-3 bg-cyan-400 rounded-full animate-pulse" style={{ animationDelay: '0.6s', transform: 'rotate(30deg)' }} />
+              </div>
+
+              {/* GPU Bars */}
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-xs text-white/70 mb-1">GPU</span>
+                <div className="flex gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={`w-2 h-6 rounded-sm transition-all ${
+                        i < (macroMode === "gpu" || macroMode === "super" ? 5 : macroMode === "auto" ? 3 : 2)
+                          ? "bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.5)]"
+                          : "bg-slate-700"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Mode Buttons */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              {[
+                { id: "auto", label: "Auto" },
+                { id: "gpu", label: "GPU Turbo" },
+                { id: "cpu", label: "CPU Turbo" },
+                { id: "super", label: "Super Mode" },
+              ].map((mode) => (
+                <button
+                  key={mode.id}
+                  onClick={() => {
+                    setMacroMode(mode.id as typeof macroMode);
+                    toast.success(`${mode.label} Activated`);
+                  }}
+                  className={`py-3 px-4 rounded-lg font-medium text-sm transition-all ${
+                    macroMode === mode.id
+                      ? "bg-gradient-to-r from-red-600 to-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]"
+                      : "bg-slate-700/80 text-white/80 hover:bg-slate-600/80"
+                  }`}
+                >
+                  {mode.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Description */}
+            <p className="text-xs text-white/50 text-center">
+              {macroMode === "auto" && "Automatically optimizes CPU and GPU for best performance"}
+              {macroMode === "gpu" && "Priority to use GPU core, 3D games for high quality images"}
+              {macroMode === "cpu" && "Priority to use CPU core for faster processing"}
+              {macroMode === "super" && "Maximum performance mode, uses all available resources"}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Floating Monitor Display - Shows enabled stats on screen */}
-      {monitorSettings.enabled && !showMonitor && !showGraphiqueSettings && !showAimAssistant && !showEqualizer && !showTacticX && (
+      {monitorSettings.enabled && !showMonitor && !showGraphiqueSettings && !showAimAssistant && !showEqualizer && !showTacticX && !showMacro && (
         <div className="fixed top-2 left-1/2 -translate-x-1/2 z-[150] bg-gradient-to-r from-slate-800/95 via-slate-700/95 to-slate-800/95 backdrop-blur-md rounded-lg px-3 py-2 border border-slate-600/50 shadow-lg">
           <div className="flex items-center gap-4 text-xs font-medium">
             {/* Move Icon */}
