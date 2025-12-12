@@ -626,30 +626,36 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             })}
           </div>
           
-          {/* Time and Battery */}
-          <div className="flex items-center justify-between px-6 py-3 landscape:px-2 landscape:py-1 bg-muted/30 border-b border-primary/20">
-            <div className="flex items-center gap-3 landscape:gap-1">
-              <span className="text-sm landscape:text-[10px] font-semibold">{currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
-              <div className="flex items-center gap-1">
-                <span className="text-xs landscape:text-[8px] text-muted-foreground">FPS</span>
-                <span className={`text-lg landscape:text-xs font-bold ${fps >= 100 ? "text-primary" : fps >= 60 ? "text-accent" : "text-destructive"}`}>
-                  {Math.round(fps)}
-                </span>
-              </div>
-            </div>
+          {/* Time and Battery - Matching reference style */}
+          <div className="flex items-center justify-center gap-4 landscape:gap-2 px-4 py-3 landscape:px-2 landscape:py-1.5 bg-black/40 border-b border-primary/20">
+            {/* Time */}
+            <span className="text-xl landscape:text-sm font-bold text-white tracking-wide">
+              {currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: false })}
+            </span>
+            
+            {/* Battery */}
             <div className="flex items-center gap-2 landscape:gap-1">
-              <div className="text-xs landscape:text-[8px] font-medium">{Math.round(batteryLevel)}%</div>
-              <div className="w-8 h-4 landscape:w-5 landscape:h-2.5 border-2 landscape:border border-primary rounded-sm relative overflow-hidden">
-                <div 
-                  className={`h-full transition-all ${isCharging ? 'bg-gradient-to-r from-primary to-accent animate-pulse' : 'bg-primary'}`}
-                  style={{ width: `${batteryLevel}%` }}
-                />
-                <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-1 h-2 bg-primary rounded-r landscape:hidden" />
+              {/* Battery icon container */}
+              <div className="relative flex items-center">
+                {/* Battery body */}
+                <div className="w-10 h-5 landscape:w-7 landscape:h-3.5 rounded-[4px] border-2 border-white/80 relative overflow-hidden">
+                  {/* Battery fill */}
+                  <div 
+                    className={`absolute inset-0.5 rounded-[2px] transition-all ${
+                      batteryLevel > 20 ? 'bg-green-500' : 'bg-red-500'
+                    }`}
+                    style={{ width: `${batteryLevel}%` }}
+                  />
+                </div>
+                {/* Battery tip */}
+                <div className="w-1 h-2.5 landscape:h-2 bg-white/80 rounded-r-sm ml-0.5" />
               </div>
-              {isCharging && <span className="text-[10px] landscape:text-[8px] text-accent">⚡</span>}
+              {/* Percentage */}
+              <span className="text-lg landscape:text-xs font-bold text-white">
+                {Math.round(batteryLevel)}%
+              </span>
             </div>
           </div>
-          
 
           <div className="flex-1 p-6 space-y-4 landscape:p-2 landscape:space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
             {/* CPU MHz Gauge */}
