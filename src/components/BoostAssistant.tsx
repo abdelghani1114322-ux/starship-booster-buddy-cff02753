@@ -641,20 +641,37 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             <div className="flex items-center gap-2 landscape:gap-1">
               <div className="relative flex items-center">
                 {/* Battery body */}
-                <div className="w-8 h-4 landscape:w-6 landscape:h-3 rounded-[3px] border-2 border-white/70 relative overflow-hidden">
+                <div className={`w-8 h-4 landscape:w-6 landscape:h-3 rounded-[3px] border-2 relative overflow-hidden transition-all ${
+                  isCharging ? 'border-green-400 shadow-[0_0_8px_rgba(74,222,128,0.6)]' : 'border-white/70'
+                }`}>
                   {/* Battery fill */}
                   <div 
                     className={`absolute inset-0.5 rounded-[1px] transition-all ${
                       batteryLevel > 20 ? 'bg-green-500' : 'bg-red-500'
-                    } ${isCharging ? 'animate-pulse' : ''}`}
+                    }`}
                     style={{ width: `${batteryLevel}%` }}
                   />
+                  {/* Charging wave animation overlay */}
+                  {isCharging && (
+                    <div className="absolute inset-0 overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-[shimmer_1.5s_infinite]" 
+                        style={{ 
+                          animation: 'shimmer 1.5s infinite',
+                          backgroundSize: '200% 100%'
+                        }} 
+                      />
+                    </div>
+                  )}
                 </div>
                 {/* Battery tip */}
-                <div className="w-0.5 h-2 landscape:h-1.5 bg-white/70 rounded-r-sm" />
+                <div className={`w-0.5 h-2 landscape:h-1.5 rounded-r-sm transition-all ${
+                  isCharging ? 'bg-green-400' : 'bg-white/70'
+                }`} />
               </div>
-              <span className="text-xs landscape:text-[8px] font-medium text-white">{Math.round(batteryLevel)}%</span>
-              {isCharging && <span className="text-[10px] landscape:text-[8px] text-green-400">⚡</span>}
+              <span className={`text-xs landscape:text-[8px] font-medium ${isCharging ? 'text-green-400' : 'text-white'}`}>
+                {Math.round(batteryLevel)}%
+              </span>
+              {isCharging && <span className="text-sm landscape:text-[10px] text-green-400 animate-pulse">⚡</span>}
             </div>
           </div>
           
