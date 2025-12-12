@@ -592,7 +592,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     <>
       {/* LEFT PANEL - CPU, GPU, Modes */}
       <div 
-        className="fixed left-0 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px] max-h-[calc(100vh-2rem)] landscape:top-0 landscape:bottom-0 landscape:translate-y-0 landscape:h-auto landscape:w-[160px]"
+        className="fixed left-0 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px] max-h-[calc(100vh-2rem)] landscape:top-1/2 landscape:-translate-y-1/2 landscape:h-[90vh] landscape:max-h-[90vh] landscape:w-[200px]"
         onClick={(e) => e.stopPropagation()}
       >
         <Card className="h-full bg-gradient-to-b from-card/95 to-card/90 backdrop-blur-xl border-2 border-primary/40 shadow-[0_0_40px_rgba(16,185,129,0.3)] p-0 flex flex-col overflow-hidden relative select-none">
@@ -784,7 +784,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
       {/* RIGHT PANEL - RAM, FPS, Gaming Info */}
       <div 
-        className="fixed right-0 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px] max-h-[calc(100vh-2rem)] landscape:top-0 landscape:bottom-0 landscape:translate-y-0 landscape:h-auto landscape:w-[160px]"
+        className="fixed right-0 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px] max-h-[calc(100vh-2rem)] landscape:top-1/2 landscape:-translate-y-1/2 landscape:h-[90vh] landscape:max-h-[90vh] landscape:w-[200px]"
         onClick={(e) => e.stopPropagation()}
       >
         <Card className="h-full bg-gradient-to-b from-card/95 to-card/90 backdrop-blur-xl border-2 border-accent/40 shadow-[0_0_40px_rgba(59,130,246,0.3)] p-0 flex flex-col overflow-hidden relative select-none">
