@@ -1311,7 +1311,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 <div className="w-6 h-6 rounded border border-slate-500/70 bg-slate-800/80 flex items-center justify-center">
                   <span className="text-[8px] font-bold text-cyan-400">CPU</span>
                 </div>
-                <span className="text-white/90">{cpuUsage} %</span>
+                <span className="text-white/90">{Math.round(cpuUsage)} %</span>
               </div>
             )}
 
@@ -1321,7 +1321,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 <div className="w-7 h-6 rounded border border-slate-500/70 bg-slate-800/80 flex items-center justify-center">
                   <span className="text-[8px] font-bold text-cyan-400">RAM</span>
                 </div>
-                <span className="text-white/90">{ramUsage} %</span>
+                <span className="text-white/90">{Math.round(ramUsage)} %</span>
               </div>
             )}
 
@@ -1355,7 +1355,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                     <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
                   </svg>
                 </div>
-                <span className="text-white/90">{cpuTemp} °C</span>
+                <span className="text-white/90">{Math.round(cpuTemp)} °C</span>
               </div>
             )}
 
@@ -1365,7 +1365,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 <div className="w-7 h-6 rounded border border-slate-500/70 bg-slate-800/80 flex items-center justify-center">
                   <span className="text-[8px] font-bold text-cyan-400">FPS</span>
                 </div>
-                <span className="text-white/90">{fps}</span>
+                <span className="text-white/90">{Math.round(fps)}</span>
               </div>
             )}
 
