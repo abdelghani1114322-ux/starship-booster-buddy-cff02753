@@ -233,6 +233,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   ];
 
   const graphiqueFilters = [
+    { id: "none", name: "None", description: "No filter applied" },
     { id: "hunter", name: "Hunter", description: "Enhanced contrast for clear vision" },
     { id: "nightvision", name: "Night Vision", description: "For scene exploration" },
     { id: "eagleeye", name: "Eagle Eye", description: "Enhanced enemy recognition" },
@@ -1262,6 +1263,70 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
         </div>
       )}
 
+      {/* Floating Monitor Display - Shows enabled stats on screen */}
+      {monitorSettings.enabled && !showMonitor && !showGraphiqueSettings && !showAimAssistant && !showEqualizer && !showTacticX && (
+        <div className="fixed top-2 left-2 z-[150] bg-black/80 backdrop-blur-sm rounded-lg p-2 border border-primary/30 shadow-lg">
+          <div className="flex flex-col gap-1 text-[10px] font-mono">
+            {monitorSettings.cpuUsage && (
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">CPU:</span>
+                <span className={`font-bold ${cpuUsage > 80 ? "text-red-400" : cpuUsage > 50 ? "text-yellow-400" : "text-green-400"}`}>
+                  {cpuUsage}%
+                </span>
+              </div>
+            )}
+            {monitorSettings.gpuUsage && (
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">GPU:</span>
+                <span className={`font-bold ${gpuUsage > 80 ? "text-red-400" : gpuUsage > 50 ? "text-yellow-400" : "text-green-400"}`}>
+                  {gpuUsage}%
+                </span>
+              </div>
+            )}
+            {monitorSettings.ramUsage && (
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">RAM:</span>
+                <span className={`font-bold ${ramUsage > 80 ? "text-red-400" : ramUsage > 50 ? "text-yellow-400" : "text-green-400"}`}>
+                  {ramUsage}%
+                </span>
+              </div>
+            )}
+            {monitorSettings.batteryInfo && (
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">BAT:</span>
+                <span className={`font-bold ${isCharging ? "text-green-400" : batteryLevel < 20 ? "text-red-400" : "text-white"}`}>
+                  {batteryLevel}%{isCharging ? "⚡" : ""}
+                </span>
+              </div>
+            )}
+            {monitorSettings.tempInfo && (
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">TEMP:</span>
+                <span className={`font-bold ${cpuTemp > 75 ? "text-red-400" : cpuTemp > 60 ? "text-yellow-400" : "text-green-400"}`}>
+                  {cpuTemp}°C
+                </span>
+              </div>
+            )}
+            {monitorSettings.fpsInfo && (
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">FPS:</span>
+                <span className={`font-bold ${fps >= 55 ? "text-green-400" : fps >= 30 ? "text-yellow-400" : "text-red-400"}`}>
+                  {fps}
+                </span>
+              </div>
+            )}
+            {monitorSettings.timeInfo && (
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">TIME:</span>
+                <span className="font-bold text-white">
+                  {currentTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Monitor Info Overlay */}
       {showMonitor && (
         <div 
@@ -1492,8 +1557,13 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                   key={filter.id}
                   onClick={() => {
                     setSelectedFilter(filter.id);
-                    if (!filterEnabled) setFilterEnabled(true);
-                    toast.success(`${filter.name} filter applied`);
+                    if (filter.id === "none") {
+                      setFilterEnabled(false);
+                      toast.success("Filter disabled");
+                    } else {
+                      if (!filterEnabled) setFilterEnabled(true);
+                      toast.success(`${filter.name} filter applied`);
+                    }
                   }}
                   className={`w-full flex items-center gap-2 p-1.5 rounded-lg transition-all ${
                     selectedFilter === filter.id 
@@ -1502,18 +1572,24 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                   }`}
                 >
                   {/* Filter thumbnail */}
-                  <img 
-                    src={
-                      filter.id === "hunter" ? filterHunter :
-                      filter.id === "nightvision" ? filterNightvision :
-                      filter.id === "eagleeye" ? filterEagleeye :
-                      filter.id === "ultraclear" ? filterUltraclear :
-                      filter.id === "pure" ? filterPure :
-                      filterCyberpunk
-                    }
-                    alt={filter.name}
-                    className="w-12 h-7 rounded object-cover flex-shrink-0"
-                  />
+                  {filter.id === "none" ? (
+                    <div className="w-12 h-7 rounded bg-muted/50 flex items-center justify-center flex-shrink-0 border border-border/30">
+                      <X className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                  ) : (
+                    <img 
+                      src={
+                        filter.id === "hunter" ? filterHunter :
+                        filter.id === "nightvision" ? filterNightvision :
+                        filter.id === "eagleeye" ? filterEagleeye :
+                        filter.id === "ultraclear" ? filterUltraclear :
+                        filter.id === "pure" ? filterPure :
+                        filterCyberpunk
+                      }
+                      alt={filter.name}
+                      className="w-12 h-7 rounded object-cover flex-shrink-0"
+                    />
+                  )}
                   {/* Filter info */}
                   <div className="text-left flex-1 min-w-0">
                     <div className={`text-[11px] font-medium ${selectedFilter === filter.id ? "text-red-400" : "text-foreground"}`}>
