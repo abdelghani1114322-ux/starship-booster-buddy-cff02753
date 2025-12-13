@@ -592,7 +592,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     <>
       {/* LEFT PANEL - CPU, GPU, Modes */}
       <div 
-        className={`fixed left-0 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px] max-h-[calc(100vh-2rem)] landscape:top-1/2 landscape:-translate-y-1/2 landscape:h-[95vh] landscape:max-h-[95vh] landscape:w-[220px] transition-all duration-300 ease-out ${
+        className={`fixed left-0 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px] max-h-[calc(100vh-2rem)] landscape:top-1/2 landscape:-translate-y-1/2 landscape:h-[95vh] landscape:max-h-[95vh] landscape:w-[260px] transition-all duration-300 ease-out ${
           isVisible ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0 pointer-events-none'
         }`}
         onClick={(e) => e.stopPropagation()}
@@ -786,7 +786,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
       {/* RIGHT PANEL - RAM, FPS, Gaming Info */}
       <div 
-        className={`fixed right-0 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px] max-h-[calc(100vh-2rem)] landscape:top-1/2 landscape:-translate-y-1/2 landscape:h-[95vh] landscape:max-h-[95vh] landscape:w-[220px] transition-all duration-300 ease-out ${
+        className={`fixed right-0 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px] max-h-[calc(100vh-2rem)] landscape:top-1/2 landscape:-translate-y-1/2 landscape:h-[95vh] landscape:max-h-[95vh] landscape:w-[260px] transition-all duration-300 ease-out ${
           isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'
         }`}
         onClick={(e) => e.stopPropagation()}
