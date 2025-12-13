@@ -20,7 +20,8 @@ import filterPure from "@/assets/filter-pure.jpg";
 import filterCyberpunk from "@/assets/filter-cyberpunk.jpg";
 import beyondCpu from "@/assets/beyond_cpu.png";
 import beyondGpu from "@/assets/beyond_gpu.png";
-
+import fanOff from "@/assets/fan_off.png";
+import fanOn from "@/assets/fan_on.png";
 interface BoostAssistantProps {
   cpuUsage: number;
   ramUsage: number;
@@ -35,6 +36,7 @@ interface BoostAssistantProps {
 
 export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceMode, isVisible, wifiEnabled, setWifiEnabled, setPerformanceMode }: BoostAssistantProps) => {
   const [fanMode, setFanMode] = useState<"auto" | "max">("auto");
+  const [fanActive, setFanActive] = useState(false);
   const [diabloMode, setDiabloMode] = useState(false);
   const [cpuTemp, setCpuTemp] = useState(65);
   const [gpuTemp, setGpuTemp] = useState(58);
@@ -688,13 +690,28 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
           {/* Mode Buttons */}
           <div className="p-4 space-y-2 landscape:p-1.5 landscape:space-y-1 bg-muted/20 border-t border-primary/20">
+            {/* Fan Button with Image */}
+            <div className="flex items-center justify-center gap-4">
+              <button
+                onClick={() => setFanActive(!fanActive)}
+                className="w-12 h-12 landscape:w-8 landscape:h-8 rounded-lg bg-muted/30 border border-primary/30 flex items-center justify-center hover:bg-muted/50 transition-all"
+              >
+                <img 
+                  src={fanActive ? fanOn : fanOff} 
+                  alt="Fan" 
+                  className={`w-8 h-8 landscape:w-6 landscape:h-6 ${fanActive ? 'animate-spin' : ''}`}
+                  style={{ animationDuration: '1s' }}
+                />
+              </button>
+              <span className="text-xs font-medium">{fanActive ? 'Fan ON' : 'Fan OFF'}</span>
+            </div>
             <Button
               variant={fanMode === "max" ? "default" : "outline"}
               className="w-full landscape:h-6 landscape:text-[10px]"
               onClick={toggleFanMode}
             >
               <Wind className="w-4 h-4 mr-2 landscape:w-3 landscape:h-3 landscape:mr-1" />
-              Fan: {fanMode.toUpperCase()}
+              Fan Mode: {fanMode.toUpperCase()}
             </Button>
             <Button
               variant={diabloMode ? "default" : "outline"}
