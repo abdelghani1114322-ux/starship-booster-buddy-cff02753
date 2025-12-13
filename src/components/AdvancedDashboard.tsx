@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { X, Home, Zap, Grid3X3 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, Home, Zap, Grid3X3, Plus, Music, Users } from "lucide-react";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import pubgIcon from "@/assets/pubg-icon.png";
@@ -23,6 +23,21 @@ const apps = [
 export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   const [activeTab, setActiveTab] = useState<"lobby" | "superbase">("lobby");
   const [appList, setAppList] = useState(apps);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [batteryLevel, setBatteryLevel] = useState(88);
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    if ('getBattery' in navigator) {
+      (navigator as any).getBattery().then((battery: any) => {
+        setBatteryLevel(Math.round(battery.level * 100));
+      });
+    }
+  }, []);
 
   const toggleBoost = (id: number) => {
     setAppList(prev => 
@@ -38,168 +53,325 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-background flex flex-col">
+    <div className="fixed inset-0 z-50 bg-black overflow-hidden">
+      {/* Tech Background Pattern */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-0 left-0 w-1/3 h-1/2 border-r border-b border-red-900/50" />
+        <div className="absolute top-0 right-0 w-1/3 h-1/2 border-l border-b border-red-900/50" />
+        <div className="absolute bottom-0 left-0 w-1/3 h-1/3 border-r border-t border-red-900/50" />
+        <div className="absolute bottom-0 right-0 w-1/3 h-1/3 border-l border-t border-red-900/50" />
+        {/* Diagonal lines */}
+        <svg className="absolute inset-0 w-full h-full">
+          <line x1="0" y1="50%" x2="25%" y2="30%" stroke="rgba(127, 29, 29, 0.3)" strokeWidth="2" />
+          <line x1="100%" y1="50%" x2="75%" y2="30%" stroke="rgba(127, 29, 29, 0.3)" strokeWidth="2" />
+          <line x1="0" y1="50%" x2="25%" y2="70%" stroke="rgba(127, 29, 29, 0.3)" strokeWidth="2" />
+          <line x1="100%" y1="50%" x2="75%" y2="70%" stroke="rgba(127, 29, 29, 0.3)" strokeWidth="2" />
+          {/* Horizontal accent lines */}
+          <line x1="0" y1="50%" x2="30%" y2="50%" stroke="rgba(220, 38, 38, 0.4)" strokeWidth="1" />
+          <line x1="70%" y1="50%" x2="100%" y2="50%" stroke="rgba(220, 38, 38, 0.4)" strokeWidth="1" />
+        </svg>
+      </div>
+
+      {/* Corner Tech Elements */}
+      <div className="absolute top-4 left-4 w-16 h-16 border-l-2 border-t-2 border-red-800/50" />
+      <div className="absolute top-4 right-4 w-16 h-16 border-r-2 border-t-2 border-red-800/50" />
+      <div className="absolute bottom-20 left-4 w-16 h-16 border-l-2 border-b-2 border-red-800/50" />
+      <div className="absolute bottom-20 right-4 w-16 h-16 border-r-2 border-b-2 border-red-800/50" />
+
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-card/80 backdrop-blur">
-        <h1 className="text-xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
-          GAME SPACE
+      <div className="relative flex items-center justify-between px-6 py-3 z-10">
+        <h1 className="text-xl font-bold tracking-[0.3em] text-white/90" style={{ fontFamily: 'system-ui' }}>
+          REDMAGIC
         </h1>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-muted-foreground">Advanced Mode</span>
-          <Button
-            variant="ghost"
-            size="icon"
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium text-white/80">
+            {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+          </span>
+          <div className="flex items-center gap-1">
+            <div className="w-6 h-3 rounded-sm border border-green-500 relative overflow-hidden">
+              <div className="absolute inset-0.5 bg-green-500" style={{ width: `${batteryLevel}%` }} />
+            </div>
+            <span className="text-xs text-white/70">{batteryLevel}%</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+            <Zap className="w-4 h-4 text-white/70" />
+          </button>
+          <button className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+            <Grid3X3 className="w-4 h-4 text-white/70" />
+          </button>
+          <button className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+            <Music className="w-4 h-4 text-white/70" />
+          </button>
+          <button 
             onClick={onClose}
-            className="rounded-full hover:bg-destructive/20"
+            className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-red-500/30 transition-colors"
           >
-            <X className="w-6 h-6" />
-          </Button>
+            <X className="w-4 h-4 text-white/70" />
+          </button>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto p-6">
+      <div className="relative flex-1 flex items-center justify-center h-[calc(100vh-140px)]">
         {activeTab === "lobby" ? (
-          <div className="space-y-6">
-            {/* Center Logo/Emblem */}
-            <div className="flex justify-center py-8">
-              <div className="relative w-48 h-48">
-                {/* Outer rings */}
-                <svg className="absolute inset-0 w-full h-full animate-spin-slow" viewBox="0 0 200 200" style={{ animationDuration: '20s' }}>
-                  <circle cx="100" cy="100" r="95" fill="none" stroke="hsl(var(--destructive))" strokeWidth="1" opacity="0.3" />
-                  <circle cx="100" cy="100" r="85" fill="none" stroke="hsl(var(--destructive))" strokeWidth="2" opacity="0.5" strokeDasharray="10 5" />
-                  <circle cx="100" cy="100" r="75" fill="none" stroke="hsl(var(--destructive))" strokeWidth="1" opacity="0.4" />
-                </svg>
-                {/* Inner glow */}
-                <div className="absolute inset-8 rounded-full bg-gradient-to-br from-red-900/50 to-black flex items-center justify-center border border-red-500/30 shadow-[0_0_40px_rgba(239,68,68,0.3)]">
-                  <Zap className="w-16 h-16 text-destructive animate-pulse" />
+          <>
+            {/* Central Circular Design */}
+            <div className="relative w-72 h-72 md:w-96 md:h-96">
+              {/* Outermost ring with tick marks */}
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 400">
+                <defs>
+                  <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#4a1515" />
+                    <stop offset="50%" stopColor="#7f1d1d" />
+                    <stop offset="100%" stopColor="#4a1515" />
+                  </linearGradient>
+                </defs>
+                {/* Outer decorative circle */}
+                <circle cx="200" cy="200" r="195" fill="none" stroke="#1f1f1f" strokeWidth="8" />
+                {/* Tick marks around the circle */}
+                {Array.from({ length: 60 }).map((_, i) => {
+                  const angle = (i * 6 - 90) * (Math.PI / 180);
+                  const x1 = 200 + 185 * Math.cos(angle);
+                  const y1 = 200 + 185 * Math.sin(angle);
+                  const x2 = 200 + (i % 5 === 0 ? 175 : 180) * Math.cos(angle);
+                  const y2 = 200 + (i % 5 === 0 ? 175 : 180) * Math.sin(angle);
+                  return (
+                    <line
+                      key={i}
+                      x1={x1}
+                      y1={y1}
+                      x2={x2}
+                      y2={y2}
+                      stroke={i % 5 === 0 ? "#4a1515" : "#2a2a2a"}
+                      strokeWidth={i % 5 === 0 ? 2 : 1}
+                    />
+                  );
+                })}
+                {/* Main ring */}
+                <circle cx="200" cy="200" r="165" fill="none" stroke="url(#ringGrad)" strokeWidth="12" />
+                {/* Inner ring */}
+                <circle cx="200" cy="200" r="145" fill="none" stroke="#2a1a1a" strokeWidth="3" />
+                {/* Tech detail arcs */}
+                <path
+                  d="M 200 60 A 140 140 0 0 1 340 200"
+                  fill="none"
+                  stroke="#3d1515"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M 60 200 A 140 140 0 0 1 200 340"
+                  fill="none"
+                  stroke="#3d1515"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                />
+                {/* Corner brackets */}
+                <rect x="85" y="85" width="20" height="6" rx="2" fill="#4a4a4a" transform="rotate(45 95 88)" />
+                <rect x="295" y="85" width="20" height="6" rx="2" fill="#4a4a4a" transform="rotate(-45 305 88)" />
+                <rect x="85" y="309" width="20" height="6" rx="2" fill="#4a4a4a" transform="rotate(-45 95 312)" />
+                <rect x="295" y="309" width="20" height="6" rx="2" fill="#4a4a4a" transform="rotate(45 305 312)" />
+              </svg>
+
+              {/* Inner circle with grid pattern */}
+              <div className="absolute inset-[15%] rounded-full bg-gradient-to-br from-[#1a0a0a] via-[#2d1010] to-[#1a0a0a] border-2 border-red-900/40 overflow-hidden">
+                {/* Grid pattern overlay */}
+                <div 
+                  className="absolute inset-0 opacity-30"
+                  style={{
+                    backgroundImage: `
+                      linear-gradient(rgba(127,29,29,0.3) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(127,29,29,0.3) 1px, transparent 1px)
+                    `,
+                    backgroundSize: '20px 20px'
+                  }}
+                />
+                {/* Radial glow */}
+                <div className="absolute inset-0 bg-gradient-radial from-red-900/20 via-transparent to-transparent" />
+              </div>
+
+              {/* Center Logo */}
+              <div className="absolute inset-[25%] flex items-center justify-center">
+                <div className="relative">
+                  {/* Glowing logo */}
+                  <svg viewBox="0 0 60 80" className="w-16 h-20 md:w-20 md:h-24">
+                    <defs>
+                      <linearGradient id="logoGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#ef4444" />
+                        <stop offset="100%" stopColor="#7f1d1d" />
+                      </linearGradient>
+                      <filter id="glow">
+                        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                        <feMerge>
+                          <feMergeNode in="coloredBlur"/>
+                          <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                      </filter>
+                    </defs>
+                    {/* Trident shape */}
+                    <path
+                      d="M30 0 L30 80 M15 15 L15 50 M45 15 L45 50 M8 25 L8 40 M52 25 L52 40"
+                      stroke="url(#logoGrad)"
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                      fill="none"
+                      filter="url(#glow)"
+                    />
+                  </svg>
                 </div>
               </div>
             </div>
 
-            {/* Apps Grid */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <Grid3X3 className="w-5 h-5 text-destructive" />
-                My Apps
-              </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                {appList.map((app) => (
-                  <div
+            {/* Apps floating around - only visible when no app selected */}
+            <div className="absolute bottom-32 left-8 hidden md:block">
+              <div className="grid grid-cols-1 gap-2">
+                {appList.slice(0, 2).map((app) => (
+                  <button
                     key={app.id}
-                    className={`relative p-4 rounded-xl border transition-all cursor-pointer ${
-                      app.boosted
-                        ? "bg-destructive/10 border-destructive shadow-[0_0_15px_rgba(239,68,68,0.3)]"
-                        : "bg-card/60 border-border hover:border-destructive/50"
-                    }`}
                     onClick={() => toggleBoost(app.id)}
+                    className={`w-12 h-12 rounded-xl transition-all ${
+                      app.boosted ? 'bg-red-500/30 ring-2 ring-red-500' : 'bg-white/5 hover:bg-white/10'
+                    }`}
                   >
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="relative">
-                        <img
-                          src={app.icon}
-                          alt={app.name}
-                          className="w-12 h-12 rounded-lg object-cover"
-                        />
-                        {app.boosted && (
-                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-destructive rounded-full flex items-center justify-center">
-                            <Zap className="w-2.5 h-2.5 text-white" />
-                          </div>
-                        )}
-                      </div>
-                      <span className="text-xs font-medium text-center truncate w-full">
-                        {app.name}
-                      </span>
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                        app.boosted
-                          ? "bg-destructive/20 text-destructive"
-                          : "bg-muted text-muted-foreground"
-                      }`}>
-                        {app.boosted ? "Boosted" : "Tap to Boost"}
-                      </span>
-                    </div>
-                  </div>
+                    <img src={app.icon} alt={app.name} className="w-8 h-8 mx-auto rounded-lg" />
+                  </button>
                 ))}
               </div>
             </div>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {/* Super Base Content */}
-            <div className="flex justify-center py-8">
-              <div className="text-center space-y-4">
-                <div className="w-24 h-24 mx-auto rounded-2xl bg-gradient-to-br from-red-500/20 to-orange-500/20 border border-destructive/30 flex items-center justify-center">
-                  <Zap className="w-12 h-12 text-destructive" />
-                </div>
-                <h2 className="text-xl font-bold">Super Base</h2>
-                <p className="text-sm text-muted-foreground max-w-md">
-                  Advanced performance tuning and system optimization settings
-                </p>
+
+            <div className="absolute bottom-32 right-8 hidden md:block">
+              <div className="grid grid-cols-1 gap-2">
+                {appList.slice(2, 4).map((app) => (
+                  <button
+                    key={app.id}
+                    onClick={() => toggleBoost(app.id)}
+                    className={`w-12 h-12 rounded-xl transition-all ${
+                      app.boosted ? 'bg-red-500/30 ring-2 ring-red-500' : 'bg-white/5 hover:bg-white/10'
+                    }`}
+                  >
+                    <img src={app.icon} alt={app.name} className="w-8 h-8 mx-auto rounded-lg" />
+                  </button>
+                ))}
               </div>
             </div>
+          </>
+        ) : (
+          <div className="space-y-6 px-6 w-full max-w-2xl">
+            {/* Apps Grid for Super Base */}
+            <h2 className="text-lg font-semibold text-white/90 flex items-center gap-2">
+              <Grid3X3 className="w-5 h-5 text-red-500" />
+              Boost Your Apps
+            </h2>
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
+              {appList.map((app) => (
+                <button
+                  key={app.id}
+                  onClick={() => toggleBoost(app.id)}
+                  className={`relative p-4 rounded-xl border transition-all ${
+                    app.boosted
+                      ? "bg-red-500/20 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]"
+                      : "bg-white/5 border-white/10 hover:border-red-500/50"
+                  }`}
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <img
+                      src={app.icon}
+                      alt={app.name}
+                      className="w-10 h-10 rounded-lg object-cover"
+                    />
+                    <span className="text-[10px] text-white/70 truncate w-full text-center">
+                      {app.name}
+                    </span>
+                    {app.boosted && (
+                      <Zap className="absolute top-1 right-1 w-3 h-3 text-red-500" />
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
 
-            {/* Quick Boost Actions */}
-            <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+            {/* Quick Actions */}
+            <div className="grid grid-cols-4 gap-3 mt-8">
               <Button
-                variant="outline"
-                className="h-20 flex-col gap-2 border-destructive/30 hover:bg-destructive/10"
-                onClick={() => toast.success("RAM Cleared!")}
+                variant="ghost"
+                className="h-16 flex-col gap-1 bg-white/5 hover:bg-red-500/20 border border-white/10"
+                onClick={() => toast.success("All Apps Boosted!")}
               >
-                <span className="text-2xl">🚀</span>
-                <span className="text-xs">Boost All</span>
+                <Zap className="w-5 h-5 text-red-500" />
+                <span className="text-[10px] text-white/70">Boost All</span>
               </Button>
               <Button
-                variant="outline"
-                className="h-20 flex-col gap-2 border-destructive/30 hover:bg-destructive/10"
+                variant="ghost"
+                className="h-16 flex-col gap-1 bg-white/5 hover:bg-red-500/20 border border-white/10"
                 onClick={() => toast.success("Cache Cleared!")}
               >
-                <span className="text-2xl">🧹</span>
-                <span className="text-xs">Clear Cache</span>
+                <span className="text-lg">🧹</span>
+                <span className="text-[10px] text-white/70">Clear</span>
               </Button>
               <Button
-                variant="outline"
-                className="h-20 flex-col gap-2 border-destructive/30 hover:bg-destructive/10"
-                onClick={() => toast.success("Memory Optimized!")}
+                variant="ghost"
+                className="h-16 flex-col gap-1 bg-white/5 hover:bg-red-500/20 border border-white/10"
+                onClick={() => toast.success("RAM Optimized!")}
               >
-                <span className="text-2xl">💾</span>
-                <span className="text-xs">Optimize RAM</span>
+                <span className="text-lg">💾</span>
+                <span className="text-[10px] text-white/70">RAM</span>
               </Button>
               <Button
-                variant="outline"
-                className="h-20 flex-col gap-2 border-destructive/30 hover:bg-destructive/10"
-                onClick={() => toast.success("GPU Turbo Enabled!")}
+                variant="ghost"
+                className="h-16 flex-col gap-1 bg-white/5 hover:bg-red-500/20 border border-white/10"
+                onClick={() => toast.success("GPU Turbo!")}
               >
-                <span className="text-2xl">⚡</span>
-                <span className="text-xs">GPU Turbo</span>
+                <span className="text-lg">⚡</span>
+                <span className="text-[10px] text-white/70">GPU</span>
               </Button>
             </div>
           </div>
         )}
       </div>
 
+      {/* Plus Button - Bottom Left */}
+      <button className="absolute bottom-24 left-6 w-14 h-14 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors">
+        <Plus className="w-6 h-6 text-white/70" />
+      </button>
+
+      {/* Right Side Icons */}
+      <div className="absolute bottom-24 right-6 flex gap-2">
+        <button className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10">
+          <Grid3X3 className="w-5 h-5 text-white/50" />
+        </button>
+        <button className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10">
+          <Music className="w-5 h-5 text-white/50" />
+        </button>
+        <button className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10">
+          <Users className="w-5 h-5 text-white/50" />
+        </button>
+      </div>
+
       {/* Bottom Tab Navigation */}
-      <div className="flex items-center justify-center gap-2 p-4 border-t border-border bg-card/80 backdrop-blur">
+      <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-1 p-4 bg-gradient-to-t from-black via-black/80 to-transparent">
         <button
           onClick={() => setActiveTab("lobby")}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all ${
+          className={`flex items-center gap-2 px-8 py-3 rounded-xl transition-all ${
             activeTab === "lobby"
-              ? "bg-gradient-to-r from-red-500/20 to-red-600/20 border border-destructive text-foreground"
-              : "bg-muted/30 border border-border text-muted-foreground hover:text-foreground"
+              ? "bg-gradient-to-r from-red-900/60 to-red-800/40 border border-red-500/50 text-white shadow-[0_0_20px_rgba(239,68,68,0.2)]"
+              : "bg-white/5 border border-white/10 text-white/60 hover:text-white"
           }`}
         >
           <Home className="w-5 h-5" />
-          <span className="font-medium">Game Lobby</span>
+          <span className="font-medium text-sm">Game Lobby</span>
         </button>
         <button
           onClick={() => setActiveTab("superbase")}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all ${
+          className={`flex items-center gap-2 px-8 py-3 rounded-xl transition-all ${
             activeTab === "superbase"
-              ? "bg-gradient-to-r from-red-500/20 to-red-600/20 border border-destructive text-foreground"
-              : "bg-muted/30 border border-border text-muted-foreground hover:text-foreground"
+              ? "bg-gradient-to-r from-red-900/60 to-red-800/40 border border-red-500/50 text-white shadow-[0_0_20px_rgba(239,68,68,0.2)]"
+              : "bg-white/5 border border-white/10 text-white/60 hover:text-white"
           }`}
         >
           <Zap className="w-5 h-5" />
-          <span className="font-medium">Super Base</span>
+          <span className="font-medium text-sm">Super Base</span>
         </button>
       </div>
     </div>
