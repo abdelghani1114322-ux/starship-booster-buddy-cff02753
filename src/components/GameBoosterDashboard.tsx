@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Zap, Cpu, MemoryStick, Gauge, Monitor, Settings, TrendingUp, PanelLeftOpen, Battery, Grid3X3, X, HardDrive, Thermometer, Clock } from "lucide-react";
 import { BoostAssistant } from "./BoostAssistant";
+import { AdvancedDashboard } from "./AdvancedDashboard";
 import { toast } from "sonner";
 import wifiOn from "@/assets/wifi-on.webp";
 import wifiOff from "@/assets/wifi-off.webp";
@@ -20,6 +21,7 @@ export const GameBoosterDashboard = () => {
   const [showPanels, setShowPanels] = useState(false);
   const [wifiEnabled, setWifiEnabled] = useState(false);
   const [showGamesLobby, setShowGamesLobby] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [cpuTemp, setCpuTemp] = useState(47);
   const [gpuTemp, setGpuTemp] = useState(46);
   const [cpuMHz, setCpuMHz] = useState(710);
@@ -574,7 +576,11 @@ export const GameBoosterDashboard = () => {
             <Monitor className="h-5 w-5" />
             <span className="text-sm">GPU Optimize</span>
           </Button>
-          <Button variant="outline" className="h-auto py-4 flex-col gap-2">
+          <Button 
+            variant="outline" 
+            className="h-auto py-4 flex-col gap-2"
+            onClick={() => setShowAdvanced(true)}
+          >
             <Settings className="h-5 w-5" />
             <span className="text-sm">Advanced</span>
           </Button>
@@ -777,6 +783,11 @@ export const GameBoosterDashboard = () => {
             backgroundPosition: 'center'
           }}
         />
+      )}
+
+      {/* Advanced Dashboard */}
+      {showAdvanced && (
+        <AdvancedDashboard onClose={() => setShowAdvanced(false)} />
       )}
 
       {/* Developer Credit */}
