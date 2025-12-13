@@ -18,6 +18,8 @@ import filterEagleeye from "@/assets/filter-eagleeye.jpg";
 import filterUltraclear from "@/assets/filter-ultraclear.jpg";
 import filterPure from "@/assets/filter-pure.jpg";
 import filterCyberpunk from "@/assets/filter-cyberpunk.jpg";
+import beyondCpu from "@/assets/beyond_cpu.png";
+import beyondGpu from "@/assets/beyond_gpu.png";
 
 interface BoostAssistantProps {
   cpuUsage: number;
@@ -481,107 +483,29 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     );
   };
 
-  // MHz Gauge Component - Golden orbital ring design
+  // MHz Gauge Component - Using uploaded images
   const MHzGauge = ({ value, label }: { value: number; label: string; color: string }) => {
     const mhzValue = Math.round((value / 100) * 2000);
-    const goldColor = "#d4a520";
-    const goldGlow = "#ffd700";
     
     return (
       <div className="relative flex flex-col items-center">
-        <div className="relative w-[120px] h-[120px]">
-          {/* MHz text at top */}
-          <div 
-            className="absolute top-0 left-1/2 -translate-x-1/2 text-xs font-semibold"
-            style={{ color: goldColor }}
-          >
-            MHz
-          </div>
+        <div className="relative w-[140px] h-[100px] landscape:w-[100px] landscape:h-[70px]">
+          {/* CPU/GPU Image */}
+          <img 
+            src={label === "CPU" ? beyondCpu : beyondGpu} 
+            alt={label}
+            className="w-full h-full object-contain"
+          />
           
-          {/* Orbital rings */}
-          <svg className="absolute inset-0 mt-4" width="120" height="80" viewBox="0 0 120 80">
-            {/* Outermost ring */}
-            <ellipse
-              cx="60"
-              cy="40"
-              rx="55"
-              ry="20"
-              fill="none"
-              stroke={goldColor}
-              strokeWidth="2"
-              opacity="0.4"
-              style={{ filter: `drop-shadow(0 0 4px ${goldGlow})` }}
-            />
-            {/* Second ring */}
-            <ellipse
-              cx="60"
-              cy="40"
-              rx="45"
-              ry="16"
-              fill="none"
-              stroke={goldColor}
-              strokeWidth="2"
-              opacity="0.6"
-              style={{ filter: `drop-shadow(0 0 6px ${goldGlow})` }}
-            />
-            {/* Third ring */}
-            <ellipse
-              cx="60"
-              cy="40"
-              rx="35"
-              ry="12"
-              fill="none"
-              stroke={goldColor}
-              strokeWidth="2.5"
-              opacity="0.8"
-              style={{ filter: `drop-shadow(0 0 8px ${goldGlow})` }}
-            />
-            {/* Fourth ring */}
-            <ellipse
-              cx="60"
-              cy="40"
-              rx="25"
-              ry="9"
-              fill="none"
-              stroke={goldGlow}
-              strokeWidth="2.5"
-              opacity="0.9"
-              style={{ filter: `drop-shadow(0 0 10px ${goldGlow})` }}
-            />
-            {/* Innermost bright ring */}
-            <ellipse
-              cx="60"
-              cy="40"
-              rx="15"
-              ry="5"
-              fill="none"
-              stroke={goldGlow}
-              strokeWidth="3"
-              opacity="1"
-              style={{ filter: `drop-shadow(0 0 12px ${goldGlow}) drop-shadow(0 0 20px ${goldGlow})` }}
-            />
-          </svg>
-          
-          {/* MHz value in center */}
+          {/* MHz value overlay */}
           <div 
-            className="absolute top-[38%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-bold"
+            className="absolute top-[35%] left-1/2 -translate-x-1/2 text-lg landscape:text-sm font-bold"
             style={{ 
               color: '#fff',
-              textShadow: `0 0 8px ${goldGlow}, 0 0 16px ${goldGlow}`,
+              textShadow: '0 0 8px rgba(212, 165, 32, 0.8), 0 0 16px rgba(255, 215, 0, 0.6)',
             }}
           >
             {mhzValue}
-          </div>
-          
-          {/* Label at bottom */}
-          <div 
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 text-sm font-bold tracking-wider"
-            style={{ 
-              color: goldColor,
-              textShadow: `0 0 8px ${goldGlow}`,
-            }}
-          >
-            {label}
           </div>
         </div>
       </div>
