@@ -35,7 +35,7 @@ interface BoostAssistantProps {
 }
 
 export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceMode, isVisible, wifiEnabled, setWifiEnabled, setPerformanceMode }: BoostAssistantProps) => {
-  const [fanMode, setFanMode] = useState<"auto" | "max">("auto");
+  
   const [fanActive, setFanActive] = useState(false);
   const [diabloMode, setDiabloMode] = useState(false);
   const [cpuTemp, setCpuTemp] = useState(65);
@@ -358,13 +358,6 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     toast.info("Equalizer reset");
   };
 
-  const toggleFanMode = () => {
-    const newMode = fanMode === "auto" ? "max" : "auto";
-    setFanMode(newMode);
-    toast.success(`Fan Mode: ${newMode.toUpperCase()}`, {
-      description: newMode === "max" ? "Maximum cooling activated" : "Auto cooling enabled",
-    });
-  };
 
   const toggleDiabloMode = () => {
     setDiabloMode(!diabloMode);
@@ -706,14 +699,6 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               <span className="text-xs font-medium">{fanActive ? 'Fan ON' : 'Fan OFF'}</span>
             </div>
             <Button
-              variant={fanMode === "max" ? "default" : "outline"}
-              className="w-full landscape:h-6 landscape:text-[10px]"
-              onClick={toggleFanMode}
-            >
-              <Wind className="w-4 h-4 mr-2 landscape:w-3 landscape:h-3 landscape:mr-1" />
-              Fan Mode: {fanMode.toUpperCase()}
-            </Button>
-            <Button
               variant={diabloMode ? "default" : "outline"}
               className={`w-full landscape:h-6 landscape:text-[10px] ${diabloMode ? "bg-destructive hover:bg-destructive/90 shadow-[0_0_20px_rgba(239,68,68,0.5)]" : ""}`}
               onClick={toggleDiabloMode}
@@ -866,9 +851,9 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 </span>
               </div>
               <div className="flex items-center justify-between p-2 bg-muted/10 rounded">
-                <span className="text-xs">Fan Mode</span>
-                <span className={`text-xs font-bold ${fanMode === "max" ? "text-accent" : "text-muted-foreground"}`}>
-                  {fanMode.toUpperCase()}
+                <span className="text-xs">Fan</span>
+                <span className={`text-xs font-bold ${fanActive ? "text-destructive" : "text-muted-foreground"}`}>
+                  {fanActive ? "ON" : "OFF"}
                 </span>
               </div>
               <div className="flex items-center justify-between p-2 bg-muted/10 rounded">
