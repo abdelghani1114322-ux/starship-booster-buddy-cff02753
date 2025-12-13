@@ -630,23 +630,21 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             </div>
 
             {/* Brightness Control - Vertical LED Bar Style */}
-            <div className="p-2 bg-muted/20 rounded-lg border border-accent/20">
-              <div className="flex flex-col items-center gap-1">
-                <div className="flex flex-col-reverse gap-0.5 h-20">
-                  {Array.from({ length: 10 }).map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setBrightness((i + 1) * 10)}
-                      className={`w-6 h-1.5 rounded-sm transition-all ${
-                        i < Math.ceil(brightness / 10) 
-                          ? 'bg-accent shadow-[0_0_6px_hsl(var(--accent))]' 
-                          : 'bg-muted/50'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <Sun className="w-4 h-4 text-accent" />
+            <div className="flex flex-col items-center gap-1">
+              <div className="flex flex-col-reverse gap-[2px]">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setBrightness(Math.round((i + 1) * (100 / 12)))}
+                    className={`w-10 h-[6px] rounded-[1px] transition-all ${
+                      i < Math.ceil(brightness / (100 / 12)) 
+                        ? 'bg-foreground/90' 
+                        : 'bg-foreground/30'
+                    }`}
+                  />
+                ))}
               </div>
+              <Sun className="w-5 h-5 text-foreground/80 mt-1" />
             </div>
 
             {/* Screen Recorder */}
@@ -775,23 +773,21 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
           <div className="flex-1 p-6 space-y-4 landscape:p-2 landscape:space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/20 scrollbar-track-transparent">
             {/* Volume Control - Vertical LED Bar Style */}
-            <div className="p-2 landscape:p-1.5 bg-muted/20 rounded-lg border border-accent/20">
-              <div className="flex flex-col items-center gap-1 landscape:gap-0.5">
-                <div className="flex flex-col-reverse gap-0.5 h-20 landscape:h-10">
-                  {Array.from({ length: 10 }).map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setVolume((i + 1) * 10)}
-                      className={`w-6 h-1.5 landscape:w-5 landscape:h-1 rounded-sm transition-all ${
-                        i < Math.ceil(volume / 10) 
-                          ? 'bg-foreground shadow-[0_0_6px_hsl(var(--foreground)/0.5)]' 
-                          : 'bg-muted/50'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <Volume2 className="w-4 h-4 landscape:w-3 landscape:h-3 text-accent" />
+            <div className="flex flex-col items-center gap-1">
+              <div className="flex flex-col-reverse gap-[2px]">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setVolume(Math.round((i + 1) * (100 / 12)))}
+                    className={`w-10 h-[6px] rounded-[1px] transition-all ${
+                      i < Math.ceil(volume / (100 / 12)) 
+                        ? 'bg-foreground/90' 
+                        : 'bg-foreground/30'
+                    }`}
+                  />
+                ))}
               </div>
+              <Volume2 className="w-5 h-5 text-foreground/80 mt-1" />
             </div>
 
             {/* RAM Usage */}
