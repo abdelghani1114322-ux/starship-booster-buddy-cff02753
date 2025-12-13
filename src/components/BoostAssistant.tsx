@@ -499,7 +499,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           
           {/* MHz value overlay */}
           <div 
-            className="absolute top-[35%] left-1/2 -translate-x-1/2 text-lg landscape:text-sm font-bold"
+            className="absolute top-[15%] left-1/2 -translate-x-1/2 text-lg landscape:text-sm font-bold"
             style={{ 
               color: '#fff',
               textShadow: '0 0 8px rgba(212, 165, 32, 0.8), 0 0 16px rgba(255, 215, 0, 0.6)',
