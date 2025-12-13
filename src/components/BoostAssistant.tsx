@@ -679,12 +679,9 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               performanceMode={performanceMode}
               setPerformanceMode={setPerformanceMode}
             />
-          </div>
 
-          {/* Mode Buttons */}
-          <div className="p-4 space-y-2 landscape:p-1.5 landscape:space-y-1 bg-muted/20 border-t border-primary/20">
             {/* Fan Button with Image */}
-            <div className="flex items-center justify-center gap-4">
+            <div className="flex items-center justify-center gap-4 mt-2">
               <button
                 onClick={() => setFanActive(!fanActive)}
                 className="w-12 h-12 landscape:w-8 landscape:h-8 rounded-lg bg-muted/30 border border-primary/30 flex items-center justify-center hover:bg-muted/50 transition-all"
@@ -698,6 +695,10 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               </button>
               <span className="text-xs font-medium">{fanActive ? 'Fan ON' : 'Fan OFF'}</span>
             </div>
+          </div>
+
+          {/* Mode Buttons */}
+          <div className="p-4 space-y-2 landscape:p-1.5 landscape:space-y-1 bg-muted/20 border-t border-primary/20">
             <Button
               variant={diabloMode ? "default" : "outline"}
               className={`w-full landscape:h-6 landscape:text-[10px] ${diabloMode ? "bg-destructive hover:bg-destructive/90 shadow-[0_0_20px_rgba(239,68,68,0.5)]" : ""}`}
