@@ -22,6 +22,8 @@ import beyondCpu from "@/assets/beyond_cpu.png";
 import beyondGpu from "@/assets/beyond_gpu.png";
 import balanceCpu from "@/assets/balance_cpu.png";
 import balanceGpu from "@/assets/balance_gpu.png";
+import riseCpu from "@/assets/rise_cpu.png";
+import riseGpu from "@/assets/rise_gpu.png";
 import fanOff from "@/assets/fan_off.png";
 import fanOn from "@/assets/fan_on.png";
 interface BoostAssistantProps {
@@ -487,12 +489,14 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     // Select image based on performance mode
     const getCpuImage = () => {
       if (performanceMode === "saving") return balanceCpu;
-      return beyondCpu;
+      if (performanceMode === "balance") return riseCpu;
+      return beyondCpu; // boost mode
     };
     
     const getGpuImage = () => {
       if (performanceMode === "saving") return balanceGpu;
-      return beyondGpu;
+      if (performanceMode === "balance") return riseGpu;
+      return beyondGpu; // boost mode
     };
     
     // Get text color based on mode
@@ -501,6 +505,12 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
         return {
           color: '#00ffff',
           textShadow: '0 0 8px rgba(0, 255, 255, 0.8), 0 0 16px rgba(0, 255, 255, 0.6)',
+        };
+      }
+      if (performanceMode === "balance") {
+        return {
+          color: '#ffa500',
+          textShadow: '0 0 8px rgba(255, 165, 0, 0.8), 0 0 16px rgba(255, 200, 0, 0.6)',
         };
       }
       return {
