@@ -688,11 +688,15 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               }}
               className={`w-12 h-12 rounded-full border transition-all flex items-center justify-center mx-auto ${
                 hunterModeEnabled 
-                  ? 'bg-red-500/30 border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.4)]' 
+                  ? 'bg-red-500/30 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.6),0_0_30px_rgba(239,68,68,0.3)]' 
                   : 'bg-[#2a2a3e] border-border/50 hover:bg-muted/40'
               }`}
             >
-              <img src={hunterModeIcon} alt="Hunter Mode" className="w-7 h-7" />
+              <img 
+                src={hunterModeIcon} 
+                alt="Hunter Mode" 
+                className={`w-7 h-7 transition-all ${hunterModeEnabled ? 'drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]' : ''}`} 
+              />
             </button>
 
             {/* Screen Recorder */}
