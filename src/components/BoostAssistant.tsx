@@ -26,6 +26,7 @@ import riseCpu from "@/assets/rise_cpu.png";
 import riseGpu from "@/assets/rise_gpu.png";
 import fanOff from "@/assets/fan_off.png";
 import fanOn from "@/assets/fan_on.png";
+import hunterModeIcon from "@/assets/hunter-mode-icon.png";
 interface BoostAssistantProps {
   cpuUsage: number;
   ramUsage: number;
@@ -685,17 +686,13 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                   description: hunterModeEnabled ? "Normal vision restored" : "Enhanced target visibility",
                 });
               }}
-              className={`w-full p-3 rounded-lg border transition-all flex items-center justify-center gap-2 ${
+              className={`w-12 h-12 rounded-full border transition-all flex items-center justify-center mx-auto ${
                 hunterModeEnabled 
-                  ? 'bg-red-500/30 border-red-500 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.4)]' 
-                  : 'bg-muted/20 border-border/50 text-foreground/70 hover:bg-muted/40'
+                  ? 'bg-red-500/30 border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.4)]' 
+                  : 'bg-[#2a2a3e] border-border/50 hover:bg-muted/40'
               }`}
             >
-              <Target className="w-5 h-5" />
-              <span className="text-sm font-medium">Hunter Mode</span>
-              <span className={`text-xs px-2 py-0.5 rounded ${hunterModeEnabled ? 'bg-red-500/50' : 'bg-muted/50'}`}>
-                {hunterModeEnabled ? 'ON' : 'OFF'}
-              </span>
+              <img src={hunterModeIcon} alt="Hunter Mode" className="w-7 h-7" />
             </button>
 
             {/* Screen Recorder */}
