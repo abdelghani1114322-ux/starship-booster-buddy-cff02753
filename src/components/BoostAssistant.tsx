@@ -500,31 +500,30 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     };
     
     // Get text color based on mode
-    const getTextStyle = () => {
-      if (performanceMode === "saving") {
-        return {
+    const textStyle = performanceMode === "saving" 
+      ? {
           color: '#00ffff',
           textShadow: '0 0 8px rgba(0, 255, 255, 0.8), 0 0 16px rgba(0, 255, 255, 0.6)',
-        };
-      }
-      if (performanceMode === "balance") {
-        return {
+        }
+      : performanceMode === "balance"
+      ? {
           color: '#ffa500',
           textShadow: '0 0 8px rgba(255, 165, 0, 0.8), 0 0 16px rgba(255, 200, 0, 0.6)',
+        }
+      : {
+          color: '#ff4444',
+          textShadow: '0 0 8px rgba(255, 68, 68, 0.8), 0 0 16px rgba(255, 100, 100, 0.6)',
         };
-      }
-      return {
-        color: '#fff',
-        textShadow: '0 0 8px rgba(212, 165, 32, 0.8), 0 0 16px rgba(255, 215, 0, 0.6)',
-      };
-    };
+
+    const cpuImage = performanceMode === "saving" ? balanceCpu : performanceMode === "balance" ? riseCpu : beyondCpu;
+    const gpuImage = performanceMode === "saving" ? balanceGpu : performanceMode === "balance" ? riseGpu : beyondGpu;
     
     return (
-      <div className="relative flex flex-col items-center">
+      <div className="relative flex flex-col items-center" key={`${label}-${performanceMode}`}>
         <div className="relative w-[140px] h-[100px] landscape:w-[100px] landscape:h-[70px]">
           {/* CPU/GPU Image */}
           <img 
-            src={label === "CPU" ? getCpuImage() : getGpuImage()} 
+            src={label === "CPU" ? cpuImage : gpuImage} 
             alt={label}
             className="w-full h-full object-contain"
           />
@@ -532,7 +531,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           {/* MHz value overlay */}
           <div 
             className="absolute top-[15%] left-1/2 -translate-x-1/2 text-lg landscape:text-sm font-bold"
-            style={getTextStyle()}
+            style={textStyle}
           >
             {mhzValue}
           </div>
