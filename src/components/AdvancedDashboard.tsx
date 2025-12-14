@@ -45,24 +45,29 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
 
   const handleBoostComplete = useCallback(() => {
     setShowBoostAnimation(false);
+    toast.success(`${boostingApp} Started!`);
     setBoostingApp("");
-  }, []);
+  }, [boostingApp]);
 
-  const toggleBoost = (id: number) => {
+  // Start game - shows animation then launches
+  const startGame = (id: number) => {
     const app = appList.find(a => a.id === id);
-    if (app && !app.boosted) {
-      // Show animation when boosting
+    if (app) {
       setBoostingApp(app.name);
       setShowBoostAnimation(true);
+      // Mark as boosted when started
+      setAppList(prev => 
+        prev.map(a => a.id === id ? { ...a, boosted: true } : a)
+      );
     }
-    
+  };
+
+  const toggleBoost = (id: number) => {
     setAppList(prev => 
       prev.map(app => {
         if (app.id === id) {
           const newBoosted = !app.boosted;
-          if (!newBoosted) {
-            toast.success(`${app.name} Boost Disabled`);
-          }
+          toast.success(newBoosted ? `${app.name} Boosted!` : `${app.name} Boost Disabled`);
           return { ...app, boosted: newBoosted };
         }
         return app;
@@ -256,7 +261,7 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
                 {appList.slice(0, 2).map((app) => (
                   <button
                     key={app.id}
-                    onClick={() => toggleBoost(app.id)}
+                    onClick={() => startGame(app.id)}
                     className={`w-12 h-12 rounded-xl transition-all ${
                       app.boosted ? 'bg-red-500/30 ring-2 ring-red-500' : 'bg-white/5 hover:bg-white/10'
                     }`}
@@ -272,7 +277,7 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
                 {appList.slice(2, 4).map((app) => (
                   <button
                     key={app.id}
-                    onClick={() => toggleBoost(app.id)}
+                    onClick={() => startGame(app.id)}
                     className={`w-12 h-12 rounded-xl transition-all ${
                       app.boosted ? 'bg-red-500/30 ring-2 ring-red-500' : 'bg-white/5 hover:bg-white/10'
                     }`}
@@ -390,7 +395,8 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
                 <button
                   key={app.id}
                   onClick={() => {
-                    toggleBoost(app.id);
+                    setShowAppPicker(false);
+                    startGame(app.id);
                   }}
                   className={`relative p-4 rounded-xl border transition-all ${
                     app.boosted
@@ -416,7 +422,7 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
             </div>
             
             <p className="text-xs text-white/40 text-center mt-4">
-              Tap an app to boost its performance
+              Tap an app to start with boost
             </p>
           </div>
         </div>
