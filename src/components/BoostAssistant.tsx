@@ -482,63 +482,40 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     );
   };
 
-  // MHz Gauge Component - Using uploaded images based on performance mode
-  const MHzGauge = ({ value, label }: { value: number; label: string; color: string }) => {
-    const mhzValue = Math.round((value / 100) * 2000);
-    
-    // Select image based on performance mode
-    const getCpuImage = () => {
-      if (performanceMode === "saving") return balanceCpu;
-      if (performanceMode === "balance") return riseCpu;
-      return beyondCpu; // boost mode
-    };
-    
-    const getGpuImage = () => {
-      if (performanceMode === "saving") return balanceGpu;
-      if (performanceMode === "balance") return riseGpu;
-      return beyondGpu; // boost mode
-    };
-    
-    // Get text color based on mode
-    const textStyle = performanceMode === "saving" 
-      ? {
-          color: '#00ffff',
-          textShadow: '0 0 8px rgba(0, 255, 255, 0.8), 0 0 16px rgba(0, 255, 255, 0.6)',
-        }
-      : performanceMode === "balance"
-      ? {
-          color: '#ffa500',
-          textShadow: '0 0 8px rgba(255, 165, 0, 0.8), 0 0 16px rgba(255, 200, 0, 0.6)',
-        }
-      : {
-          color: '#ff4444',
-          textShadow: '0 0 8px rgba(255, 68, 68, 0.8), 0 0 16px rgba(255, 100, 100, 0.6)',
-        };
-
-    const cpuImage = performanceMode === "saving" ? balanceCpu : performanceMode === "balance" ? riseCpu : beyondCpu;
-    const gpuImage = performanceMode === "saving" ? balanceGpu : performanceMode === "balance" ? riseGpu : beyondGpu;
-    
-    return (
-      <div className="relative flex flex-col items-center" key={`${label}-${performanceMode}`}>
-        <div className="relative w-[140px] h-[100px] landscape:w-[100px] landscape:h-[70px]">
-          {/* CPU/GPU Image */}
-          <img 
-            src={label === "CPU" ? cpuImage : gpuImage} 
-            alt={label}
-            className="w-full h-full object-contain"
-          />
-          
-          {/* MHz value overlay */}
-          <div 
-            className="absolute top-[15%] left-1/2 -translate-x-1/2 text-lg landscape:text-sm font-bold"
-            style={textStyle}
-          >
-            {mhzValue}
-          </div>
-        </div>
-      </div>
-    );
+  // Get CPU/GPU image and text style based on performance mode
+  const getCpuImage = () => {
+    if (performanceMode === "saving") return balanceCpu;
+    if (performanceMode === "balance") return riseCpu;
+    return beyondCpu;
   };
+  
+  const getGpuImage = () => {
+    if (performanceMode === "saving") return balanceGpu;
+    if (performanceMode === "balance") return riseGpu;
+    return beyondGpu;
+  };
+  
+  const getMhzTextStyle = (): React.CSSProperties => {
+    if (performanceMode === "saving") {
+      return {
+        color: '#00ffff',
+        textShadow: '0 0 8px rgba(0, 255, 255, 0.8), 0 0 16px rgba(0, 255, 255, 0.6)',
+      };
+    }
+    if (performanceMode === "balance") {
+      return {
+        color: '#ffa500',
+        textShadow: '0 0 8px rgba(255, 165, 0, 0.8), 0 0 16px rgba(255, 200, 0, 0.6)',
+      };
+    }
+    return {
+      color: '#ff4444',
+      textShadow: '0 0 8px rgba(255, 68, 68, 0.8), 0 0 16px rgba(255, 100, 100, 0.6)',
+    };
+  };
+  
+  const cpuMhzValue = Math.round((cpuUsage / 100) * 2000);
+  const gpuMhzValue = Math.round((gpuUsage / 100) * 2000);
 
   return (
     <>
@@ -632,12 +609,22 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
           <div className="flex-1 p-6 space-y-4 landscape:p-2 landscape:space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
             {/* CPU MHz Gauge */}
-            <div className="flex justify-center items-center">
-              <MHzGauge 
-                value={cpuUsage} 
-                label="CPU" 
-                color="#ef4444"
-              />
+            <div className="flex justify-center items-center" key={`cpu-gauge-${performanceMode}`}>
+              <div className="relative flex flex-col items-center">
+                <div className="relative w-[140px] h-[100px] landscape:w-[100px] landscape:h-[70px]">
+                  <img 
+                    src={getCpuImage()} 
+                    alt="CPU"
+                    className="w-full h-full object-contain"
+                  />
+                  <div 
+                    className="absolute top-[15%] left-1/2 -translate-x-1/2 text-lg landscape:text-sm font-bold"
+                    style={getMhzTextStyle()}
+                  >
+                    {cpuMhzValue}
+                  </div>
+                </div>
+              </div>
             </div>
 
 
@@ -796,12 +783,22 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           </div>
 
           {/* GPU MHz Gauge */}
-          <div className="flex justify-center items-center py-3 bg-muted/30 border-b border-accent/20">
-            <MHzGauge 
-              value={gpuUsage} 
-              label="GPU" 
-              color="#ef4444"
-            />
+          <div className="flex justify-center items-center py-3 bg-muted/30 border-b border-accent/20" key={`gpu-gauge-${performanceMode}`}>
+            <div className="relative flex flex-col items-center">
+              <div className="relative w-[140px] h-[100px] landscape:w-[100px] landscape:h-[70px]">
+                <img 
+                  src={getGpuImage()} 
+                  alt="GPU"
+                  className="w-full h-full object-contain"
+                />
+                <div 
+                  className="absolute top-[15%] left-1/2 -translate-x-1/2 text-lg landscape:text-sm font-bold"
+                  style={getMhzTextStyle()}
+                >
+                  {gpuMhzValue}
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="flex-1 p-6 space-y-4 landscape:p-2 landscape:space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/20 scrollbar-track-transparent">
