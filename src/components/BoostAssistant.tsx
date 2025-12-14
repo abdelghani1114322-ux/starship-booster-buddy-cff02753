@@ -89,13 +89,23 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [showGraphiqueSettings, setShowGraphiqueSettings] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<string>("none");
   const [filterEnabled, setFilterEnabled] = useState(false);
+  const [hunterModeEnabled, setHunterModeEnabled] = useState(false);
   const [showMacro, setShowMacro] = useState(false);
   const [macroTab, setMacroTab] = useState<"performance" | "display" | "audio">("performance");
   const [macroMode, setMacroMode] = useState<"auto" | "gpu" | "cpu" | "super">("auto");
 
-  // Apply filter effect to document
+  // Apply filter effect to document (including hunter mode)
   useEffect(() => {
     const root = document.documentElement;
+    
+    // Hunter mode takes priority with reddish hunting filter
+    if (hunterModeEnabled) {
+      root.style.filter = "sepia(0.4) hue-rotate(-30deg) saturate(1.4) contrast(1.1) brightness(0.95)";
+      return () => {
+        root.style.filter = "";
+      };
+    }
+    
     if (filterEnabled && selectedFilter !== "none") {
       let filterStyle = "";
       switch (selectedFilter) {
@@ -125,7 +135,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     return () => {
       root.style.filter = "";
     };
-  }, [filterEnabled, selectedFilter]);
+  }, [filterEnabled, selectedFilter, hunterModeEnabled]);
   
   // Audio context refs
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -666,6 +676,27 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               </div>
               <Sun className="w-5 h-5 text-foreground/80 mt-1" />
             </div>
+
+            {/* Hunter Mode Button */}
+            <button
+              onClick={() => {
+                setHunterModeEnabled(!hunterModeEnabled);
+                toast.success(hunterModeEnabled ? "Hunter Mode Disabled" : "Hunter Mode Enabled 🎯", {
+                  description: hunterModeEnabled ? "Normal vision restored" : "Enhanced target visibility",
+                });
+              }}
+              className={`w-full p-3 rounded-lg border transition-all flex items-center justify-center gap-2 ${
+                hunterModeEnabled 
+                  ? 'bg-red-500/30 border-red-500 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.4)]' 
+                  : 'bg-muted/20 border-border/50 text-foreground/70 hover:bg-muted/40'
+              }`}
+            >
+              <Target className="w-5 h-5" />
+              <span className="text-sm font-medium">Hunter Mode</span>
+              <span className={`text-xs px-2 py-0.5 rounded ${hunterModeEnabled ? 'bg-red-500/50' : 'bg-muted/50'}`}>
+                {hunterModeEnabled ? 'ON' : 'OFF'}
+              </span>
+            </button>
 
             {/* Screen Recorder */}
             <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
