@@ -20,6 +20,8 @@ import filterPure from "@/assets/filter-pure.jpg";
 import filterCyberpunk from "@/assets/filter-cyberpunk.jpg";
 import beyondCpu from "@/assets/beyond_cpu.png";
 import beyondGpu from "@/assets/beyond_gpu.png";
+import balanceCpu from "@/assets/balance_cpu.png";
+import balanceGpu from "@/assets/balance_gpu.png";
 import fanOff from "@/assets/fan_off.png";
 import fanOn from "@/assets/fan_on.png";
 interface BoostAssistantProps {
@@ -478,16 +480,41 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     );
   };
 
-  // MHz Gauge Component - Using uploaded images
+  // MHz Gauge Component - Using uploaded images based on performance mode
   const MHzGauge = ({ value, label }: { value: number; label: string; color: string }) => {
     const mhzValue = Math.round((value / 100) * 2000);
+    
+    // Select image based on performance mode
+    const getCpuImage = () => {
+      if (performanceMode === "saving") return balanceCpu;
+      return beyondCpu;
+    };
+    
+    const getGpuImage = () => {
+      if (performanceMode === "saving") return balanceGpu;
+      return beyondGpu;
+    };
+    
+    // Get text color based on mode
+    const getTextStyle = () => {
+      if (performanceMode === "saving") {
+        return {
+          color: '#00ffff',
+          textShadow: '0 0 8px rgba(0, 255, 255, 0.8), 0 0 16px rgba(0, 255, 255, 0.6)',
+        };
+      }
+      return {
+        color: '#fff',
+        textShadow: '0 0 8px rgba(212, 165, 32, 0.8), 0 0 16px rgba(255, 215, 0, 0.6)',
+      };
+    };
     
     return (
       <div className="relative flex flex-col items-center">
         <div className="relative w-[140px] h-[100px] landscape:w-[100px] landscape:h-[70px]">
           {/* CPU/GPU Image */}
           <img 
-            src={label === "CPU" ? beyondCpu : beyondGpu} 
+            src={label === "CPU" ? getCpuImage() : getGpuImage()} 
             alt={label}
             className="w-full h-full object-contain"
           />
@@ -495,10 +522,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           {/* MHz value overlay */}
           <div 
             className="absolute top-[15%] left-1/2 -translate-x-1/2 text-lg landscape:text-sm font-bold"
-            style={{ 
-              color: '#fff',
-              textShadow: '0 0 8px rgba(212, 165, 32, 0.8), 0 0 16px rgba(255, 215, 0, 0.6)',
-            }}
+            style={getTextStyle()}
           >
             {mhzValue}
           </div>
