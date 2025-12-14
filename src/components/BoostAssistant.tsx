@@ -95,48 +95,31 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [macroTab, setMacroTab] = useState<"performance" | "display" | "audio">("performance");
   const [macroMode, setMacroMode] = useState<"auto" | "gpu" | "cpu" | "super">("auto");
 
-  // Apply filter effect to document (including hunter mode)
-  useEffect(() => {
-    const root = document.documentElement;
-    
-    // Hunter mode takes priority with reddish hunting filter
+  // Get active filter style
+  const getActiveFilterStyle = (): string => {
     if (hunterModeEnabled) {
-      root.style.filter = "sepia(0.4) hue-rotate(-30deg) saturate(1.4) contrast(1.1) brightness(0.95)";
-      return () => {
-        root.style.filter = "";
-      };
+      return "sepia(0.4) hue-rotate(-30deg) saturate(1.4) contrast(1.1) brightness(0.95)";
     }
-    
     if (filterEnabled && selectedFilter !== "none") {
-      let filterStyle = "";
       switch (selectedFilter) {
         case "hunter":
-          filterStyle = "contrast(1.15) saturate(1.2) hue-rotate(-10deg)";
-          break;
+          return "contrast(1.15) saturate(1.2) hue-rotate(-10deg)";
         case "nightvision":
-          filterStyle = "sepia(0.3) hue-rotate(80deg) saturate(1.5) brightness(0.9)";
-          break;
+          return "sepia(0.3) hue-rotate(80deg) saturate(1.5) brightness(0.9)";
         case "eagleeye":
-          filterStyle = "contrast(1.25) saturate(1.1) brightness(1.05)";
-          break;
+          return "contrast(1.25) saturate(1.1) brightness(1.05)";
         case "ultraclear":
-          filterStyle = "contrast(1.1) saturate(1.3) brightness(1.1)";
-          break;
+          return "contrast(1.1) saturate(1.3) brightness(1.1)";
         case "pure":
-          filterStyle = "grayscale(0.1) contrast(1.05) brightness(1.05)";
-          break;
+          return "grayscale(0.1) contrast(1.05) brightness(1.05)";
         case "cyberpunk":
-          filterStyle = "saturate(1.5) hue-rotate(320deg) contrast(1.1)";
-          break;
+          return "saturate(1.5) hue-rotate(320deg) contrast(1.1)";
       }
-      root.style.filter = filterStyle;
-    } else {
-      root.style.filter = "";
     }
-    return () => {
-      root.style.filter = "";
-    };
-  }, [filterEnabled, selectedFilter, hunterModeEnabled]);
+    return "";
+  };
+
+  const activeFilter = getActiveFilterStyle();
   
   // Audio context refs
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -537,7 +520,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        <Card className="h-full bg-gradient-to-b from-card/95 to-card/90 backdrop-blur-xl border-2 border-primary/40 shadow-[0_0_40px_rgba(16,185,129,0.3)] p-0 flex flex-col overflow-hidden relative select-none">
+        <Card className="h-full bg-gradient-to-b from-card/95 to-card/90 backdrop-blur-xl border-2 border-primary/40 shadow-[0_0_40px_rgba(16,185,129,0.3)] p-0 flex flex-col overflow-hidden relative select-none transition-all" style={{ filter: activeFilter }}>
           {/* Segmented LED Bar - Left Edge */}
           <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-evenly py-4">
             {Array.from({ length: 10 }).map((_, i) => (
@@ -768,7 +751,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        <Card className="h-full bg-gradient-to-b from-card/95 to-card/90 backdrop-blur-xl border-2 border-accent/40 shadow-[0_0_40px_rgba(59,130,246,0.3)] p-0 flex flex-col overflow-hidden relative select-none">
+        <Card className="h-full bg-gradient-to-b from-card/95 to-card/90 backdrop-blur-xl border-2 border-accent/40 shadow-[0_0_40px_rgba(59,130,246,0.3)] p-0 flex flex-col overflow-hidden relative select-none transition-all" style={{ filter: activeFilter }}>
           {/* Performance Bars - Left Edge (RAM) */}
           <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-center gap-1 py-4 px-1">
             {Array.from({ length: 20 }).map((_, i) => {
