@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X, Home, Zap, Grid3X3, Plus, Music, Users } from "lucide-react";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
@@ -7,6 +7,7 @@ import freefireIcon from "@/assets/freefire-icon.png";
 import chromeIcon from "@/assets/chrome-icon.png";
 import youtubeIcon from "@/assets/youtube-icon.png";
 import whatsappIcon from "@/assets/whatsapp-icon.png";
+import BoostAnimation from "./BoostAnimation";
 
 interface AdvancedDashboardProps {
   onClose: () => void;
@@ -26,6 +27,8 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [batteryLevel, setBatteryLevel] = useState(88);
   const [showAppPicker, setShowAppPicker] = useState(false);
+  const [showBoostAnimation, setShowBoostAnimation] = useState(false);
+  const [boostingApp, setBoostingApp] = useState<string>("");
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -40,12 +43,26 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
     }
   }, []);
 
+  const handleBoostComplete = useCallback(() => {
+    setShowBoostAnimation(false);
+    setBoostingApp("");
+  }, []);
+
   const toggleBoost = (id: number) => {
+    const app = appList.find(a => a.id === id);
+    if (app && !app.boosted) {
+      // Show animation when boosting
+      setBoostingApp(app.name);
+      setShowBoostAnimation(true);
+    }
+    
     setAppList(prev => 
       prev.map(app => {
         if (app.id === id) {
           const newBoosted = !app.boosted;
-          toast.success(newBoosted ? `${app.name} Boosted!` : `${app.name} Boost Disabled`);
+          if (!newBoosted) {
+            toast.success(`${app.name} Boost Disabled`);
+          }
           return { ...app, boosted: newBoosted };
         }
         return app;
@@ -54,6 +71,14 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   };
 
   return (
+    <>
+      {/* Boost Animation Overlay */}
+      <BoostAnimation 
+        isVisible={showBoostAnimation} 
+        onComplete={handleBoostComplete}
+        appName={boostingApp}
+      />
+      
     <div className="fixed inset-0 z-50 bg-black overflow-hidden">
       {/* Tech Background Pattern */}
       <div className="absolute inset-0 opacity-20">
@@ -436,5 +461,6 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
         </button>
       </div>
     </div>
+    </>
   );
 };
