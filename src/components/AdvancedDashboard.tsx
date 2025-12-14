@@ -25,6 +25,7 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   const [appList, setAppList] = useState(apps);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [batteryLevel, setBatteryLevel] = useState(88);
+  const [showAppPicker, setShowAppPicker] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -332,9 +333,69 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
       </div>
 
       {/* Plus Button - Bottom Left */}
-      <button className="absolute bottom-24 left-6 w-14 h-14 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors">
+      <button 
+        onClick={() => setShowAppPicker(true)}
+        className="absolute bottom-24 left-6 w-14 h-14 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors"
+      >
         <Plus className="w-6 h-6 text-white/70" />
       </button>
+
+      {/* App Picker Overlay */}
+      {showAppPicker && (
+        <div className="fixed inset-0 z-60 bg-black/80 flex items-center justify-center p-6" onClick={() => setShowAppPicker(false)}>
+          <div 
+            className="bg-gradient-to-b from-[#1a0a0a] to-[#0d0505] border border-red-900/50 rounded-2xl p-6 w-full max-w-md max-h-[70vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Grid3X3 className="w-5 h-5 text-red-500" />
+                My Apps
+              </h3>
+              <button 
+                onClick={() => setShowAppPicker(false)}
+                className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-red-500/30"
+              >
+                <X className="w-4 h-4 text-white/70" />
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-4">
+              {appList.map((app) => (
+                <button
+                  key={app.id}
+                  onClick={() => {
+                    toggleBoost(app.id);
+                  }}
+                  className={`relative p-4 rounded-xl border transition-all ${
+                    app.boosted
+                      ? "bg-red-500/20 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]"
+                      : "bg-white/5 border-white/10 hover:border-red-500/50"
+                  }`}
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <img
+                      src={app.icon}
+                      alt={app.name}
+                      className="w-12 h-12 rounded-xl object-cover"
+                    />
+                    <span className="text-xs text-white/80 truncate w-full text-center">
+                      {app.name}
+                    </span>
+                    {app.boosted && (
+                      <Zap className="absolute top-1 right-1 w-4 h-4 text-red-500" />
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+            
+            <p className="text-xs text-white/40 text-center mt-4">
+              Tap an app to boost its performance
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Right Side Icons */}
       <div className="absolute bottom-24 right-6 flex gap-2">
