@@ -95,6 +95,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [showMacro, setShowMacro] = useState(false);
   const [macroTab, setMacroTab] = useState<"performance" | "display" | "audio">("performance");
   const [macroMode, setMacroMode] = useState<"auto" | "gpu" | "cpu" | "super">("auto");
+  const [miniApp, setMiniApp] = useState<"youtube" | "chrome" | null>(null);
 
   // Apply filter effect to document (including hunter mode)
   useEffect(() => {
@@ -823,7 +824,17 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 size="icon"
                 variant="ghost"
                 className="hover:opacity-80 hover:scale-110 h-12 w-12 rounded-lg shadow-lg transition-all p-1 bg-muted/20"
-                onClick={() => toast.success(`Launching ${app.name}`)}
+                onClick={() => {
+                  if (app.name === "YouTube") {
+                    setMiniApp("youtube");
+                    toast.success("Opening YouTube mini player");
+                  } else if (app.name === "Chrome") {
+                    setMiniApp("chrome");
+                    toast.success("Opening Chrome mini browser");
+                  } else {
+                    toast.success(`Launching ${app.name}`);
+                  }
+                }}
               >
                 <img src={app.icon} alt={app.name} className="h-8 w-8 object-contain" />
               </Button>
@@ -2372,6 +2383,38 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 {isPlayingTest ? "Stop" : "Test Sound"}
               </Button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mini App Overlay */}
+      {miniApp && (
+        <div className="fixed bottom-20 right-4 z-[60] w-[320px] h-[200px] rounded-xl overflow-hidden shadow-2xl border-2 border-accent/50 bg-black">
+          {/* Header */}
+          <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-r from-card/95 to-muted/95 backdrop-blur flex items-center justify-between px-2 z-10">
+            <div className="flex items-center gap-2">
+              <img 
+                src={miniApp === "youtube" ? youtubeIcon : chromeIcon} 
+                alt={miniApp} 
+                className="w-4 h-4" 
+              />
+              <span className="text-xs font-medium capitalize">{miniApp}</span>
+            </div>
+            <button
+              onClick={() => setMiniApp(null)}
+              className="w-6 h-6 rounded-full bg-destructive/80 hover:bg-destructive flex items-center justify-center transition-colors"
+            >
+              <X className="w-3 h-3 text-white" />
+            </button>
+          </div>
+          {/* Content */}
+          <div className="w-full h-full pt-8">
+            <iframe
+              src={miniApp === "youtube" ? "https://m.youtube.com" : "https://www.google.com/webhp?igu=1"}
+              className="w-full h-full border-0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
           </div>
         </div>
       )}
