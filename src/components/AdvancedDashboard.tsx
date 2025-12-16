@@ -1,34 +1,32 @@
 import { useState, useEffect, useCallback } from "react";
-import { X, Home, Zap, Grid3X3, Plus, Music, Users } from "lucide-react";
+import { X, Home, Zap, Grid3X3, Plus, Music, Users, Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
-import pubgIcon from "@/assets/pubg-icon.png";
-import freefireIcon from "@/assets/freefire-icon.png";
-import chromeIcon from "@/assets/chrome-icon.png";
-import youtubeIcon from "@/assets/youtube-icon.png";
-import whatsappIcon from "@/assets/whatsapp-icon.png";
+import { Capacitor } from "@capacitor/core";
 import BoostAnimation from "./BoostAnimation";
 
 interface AdvancedDashboardProps {
   onClose: () => void;
 }
 
-const apps = [
-  { id: 1, name: "PUBG Mobile", icon: pubgIcon, boosted: false },
-  { id: 2, name: "Free Fire", icon: freefireIcon, boosted: false },
-  { id: 3, name: "Chrome", icon: chromeIcon, boosted: false },
-  { id: 4, name: "YouTube", icon: youtubeIcon, boosted: false },
-  { id: 5, name: "WhatsApp", icon: whatsappIcon, boosted: false },
-];
+interface InstalledApp {
+  packageName: string;
+  appName: string;
+  icon?: string;
+  isIncluded: boolean;
+  boosted: boolean;
+}
 
 export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   const [activeTab, setActiveTab] = useState<"lobby" | "superbase">("lobby");
-  const [appList, setAppList] = useState(apps);
+  const [includedApps, setIncludedApps] = useState<InstalledApp[]>([]);
+  const [allApps, setAllApps] = useState<InstalledApp[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [batteryLevel, setBatteryLevel] = useState(88);
   const [showAppPicker, setShowAppPicker] = useState(false);
   const [showBoostAnimation, setShowBoostAnimation] = useState(false);
   const [boostingApp, setBoostingApp] = useState<string>("");
+  const [isLoadingApps, setIsLoadingApps] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -43,37 +41,133 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
     }
   }, []);
 
+  // Load installed apps when app picker opens
+  const loadInstalledApps = async () => {
+    if (allApps.length > 0) return; // Already loaded
+    
+    setIsLoadingApps(true);
+    
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const { CapacitorUsageStatsManager } = await import(
+          "@capgo/capacitor-android-usagestatsmanager"
+        );
+        
+        const permissionResult = await CapacitorUsageStatsManager.isUsageStatsPermissionGranted();
+        
+        if (!permissionResult.granted) {
+          toast.info("Permission required", {
+            description: "Please grant usage access to see installed apps",
+          });
+          await CapacitorUsageStatsManager.openUsageStatsSettings();
+          setIsLoadingApps(false);
+          return;
+        }
+        
+        const packages = await CapacitorUsageStatsManager.queryAllPackages();
+        
+        if (packages && packages.packages) {
+          const apps: InstalledApp[] = packages.packages.map((pkg: any) => ({
+            packageName: pkg.packageName || pkg,
+            appName: extractAppName(pkg.packageName || pkg),
+            icon: pkg.icon,
+            isIncluded: false,
+            boosted: false,
+          }));
+          
+          setAllApps(apps.sort((a, b) => a.appName.localeCompare(b.appName)));
+        }
+      } catch (error) {
+        console.error("Error loading apps:", error);
+        loadMockApps();
+      }
+    } else {
+      loadMockApps();
+    }
+    
+    setIsLoadingApps(false);
+  };
+
+  const extractAppName = (packageName: string): string => {
+    const parts = packageName.split(".");
+    const lastPart = parts[parts.length - 1];
+    return lastPart.charAt(0).toUpperCase() + lastPart.slice(1);
+  };
+
+  const loadMockApps = () => {
+    const mockApps: InstalledApp[] = [
+      { packageName: "com.sobrr.agnes", appName: "Agnes", icon: undefined, isIncluded: false, boosted: false },
+      { packageName: "net.bat.store", appName: "AHA Games", icon: undefined, isIncluded: false, boosted: false },
+      { packageName: "com.gallery20", appName: "AI Gallery", icon: undefined, isIncluded: false, boosted: false },
+      { packageName: "com.innersloth.spacemafia", appName: "Among Us", icon: undefined, isIncluded: false, boosted: false },
+      { packageName: "com.tencent.ig", appName: "PUBG Mobile", icon: undefined, isIncluded: false, boosted: false },
+      { packageName: "com.dts.freefireth", appName: "Free Fire", icon: undefined, isIncluded: false, boosted: false },
+      { packageName: "com.mobile.legends", appName: "Mobile Legends", icon: undefined, isIncluded: false, boosted: false },
+      { packageName: "com.miHoYo.GenshinImpact", appName: "Genshin Impact", icon: undefined, isIncluded: false, boosted: false },
+      { packageName: "com.supercell.clashofclans", appName: "Clash of Clans", icon: undefined, isIncluded: false, boosted: false },
+    ].sort((a, b) => a.appName.localeCompare(b.appName));
+    
+    setAllApps(mockApps);
+  };
+
+  const handleIncludeApp = (packageName: string) => {
+    setAllApps(prev => prev.map(app => 
+      app.packageName === packageName ? { ...app, isIncluded: true } : app
+    ));
+    const app = allApps.find(a => a.packageName === packageName);
+    if (app) {
+      setIncludedApps(prev => [...prev, { ...app, isIncluded: true }]);
+      toast.success(`${app.appName} added to dashboard`);
+    }
+  };
+
+  const handleExcludeApp = (packageName: string) => {
+    setAllApps(prev => prev.map(app => 
+      app.packageName === packageName ? { ...app, isIncluded: false } : app
+    ));
+    setIncludedApps(prev => prev.filter(app => app.packageName !== packageName));
+    const app = allApps.find(a => a.packageName === packageName);
+    if (app) {
+      toast.success(`${app.appName} removed from dashboard`);
+    }
+  };
+
   const handleBoostComplete = useCallback(() => {
     setShowBoostAnimation(false);
     toast.success(`${boostingApp} Started!`);
     setBoostingApp("");
   }, [boostingApp]);
 
-  // Start game - shows animation then launches
-  const startGame = (id: number) => {
-    const app = appList.find(a => a.id === id);
+  const startGame = (packageName: string) => {
+    const app = includedApps.find(a => a.packageName === packageName);
     if (app) {
-      setBoostingApp(app.name);
+      setBoostingApp(app.appName);
       setShowBoostAnimation(true);
-      // Mark as boosted when started
-      setAppList(prev => 
-        prev.map(a => a.id === id ? { ...a, boosted: true } : a)
+      setIncludedApps(prev => 
+        prev.map(a => a.packageName === packageName ? { ...a, boosted: true } : a)
       );
     }
   };
 
-  const toggleBoost = (id: number) => {
-    setAppList(prev => 
+  const toggleBoost = (packageName: string) => {
+    setIncludedApps(prev => 
       prev.map(app => {
-        if (app.id === id) {
+        if (app.packageName === packageName) {
           const newBoosted = !app.boosted;
-          toast.success(newBoosted ? `${app.name} Boosted!` : `${app.name} Boost Disabled`);
+          toast.success(newBoosted ? `${app.appName} Boosted!` : `${app.appName} Boost Disabled`);
           return { ...app, boosted: newBoosted };
         }
         return app;
       })
     );
   };
+
+  const openAppPicker = () => {
+    setShowAppPicker(true);
+    loadInstalledApps();
+  };
+
+  const notIncludedApps = allApps.filter(app => !app.isIncluded);
 
   return (
     <>
@@ -258,15 +352,21 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
             {/* Apps floating around - only visible when no app selected */}
             <div className="absolute bottom-32 left-8 hidden md:block">
               <div className="grid grid-cols-1 gap-2">
-                {appList.slice(0, 2).map((app) => (
+                {includedApps.slice(0, 2).map((app) => (
                   <button
-                    key={app.id}
-                    onClick={() => startGame(app.id)}
+                    key={app.packageName}
+                    onClick={() => startGame(app.packageName)}
                     className={`w-12 h-12 rounded-xl transition-all ${
                       app.boosted ? 'bg-red-500/30 ring-2 ring-red-500' : 'bg-white/5 hover:bg-white/10'
                     }`}
                   >
-                    <img src={app.icon} alt={app.name} className="w-8 h-8 mx-auto rounded-lg" />
+                    {app.icon ? (
+                      <img src={`data:image/png;base64,${app.icon}`} alt={app.appName} className="w-8 h-8 mx-auto rounded-lg" />
+                    ) : (
+                      <div className="w-8 h-8 mx-auto rounded-lg bg-red-500/20 flex items-center justify-center text-red-500 font-bold">
+                        {app.appName.charAt(0)}
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>
@@ -274,15 +374,21 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
 
             <div className="absolute bottom-32 right-8 hidden md:block">
               <div className="grid grid-cols-1 gap-2">
-                {appList.slice(2, 4).map((app) => (
+                {includedApps.slice(2, 4).map((app) => (
                   <button
-                    key={app.id}
-                    onClick={() => startGame(app.id)}
+                    key={app.packageName}
+                    onClick={() => startGame(app.packageName)}
                     className={`w-12 h-12 rounded-xl transition-all ${
                       app.boosted ? 'bg-red-500/30 ring-2 ring-red-500' : 'bg-white/5 hover:bg-white/10'
                     }`}
                   >
-                    <img src={app.icon} alt={app.name} className="w-8 h-8 mx-auto rounded-lg" />
+                    {app.icon ? (
+                      <img src={`data:image/png;base64,${app.icon}`} alt={app.appName} className="w-8 h-8 mx-auto rounded-lg" />
+                    ) : (
+                      <div className="w-8 h-8 mx-auto rounded-lg bg-red-500/20 flex items-center justify-center text-red-500 font-bold">
+                        {app.appName.charAt(0)}
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>
@@ -295,33 +401,46 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
               <Grid3X3 className="w-5 h-5 text-red-500" />
               Boost Your Apps
             </h2>
-            <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
-              {appList.map((app) => (
-                <button
-                  key={app.id}
-                  onClick={() => toggleBoost(app.id)}
-                  className={`relative p-4 rounded-xl border transition-all ${
-                    app.boosted
-                      ? "bg-red-500/20 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]"
-                      : "bg-white/5 border-white/10 hover:border-red-500/50"
-                  }`}
-                >
-                  <div className="flex flex-col items-center gap-2">
-                    <img
-                      src={app.icon}
-                      alt={app.name}
-                      className="w-10 h-10 rounded-lg object-cover"
-                    />
-                    <span className="text-[10px] text-white/70 truncate w-full text-center">
-                      {app.name}
-                    </span>
-                    {app.boosted && (
-                      <Zap className="absolute top-1 right-1 w-3 h-3 text-red-500" />
-                    )}
-                  </div>
-                </button>
-              ))}
-            </div>
+            {includedApps.length === 0 ? (
+              <div className="text-center py-8 text-white/50">
+                <p>No apps added yet</p>
+                <p className="text-sm mt-1">Tap + to add games</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
+                {includedApps.map((app) => (
+                  <button
+                    key={app.packageName}
+                    onClick={() => toggleBoost(app.packageName)}
+                    className={`relative p-4 rounded-xl border transition-all ${
+                      app.boosted
+                        ? "bg-red-500/20 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]"
+                        : "bg-white/5 border-white/10 hover:border-red-500/50"
+                    }`}
+                  >
+                    <div className="flex flex-col items-center gap-2">
+                      {app.icon ? (
+                        <img
+                          src={`data:image/png;base64,${app.icon}`}
+                          alt={app.appName}
+                          className="w-10 h-10 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center text-red-500 font-bold">
+                          {app.appName.charAt(0)}
+                        </div>
+                      )}
+                      <span className="text-[10px] text-white/70 truncate w-full text-center">
+                        {app.appName}
+                      </span>
+                      {app.boosted && (
+                        <Zap className="absolute top-1 right-1 w-3 h-3 text-red-500" />
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Quick Actions */}
             <div className="grid grid-cols-4 gap-3 mt-8">
@@ -364,66 +483,94 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
 
       {/* Plus Button - Bottom Left */}
       <button 
-        onClick={() => setShowAppPicker(true)}
+        onClick={openAppPicker}
         className="absolute bottom-24 left-6 w-14 h-14 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors"
       >
         <Plus className="w-6 h-6 text-white/70" />
       </button>
 
-      {/* App Picker Overlay */}
+      {/* App Picker Overlay - Add Games */}
       {showAppPicker && (
-        <div className="fixed inset-0 z-60 bg-black/80 flex items-center justify-center p-6" onClick={() => setShowAppPicker(false)}>
+        <div className="fixed inset-0 z-60 bg-black/95 flex flex-col" onClick={() => setShowAppPicker(false)}>
           <div 
-            className="bg-gradient-to-b from-[#1a0a0a] to-[#0d0505] border border-red-900/50 rounded-2xl p-6 w-full max-w-md max-h-[70vh] overflow-y-auto"
+            className="flex-1 flex flex-col w-full max-w-lg mx-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Grid3X3 className="w-5 h-5 text-red-500" />
-                My Apps
-              </h3>
+            {/* Header */}
+            <div className="flex items-center gap-4 p-4 border-b border-white/10">
               <button 
                 onClick={() => setShowAppPicker(false)}
-                className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-red-500/30"
+                className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20"
               >
-                <X className="w-4 h-4 text-white/70" />
+                <ArrowLeft className="w-5 h-5 text-white/70" />
               </button>
+              <h3 className="text-xl font-bold text-white">Add Games</h3>
             </div>
             
-            <div className="grid grid-cols-3 gap-4">
-              {appList.map((app) => (
-                <button
-                  key={app.id}
-                  onClick={() => {
-                    setShowAppPicker(false);
-                    startGame(app.id);
-                  }}
-                  className={`relative p-4 rounded-xl border transition-all ${
-                    app.boosted
-                      ? "bg-red-500/20 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]"
-                      : "bg-white/5 border-white/10 hover:border-red-500/50"
-                  }`}
-                >
-                  <div className="flex flex-col items-center gap-2">
-                    <img
-                      src={app.icon}
-                      alt={app.name}
-                      className="w-12 h-12 rounded-xl object-cover"
-                    />
-                    <span className="text-xs text-white/80 truncate w-full text-center">
-                      {app.name}
-                    </span>
-                    {app.boosted && (
-                      <Zap className="absolute top-1 right-1 w-4 h-4 text-red-500" />
-                    )}
-                  </div>
-                </button>
-              ))}
+            {/* Not Added Count */}
+            <div className="px-4 py-3 text-white/60 text-sm">
+              {notIncludedApps.length} Not added
             </div>
             
-            <p className="text-xs text-white/40 text-center mt-4">
-              Tap an app to start with boost
-            </p>
+            {/* App List */}
+            <div className="flex-1 overflow-y-auto px-4 pb-4">
+              {isLoadingApps ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-red-500" />
+                </div>
+              ) : notIncludedApps.length === 0 ? (
+                <div className="text-center py-12 text-white/50">
+                  <p>All apps have been added!</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {notIncludedApps.map((app) => (
+                    <div
+                      key={app.packageName}
+                      className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/10"
+                    >
+                      {/* App Icon */}
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 overflow-hidden bg-white/5">
+                        {app.icon ? (
+                          <img
+                            src={`data:image/png;base64,${app.icon}`}
+                            alt={app.appName}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-red-500/30 to-red-900/30 flex items-center justify-center">
+                            <span className="text-xl font-bold text-red-500">
+                              {app.appName.charAt(0)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* App Name */}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-white font-medium truncate">{app.appName}</h4>
+                      </div>
+
+                      {/* Exclude/Include Buttons */}
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          onClick={() => handleExcludeApp(app.packageName)}
+                          className="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors"
+                        >
+                          Exclude
+                        </button>
+                        <button
+                          onClick={() => handleIncludeApp(app.packageName)}
+                          className="px-4 py-2 rounded-lg bg-white/10 text-white/70 text-sm font-medium hover:bg-white/20 transition-colors border border-white/20"
+                        >
+                          Include
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
