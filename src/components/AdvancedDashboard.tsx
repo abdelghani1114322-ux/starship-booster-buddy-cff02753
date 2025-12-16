@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { Capacitor } from "@capacitor/core";
 import BoostAnimation from "./BoostAnimation";
+import gameSpaceBg from "@/assets/game-space-bg.png";
 
 interface AdvancedDashboardProps {
   onClose: () => void;
@@ -178,7 +179,7 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
         appName={boostingApp}
       />
       
-    <div className="fixed inset-0 z-50 bg-black overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black overflow-hidden" style={{ backgroundImage: `url(${gameSpaceBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       {/* Tech Background Pattern */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-0 left-0 w-1/3 h-1/2 border-r border-b border-red-900/50" />
