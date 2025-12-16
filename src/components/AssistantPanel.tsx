@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Zap, Fuel, Trophy } from "lucide-react";
+import { X, Fuel, Trophy, Zap } from "lucide-react";
+import assistantButton from "@/assets/assistant-button.png";
 
 interface AssistantPanelProps {
   score: number;
@@ -16,11 +17,11 @@ export const AssistantPanel = ({ score, fuel, boosts }: AssistantPanelProps) => 
       {/* Floating trigger button */}
       <motion.button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-transparent flex items-center justify-center"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
       >
-        <Zap className="w-6 h-6" />
+        <img src={assistantButton} alt="Assistant" className="w-full h-full object-contain" />
       </motion.button>
 
       {/* Panel overlay */}
