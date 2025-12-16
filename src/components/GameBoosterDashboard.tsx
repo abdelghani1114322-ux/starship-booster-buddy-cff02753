@@ -778,7 +778,7 @@ export const GameBoosterDashboard = () => {
       {!showPanels && (
         <button
           onClick={() => setShowPanels(true)}
-          className="fixed right-0 top-1/2 -translate-y-1/2 z-40 w-6 h-24 hover:scale-110 transition-transform"
+          className="fixed left-0 top-1/2 -translate-y-1/2 z-40 w-6 h-24 hover:scale-110 transition-transform"
         >
           <img src={assistantToggle} alt="Open Panel" className="w-full h-full object-contain" />
         </button>
