@@ -8,7 +8,7 @@ import { AdvancedDashboard } from "./AdvancedDashboard";
 import { toast } from "sonner";
 import wifiOn from "@/assets/wifi-on.webp";
 import wifiOff from "@/assets/wifi-off.webp";
-import buttonBar from "@/assets/button-bar.jpg";
+import assistantToggle from "@/assets/assistant-toggle.png";
 import startAnimation from "@/assets/start_animation.mp4";
 
 export const GameBoosterDashboard = () => {
@@ -778,13 +778,10 @@ export const GameBoosterDashboard = () => {
       {!showPanels && (
         <button
           onClick={() => setShowPanels(true)}
-          className="fixed right-0 top-1/2 -translate-y-1/2 z-40 w-8 h-32 rounded-l-xl shadow-[0_0_20px_rgba(234,179,8,0.5)] hover:scale-110 transition-transform"
-          style={{
-            background: `url(${buttonBar})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
-        />
+          className="fixed right-0 top-1/2 -translate-y-1/2 z-40 w-6 h-24 hover:scale-110 transition-transform"
+        >
+          <img src={assistantToggle} alt="Open Panel" className="w-full h-full object-contain" />
+        </button>
       )}
 
       {/* Game Space Intro Video */}
