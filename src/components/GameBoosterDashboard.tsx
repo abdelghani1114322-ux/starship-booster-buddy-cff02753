@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import wifiOn from "@/assets/wifi-on.webp";
 import wifiOff from "@/assets/wifi-off.webp";
 import buttonBar from "@/assets/button-bar.jpg";
+import startAnimation from "@/assets/start_animation.mp4";
 
 export const GameBoosterDashboard = () => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export const GameBoosterDashboard = () => {
   const [wifiEnabled, setWifiEnabled] = useState(false);
   const [showGamesLobby, setShowGamesLobby] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showIntroVideo, setShowIntroVideo] = useState(false);
   const [cpuTemp, setCpuTemp] = useState(47);
   const [gpuTemp, setGpuTemp] = useState(46);
   const [cpuMHz, setCpuMHz] = useState(710);
@@ -579,7 +581,7 @@ export const GameBoosterDashboard = () => {
           <Button 
             variant="outline" 
             className="h-auto py-4 flex-col gap-2"
-            onClick={() => setShowAdvanced(true)}
+            onClick={() => setShowIntroVideo(true)}
           >
             <Settings className="h-5 w-5" />
             <span className="text-sm">Game Space</span>
@@ -783,6 +785,22 @@ export const GameBoosterDashboard = () => {
             backgroundPosition: 'center'
           }}
         />
+      )}
+
+      {/* Game Space Intro Video */}
+      {showIntroVideo && (
+        <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+          <video
+            src={startAnimation}
+            autoPlay
+            playsInline
+            className="w-full h-full object-cover"
+            onEnded={() => {
+              setShowIntroVideo(false);
+              setShowAdvanced(true);
+            }}
+          />
+        </div>
       )}
 
       {/* Advanced Dashboard */}
