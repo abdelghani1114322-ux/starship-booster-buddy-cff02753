@@ -27,6 +27,7 @@ import riseGpu from "@/assets/rise_gpu.png";
 import fanOff from "@/assets/fan_off.png";
 import fanOn from "@/assets/fan_on.png";
 import hunterModeIcon from "@/assets/hunter-mode-icon.png";
+import refreshRate60Hz from "@/assets/refresh-rate-60hz.png";
 interface BoostAssistantProps {
   cpuUsage: number;
   ramUsage: number;
@@ -678,26 +679,41 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               <Sun className="w-5 h-5 text-foreground/80 mt-1" />
             </div>
 
-            {/* Hunter Mode Button */}
-            <button
-              onClick={() => {
-                setHunterModeEnabled(!hunterModeEnabled);
-                toast.success(hunterModeEnabled ? "Hunter Mode Disabled" : "Hunter Mode Enabled 🎯", {
-                  description: hunterModeEnabled ? "Normal vision restored" : "Enhanced target visibility",
-                });
-              }}
-              className={`w-12 h-12 rounded-full border transition-all flex items-center justify-center mx-auto ${
-                hunterModeEnabled 
-                  ? 'bg-red-500/30 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.6),0_0_30px_rgba(239,68,68,0.3)]' 
-                  : 'bg-[#2a2a3e] border-border/50 hover:bg-muted/40'
-              }`}
-            >
-              <img 
-                src={hunterModeIcon} 
-                alt="Hunter Mode" 
-                className={`w-7 h-7 transition-all ${hunterModeEnabled ? 'drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]' : ''}`} 
-              />
-            </button>
+            {/* Hunter Mode & Refresh Rate Buttons */}
+            <div className="flex items-center justify-center gap-3">
+              {/* Hunter Mode Button */}
+              <button
+                onClick={() => {
+                  setHunterModeEnabled(!hunterModeEnabled);
+                  toast.success(hunterModeEnabled ? "Hunter Mode Disabled" : "Hunter Mode Enabled 🎯", {
+                    description: hunterModeEnabled ? "Normal vision restored" : "Enhanced target visibility",
+                  });
+                }}
+                className={`w-12 h-12 rounded-full border transition-all flex items-center justify-center ${
+                  hunterModeEnabled 
+                    ? 'bg-red-500/30 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.6),0_0_30px_rgba(239,68,68,0.3)]' 
+                    : 'bg-[#2a2a3e] border-border/50 hover:bg-muted/40'
+                }`}
+              >
+                <img 
+                  src={hunterModeIcon} 
+                  alt="Hunter Mode" 
+                  className={`w-7 h-7 transition-all ${hunterModeEnabled ? 'drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]' : ''}`} 
+                />
+              </button>
+
+              {/* 60Hz Refresh Rate Button */}
+              <button
+                onClick={() => toast.info("Refresh Rate: 60Hz")}
+                className="w-12 h-12 rounded-full overflow-hidden border border-border/50 hover:border-accent/50 transition-all hover:scale-105"
+              >
+                <img 
+                  src={refreshRate60Hz} 
+                  alt="60Hz" 
+                  className="w-full h-full object-cover" 
+                />
+              </button>
+            </div>
 
             {/* Screen Recorder */}
             <div className="p-3 bg-muted/20 rounded-lg border border-accent/20">
