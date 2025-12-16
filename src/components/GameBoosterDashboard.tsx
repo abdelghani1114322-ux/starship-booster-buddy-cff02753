@@ -582,7 +582,7 @@ export const GameBoosterDashboard = () => {
             onClick={() => setShowAdvanced(true)}
           >
             <Settings className="h-5 w-5" />
-            <span className="text-sm">Advanced</span>
+            <span className="text-sm">Game Space</span>
           </Button>
         </div>
 
