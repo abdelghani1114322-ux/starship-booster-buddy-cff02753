@@ -107,7 +107,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [showMacro, setShowMacro] = useState(false);
   const [macroTab, setMacroTab] = useState<"performance" | "display" | "audio">("performance");
   const [macroMode, setMacroMode] = useState<"auto" | "gpu" | "cpu" | "super">("auto");
-  const [miniApp, setMiniApp] = useState<"youtube" | "chrome" | null>(null);
+  const [miniApp, setMiniApp] = useState<{ name: string; icon: string; webUrl: string } | null>(null);
   const [showZoomMode, setShowZoomMode] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
   const [zoomLevel, setZoomLevel] = useState(2);
@@ -306,24 +306,17 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
         toast.info(`Opening ${app.name} in browser`);
       }
     } else {
-      // Web fallback - open mini app for YouTube/Chrome, or open web URL
-      if (app.name === "YouTube") {
-        setMiniApp("youtube");
-        toast.success("Opening YouTube mini player");
-      } else if (app.name === "Chrome") {
-        setMiniApp("chrome");
-        toast.success("Opening Chrome mini browser");
-      } else {
-        window.open(app.webUrl, "_blank");
-        toast.success(`Opening ${app.name} in new tab`);
-      }
+      // Web fallback - open all apps in mini window directly
+      setMiniApp({ name: app.name, icon: app.icon, webUrl: app.webUrl });
+      toast.success(`${app.name} launched in mini window`);
     }
   };
 
-  // Function to launch apps - shows video first, then launches
+  // Function to launch apps - opens mini app directly, no intro video
   const launchApp = (app: typeof gameApps[0]) => {
-    setPendingAppLaunch(app);
-    setShowAppLaunchVideo(true);
+    // Directly open mini app window - no video intro
+    setMiniApp({ name: app.name, icon: app.icon, webUrl: app.webUrl });
+    toast.success(`${app.name} launched`);
   };
 
   // Handle video end - launch the app
@@ -620,18 +613,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
   return (
     <>
-      {/* Video Animation Overlay when launching apps */}
-      {showAppLaunchVideo && (
-        <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center">
-          <video
-            src={startAnimation}
-            autoPlay
-            playsInline
-            className="w-full h-full object-cover"
-            onEnded={handleVideoEnd}
-          />
-        </div>
-      )}
+      {/* No video intro - apps launch directly */}
       {/* LEFT PANEL - CPU, GPU, Modes */}
       <div 
         className={`fixed left-0 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px] max-h-[calc(100vh-2rem)] landscape:top-1/2 landscape:-translate-y-1/2 landscape:h-[95vh] landscape:max-h-[95vh] landscape:w-[260px] transition-all duration-300 ease-out ${
@@ -2488,18 +2470,18 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
         </div>
       )}
 
-      {/* Mini App Overlay */}
+      {/* Mini App Overlay - Direct launch, no intro */}
       {miniApp && (
         <div className="fixed bottom-20 right-4 z-[60] w-[320px] h-[200px] rounded-xl overflow-hidden shadow-2xl border-2 border-accent/50 bg-black">
           {/* Header */}
           <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-r from-card/95 to-muted/95 backdrop-blur flex items-center justify-between px-2 z-10">
             <div className="flex items-center gap-2">
               <img 
-                src={miniApp === "youtube" ? youtubeIcon : chromeIcon} 
-                alt={miniApp} 
+                src={miniApp.icon} 
+                alt={miniApp.name} 
                 className="w-4 h-4" 
               />
-              <span className="text-xs font-medium capitalize">{miniApp}</span>
+              <span className="text-xs font-medium">{miniApp.name}</span>
             </div>
             <button
               onClick={() => setMiniApp(null)}
@@ -2511,7 +2493,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           {/* Content */}
           <div className="w-full h-full pt-8">
             <iframe
-              src={miniApp === "youtube" ? "https://m.youtube.com" : "https://www.google.com/webhp?igu=1"}
+              src={miniApp.webUrl}
               className="w-full h-full border-0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
