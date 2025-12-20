@@ -158,17 +158,21 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
     setBoostingApp("");
   }, [boostingApp]);
 
+  const [showBoostOverlay, setShowBoostOverlay] = useState(false);
+
   const startGame = (packageName: string) => {
     const app = includedApps.find(a => a.packageName === packageName);
     if (app) {
-      // Show boost animation for 4 seconds when app starts
+      // Show boost overlay for 4 seconds, then close game space and show app
       setRunningApp(app);
+      setShowBoostOverlay(true);
       setIncludedApps(prev => 
         prev.map(a => a.packageName === packageName ? { ...a, boosted: true } : a)
       );
       
-      // Auto-close after 4 seconds
+      // Auto-close boost overlay after 4 seconds
       setTimeout(() => {
+        setShowBoostOverlay(false);
         setRunningApp(null);
         toast.success(`${app.appName} launched and boosted!`);
       }, 4000);
@@ -179,6 +183,7 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
     if (runningApp) {
       toast.info(`${runningApp.appName} closed`);
       setRunningApp(null);
+      setShowBoostOverlay(false);
     }
   };
 
@@ -204,21 +209,21 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
 
   return (
     <>
-      {/* Energy-X Boost Animation - shows for 4 seconds when app starts */}
-      {runningApp && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90">
-          {/* Fullscreen Video */}
+      {/* Energy-X Boost Overlay - shows for 4 seconds when app starts (appears OVER the app) */}
+      {showBoostOverlay && runningApp && (
+        <div className="fixed inset-0 z-[200] pointer-events-none">
+          {/* Video Animation Overlay */}
           <video
             src={gameBoostAnimation}
             autoPlay
             muted
             playsInline
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover opacity-80"
           />
           
-          {/* App Info Overlay */}
-          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3">
-            <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-lg border-2 border-red-500">
+          {/* App Info Centered */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-2xl border-2 border-red-500 mb-4">
               {runningApp.icon ? (
                 <img 
                   src={`data:image/png;base64,${runningApp.icon}`} 
@@ -226,15 +231,15 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
                   className="w-full h-full object-cover" 
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-2xl">
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-3xl">
                   {runningApp.appName.charAt(0)}
                 </div>
               )}
             </div>
-            <h3 className="text-white font-bold text-xl">{runningApp.appName}</h3>
-            <div className="flex items-center gap-2">
-              <Zap className="w-5 h-5 text-red-400 animate-pulse" />
-              <span className="text-red-400 font-semibold">BOOSTING...</span>
+            <h3 className="text-white font-bold text-2xl drop-shadow-lg">{runningApp.appName}</h3>
+            <div className="flex items-center gap-2 mt-2">
+              <Zap className="w-6 h-6 text-red-400 animate-pulse" />
+              <span className="text-red-400 font-bold text-lg">ENERGY-X BOOSTING...</span>
             </div>
           </div>
         </div>
