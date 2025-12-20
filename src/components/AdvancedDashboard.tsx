@@ -3,11 +3,11 @@ import { X, Home, Zap, Grid3X3, Plus, Music, Users, Loader2, Video, Play } from 
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { Capacitor } from "@capacitor/core";
-import BoostAnimation from "./BoostAnimation";
 import { BoostAssistant } from "./BoostAssistant";
 import gameSpaceBg from "@/assets/game-space-bg.png";
 import backButton from "@/assets/back-button.png";
 import assistantToggle from "@/assets/assistant-toggle.png";
+import startAnimation from "@/assets/start_animation.mp4";
 
 interface AdvancedDashboardProps {
   onClose: () => void;
@@ -190,12 +190,18 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
 
   return (
     <>
-      {/* Boost Animation Overlay */}
-      <BoostAnimation 
-        isVisible={showBoostAnimation} 
-        onComplete={handleBoostComplete}
-        appName={boostingApp}
-      />
+      {/* Video Animation Overlay */}
+      {showBoostAnimation && (
+        <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center">
+          <video
+            src={startAnimation}
+            autoPlay
+            playsInline
+            className="w-full h-full object-cover"
+            onEnded={handleBoostComplete}
+          />
+        </div>
+      )}
       
     <div className="fixed inset-0 z-50 bg-black overflow-hidden" style={{ backgroundImage: `url(${gameSpaceBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       {/* Tech Background Pattern */}

@@ -5,6 +5,7 @@ import { Card } from "./ui/card";
 import { Slider } from "./ui/slider";
 import { toast } from "sonner";
 import { Capacitor } from "@capacitor/core";
+import startAnimation from "@/assets/start_animation.mp4";
 
 import wifiOn from "@/assets/wifi-on.webp";
 import wifiOff from "@/assets/wifi-off.webp";
@@ -42,6 +43,16 @@ interface BoostAssistantProps {
 }
 
 export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceMode, isVisible, wifiEnabled, setWifiEnabled, setPerformanceMode }: BoostAssistantProps) => {
+  const [showAppLaunchVideo, setShowAppLaunchVideo] = useState(false);
+  const [pendingAppLaunch, setPendingAppLaunch] = useState<typeof gameApps[0] | null>(null);
+  
+  const gameApps = [
+    { name: "Instagram", icon: instagramIcon, packageName: "com.instagram.android", webUrl: "https://www.instagram.com" },
+    { name: "Facebook", icon: facebookIcon, packageName: "com.facebook.katana", webUrl: "https://www.facebook.com" },
+    { name: "Chrome", icon: chromeIcon, packageName: "com.android.chrome", webUrl: "https://www.google.com" },
+    { name: "YouTube", icon: youtubeIcon, packageName: "com.google.android.youtube", webUrl: "https://www.youtube.com" },
+    { name: "WhatsApp", icon: whatsappIcon, packageName: "com.whatsapp", webUrl: "https://web.whatsapp.com" },
+  ];
   
   const [fanActive, setFanActive] = useState(false);
   const [diabloMode, setDiabloMode] = useState(false);
@@ -244,16 +255,9 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     return `${mins}:${String(secs).padStart(2, '0')}`;
   };
 
-  const gameApps = [
-    { name: "Instagram", icon: instagramIcon, packageName: "com.instagram.android", webUrl: "https://www.instagram.com" },
-    { name: "Facebook", icon: facebookIcon, packageName: "com.facebook.katana", webUrl: "https://www.facebook.com" },
-    { name: "Chrome", icon: chromeIcon, packageName: "com.android.chrome", webUrl: "https://www.google.com" },
-    { name: "YouTube", icon: youtubeIcon, packageName: "com.google.android.youtube", webUrl: "https://www.youtube.com" },
-    { name: "WhatsApp", icon: whatsappIcon, packageName: "com.whatsapp", webUrl: "https://web.whatsapp.com" },
-  ];
 
-  // Function to launch apps
-  const launchApp = async (app: typeof gameApps[0]) => {
+  // Function to actually launch the app (called after video ends)
+  const performAppLaunch = async (app: typeof gameApps[0]) => {
     if (Capacitor.isNativePlatform()) {
       try {
         // Try to open the app using Android Intent
@@ -313,6 +317,21 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
         window.open(app.webUrl, "_blank");
         toast.success(`Opening ${app.name} in new tab`);
       }
+    }
+  };
+
+  // Function to launch apps - shows video first, then launches
+  const launchApp = (app: typeof gameApps[0]) => {
+    setPendingAppLaunch(app);
+    setShowAppLaunchVideo(true);
+  };
+
+  // Handle video end - launch the app
+  const handleVideoEnd = () => {
+    setShowAppLaunchVideo(false);
+    if (pendingAppLaunch) {
+      performAppLaunch(pendingAppLaunch);
+      setPendingAppLaunch(null);
     }
   };
 
@@ -601,6 +620,18 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
   return (
     <>
+      {/* Video Animation Overlay when launching apps */}
+      {showAppLaunchVideo && (
+        <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center">
+          <video
+            src={startAnimation}
+            autoPlay
+            playsInline
+            className="w-full h-full object-cover"
+            onEnded={handleVideoEnd}
+          />
+        </div>
+      )}
       {/* LEFT PANEL - CPU, GPU, Modes */}
       <div 
         className={`fixed left-0 top-1/2 -translate-y-1/2 z-50 w-80 h-[600px] max-h-[calc(100vh-2rem)] landscape:top-1/2 landscape:-translate-y-1/2 landscape:h-[95vh] landscape:max-h-[95vh] landscape:w-[260px] transition-all duration-300 ease-out ${
