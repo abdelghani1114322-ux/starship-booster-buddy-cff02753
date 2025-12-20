@@ -581,7 +581,7 @@ export const GameBoosterDashboard = () => {
           <Button 
             variant="outline" 
             className="h-auto py-4 flex-col gap-2"
-            onClick={() => setShowIntroVideo(true)}
+            onClick={() => setShowAdvanced(true)}
           >
             <Settings className="h-5 w-5" />
             <span className="text-sm">Game Space</span>
@@ -784,21 +784,7 @@ export const GameBoosterDashboard = () => {
         </button>
       )}
 
-      {/* Game Space Intro Video */}
-      {showIntroVideo && (
-        <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
-          <video
-            src={startAnimation}
-            autoPlay
-            playsInline
-            className="w-full h-full object-cover"
-            onEnded={() => {
-              setShowIntroVideo(false);
-              setShowAdvanced(true);
-            }}
-          />
-        </div>
-      )}
+      {/* No intro video - Game Space opens directly */}
 
       {/* Advanced Dashboard */}
       {showAdvanced && (
