@@ -7,8 +7,8 @@ import { toast } from "sonner";
 
 import wifiOn from "@/assets/wifi-on.webp";
 import wifiOff from "@/assets/wifi-off.webp";
-import pubgIcon from "@/assets/pubg-icon.png";
-import freefireIcon from "@/assets/freefire-icon.png";
+import instagramIcon from "@/assets/instagram-icon.png";
+import facebookIcon from "@/assets/facebook-icon.png";
 import chromeIcon from "@/assets/chrome-icon.png";
 import youtubeIcon from "@/assets/youtube-icon.png";
 import whatsappIcon from "@/assets/whatsapp-icon.png";
@@ -244,8 +244,8 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   };
 
   const gameApps = [
-    { name: "PUBG", icon: pubgIcon },
-    { name: "Free Fire", icon: freefireIcon },
+    { name: "Instagram", icon: instagramIcon },
+    { name: "Facebook", icon: facebookIcon },
     { name: "Chrome", icon: chromeIcon },
     { name: "YouTube", icon: youtubeIcon },
     { name: "WhatsApp", icon: whatsappIcon },
