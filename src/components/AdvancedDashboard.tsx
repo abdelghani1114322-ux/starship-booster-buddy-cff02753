@@ -4,8 +4,10 @@ import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { Capacitor } from "@capacitor/core";
 import BoostAnimation from "./BoostAnimation";
+import { BoostAssistant } from "./BoostAssistant";
 import gameSpaceBg from "@/assets/game-space-bg.png";
 import backButton from "@/assets/back-button.png";
+import assistantToggle from "@/assets/assistant-toggle.png";
 
 interface AdvancedDashboardProps {
   onClose: () => void;
@@ -30,8 +32,13 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   const [boostingApp, setBoostingApp] = useState<string>("");
   const [isLoadingApps, setIsLoadingApps] = useState(false);
   const [showRecordings, setShowRecordings] = useState(false);
-
-  // Mock screen recordings data
+  const [showAssistant, setShowAssistant] = useState(false);
+  const [wifiEnabled, setWifiEnabled] = useState(false);
+  const [performanceMode, setPerformanceMode] = useState<"saving" | "balance" | "boost">("balance");
+  const [cpuUsage, setCpuUsage] = useState(45);
+  const [ramUsage, setRamUsage] = useState(62);
+  const [fps, setFps] = useState(60);
+  const [gpuUsage, setGpuUsage] = useState(38);
   const mockRecordings = [
     { id: 1, name: "PUBG Mobile Gameplay", duration: "12:34", date: "Today", thumbnail: null },
     { id: 2, name: "Free Fire Match", duration: "08:22", date: "Today", thumbnail: null },
@@ -254,156 +261,33 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
       <div className="relative flex-1 flex items-center justify-center h-[calc(100vh-140px)]">
         {activeTab === "lobby" ? (
           <>
-            {/* Central Circular Design */}
-            <div className="relative w-72 h-72 md:w-96 md:h-96">
-              {/* Outermost ring with tick marks */}
-              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 400">
-                <defs>
-                  <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#4a1515" />
-                    <stop offset="50%" stopColor="#7f1d1d" />
-                    <stop offset="100%" stopColor="#4a1515" />
-                  </linearGradient>
-                </defs>
-                {/* Outer decorative circle */}
-                <circle cx="200" cy="200" r="195" fill="none" stroke="#1f1f1f" strokeWidth="8" />
-                {/* Tick marks around the circle */}
-                {Array.from({ length: 60 }).map((_, i) => {
-                  const angle = (i * 6 - 90) * (Math.PI / 180);
-                  const x1 = 200 + 185 * Math.cos(angle);
-                  const y1 = 200 + 185 * Math.sin(angle);
-                  const x2 = 200 + (i % 5 === 0 ? 175 : 180) * Math.cos(angle);
-                  const y2 = 200 + (i % 5 === 0 ? 175 : 180) * Math.sin(angle);
-                  return (
-                    <line
-                      key={i}
-                      x1={x1}
-                      y1={y1}
-                      x2={x2}
-                      y2={y2}
-                      stroke={i % 5 === 0 ? "#4a1515" : "#2a2a2a"}
-                      strokeWidth={i % 5 === 0 ? 2 : 1}
-                    />
-                  );
-                })}
-                {/* Main ring */}
-                <circle cx="200" cy="200" r="165" fill="none" stroke="url(#ringGrad)" strokeWidth="12" />
-                {/* Inner ring */}
-                <circle cx="200" cy="200" r="145" fill="none" stroke="#2a1a1a" strokeWidth="3" />
-                {/* Tech detail arcs */}
-                <path
-                  d="M 200 60 A 140 140 0 0 1 340 200"
-                  fill="none"
-                  stroke="#3d1515"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M 60 200 A 140 140 0 0 1 200 340"
-                  fill="none"
-                  stroke="#3d1515"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-                {/* Corner brackets */}
-                <rect x="85" y="85" width="20" height="6" rx="2" fill="#4a4a4a" transform="rotate(45 95 88)" />
-                <rect x="295" y="85" width="20" height="6" rx="2" fill="#4a4a4a" transform="rotate(-45 305 88)" />
-                <rect x="85" y="309" width="20" height="6" rx="2" fill="#4a4a4a" transform="rotate(-45 95 312)" />
-                <rect x="295" y="309" width="20" height="6" rx="2" fill="#4a4a4a" transform="rotate(45 305 312)" />
-              </svg>
-
-              {/* Inner circle with grid pattern */}
-              <div className="absolute inset-[15%] rounded-full bg-gradient-to-br from-[#1a0a0a] via-[#2d1010] to-[#1a0a0a] border-2 border-red-900/40 overflow-hidden">
-                {/* Grid pattern overlay */}
-                <div 
-                  className="absolute inset-0 opacity-30"
-                  style={{
-                    backgroundImage: `
-                      linear-gradient(rgba(127,29,29,0.3) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(127,29,29,0.3) 1px, transparent 1px)
-                    `,
-                    backgroundSize: '20px 20px'
-                  }}
-                />
-                {/* Radial glow */}
-                <div className="absolute inset-0 bg-gradient-radial from-red-900/20 via-transparent to-transparent" />
-              </div>
-
-              {/* Center Logo */}
-              <div className="absolute inset-[25%] flex items-center justify-center">
-                <div className="relative">
-                  {/* Glowing logo */}
-                  <svg viewBox="0 0 60 80" className="w-16 h-20 md:w-20 md:h-24">
-                    <defs>
-                      <linearGradient id="logoGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#ef4444" />
-                        <stop offset="100%" stopColor="#7f1d1d" />
-                      </linearGradient>
-                      <filter id="glow">
-                        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                        <feMerge>
-                          <feMergeNode in="coloredBlur"/>
-                          <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                      </filter>
-                    </defs>
-                    {/* Trident shape */}
-                    <path
-                      d="M30 0 L30 80 M15 15 L15 50 M45 15 L45 50 M8 25 L8 40 M52 25 L52 40"
-                      stroke="url(#logoGrad)"
-                      strokeWidth="4"
-                      strokeLinecap="round"
-                      fill="none"
-                      filter="url(#glow)"
-                    />
-                  </svg>
+            {/* Lobby content - Apps display */}
+            <div className="flex flex-col items-center justify-center gap-8">
+              <h2 className="text-2xl font-bold text-white/90">Game Lobby</h2>
+              <p className="text-white/50">Add games using the + button below</p>
+              
+              {/* Included apps grid */}
+              {includedApps.length > 0 && (
+                <div className="grid grid-cols-4 gap-4">
+                  {includedApps.map((app) => (
+                    <button
+                      key={app.packageName}
+                      onClick={() => startGame(app.packageName)}
+                      className={`w-16 h-16 rounded-xl transition-all ${
+                        app.boosted ? 'bg-red-500/30 ring-2 ring-red-500' : 'bg-white/5 hover:bg-white/10'
+                      }`}
+                    >
+                      {app.icon ? (
+                        <img src={`data:image/png;base64,${app.icon}`} alt={app.appName} className="w-12 h-12 mx-auto rounded-lg" />
+                      ) : (
+                        <div className="w-12 h-12 mx-auto rounded-lg bg-red-500/20 flex items-center justify-center text-red-500 font-bold text-lg">
+                          {app.appName.charAt(0)}
+                        </div>
+                      )}
+                    </button>
+                  ))}
                 </div>
-              </div>
-            </div>
-
-            {/* Apps floating around - only visible when no app selected */}
-            <div className="absolute bottom-32 left-8 hidden md:block">
-              <div className="grid grid-cols-1 gap-2">
-                {includedApps.slice(0, 2).map((app) => (
-                  <button
-                    key={app.packageName}
-                    onClick={() => startGame(app.packageName)}
-                    className={`w-12 h-12 rounded-xl transition-all ${
-                      app.boosted ? 'bg-red-500/30 ring-2 ring-red-500' : 'bg-white/5 hover:bg-white/10'
-                    }`}
-                  >
-                    {app.icon ? (
-                      <img src={`data:image/png;base64,${app.icon}`} alt={app.appName} className="w-8 h-8 mx-auto rounded-lg" />
-                    ) : (
-                      <div className="w-8 h-8 mx-auto rounded-lg bg-red-500/20 flex items-center justify-center text-red-500 font-bold">
-                        {app.appName.charAt(0)}
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="absolute bottom-32 right-8 hidden md:block">
-              <div className="grid grid-cols-1 gap-2">
-                {includedApps.slice(2, 4).map((app) => (
-                  <button
-                    key={app.packageName}
-                    onClick={() => startGame(app.packageName)}
-                    className={`w-12 h-12 rounded-xl transition-all ${
-                      app.boosted ? 'bg-red-500/30 ring-2 ring-red-500' : 'bg-white/5 hover:bg-white/10'
-                    }`}
-                  >
-                    {app.icon ? (
-                      <img src={`data:image/png;base64,${app.icon}`} alt={app.appName} className="w-8 h-8 mx-auto rounded-lg" />
-                    ) : (
-                      <div className="w-8 h-8 mx-auto rounded-lg bg-red-500/20 flex items-center justify-center text-red-500 font-bold">
-                        {app.appName.charAt(0)}
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
+              )}
             </div>
           </>
         ) : (
@@ -694,6 +578,27 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
           <span className="font-medium text-sm">Super Base</span>
         </button>
       </div>
+
+      {/* Assistant Panel Toggle Button */}
+      <button
+        onClick={() => setShowAssistant(!showAssistant)}
+        className="fixed left-0 top-1/2 -translate-y-1/2 z-40 w-6 h-24 hover:scale-110 transition-transform"
+      >
+        <img src={assistantToggle} alt="Open Panel" className="w-full h-full object-contain" />
+      </button>
+
+      {/* Boost Assistant Panel */}
+      <BoostAssistant
+        cpuUsage={cpuUsage}
+        ramUsage={ramUsage}
+        fps={fps}
+        gpuUsage={gpuUsage}
+        performanceMode={performanceMode}
+        isVisible={showAssistant}
+        wifiEnabled={wifiEnabled}
+        setWifiEnabled={setWifiEnabled}
+        setPerformanceMode={setPerformanceMode}
+      />
     </div>
     </>
   );
