@@ -264,38 +264,68 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
       </div>
 
       {/* Main Content */}
-      <div className="relative flex-1 flex items-center justify-center h-[calc(100vh-140px)]">
+      <div className="relative flex-1 flex flex-col h-[calc(100vh-140px)] overflow-auto">
         {activeTab === "lobby" ? (
-          <>
-            {/* Lobby content - Apps display */}
-            <div className="flex flex-col items-center justify-center gap-8">
-              <h2 className="text-2xl font-bold text-white/90">Game Lobby</h2>
-              <p className="text-white/50">Add games using the + button below</p>
+          <div className="flex-1 px-4 py-6">
+            {/* Apps List - Like reference image */}
+            <div className="space-y-3">
+              {includedApps.map((app) => (
+                <button
+                  key={app.packageName}
+                  onClick={() => startGame(app.packageName)}
+                  className={`w-full flex items-center gap-4 p-2 rounded-xl transition-all hover:bg-white/5 ${
+                    app.boosted ? 'bg-red-500/10' : ''
+                  }`}
+                >
+                  {/* App Icon */}
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-gray-700 to-gray-900">
+                    {app.icon ? (
+                      <img 
+                        src={`data:image/png;base64,${app.icon}`} 
+                        alt={app.appName} 
+                        className="w-full h-full object-cover" 
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-2xl">
+                        {app.appName.charAt(0)}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* App Info */}
+                  <div className="flex-1 text-left">
+                    <h3 className="text-white font-medium text-lg">{app.appName}</h3>
+                    <p className="text-white/40 text-sm">
+                      {"<1h"} · {Math.floor(Math.random() * 90) + 1}d · {Math.floor(Math.random() * 5)}GB
+                    </p>
+                  </div>
+                  
+                  {/* Boost indicator */}
+                  {app.boosted && (
+                    <Zap className="w-5 h-5 text-red-500" />
+                  )}
+                </button>
+              ))}
               
-              {/* Included apps grid */}
-              {includedApps.length > 0 && (
-                <div className="grid grid-cols-4 gap-4">
-                  {includedApps.map((app) => (
-                    <button
-                      key={app.packageName}
-                      onClick={() => startGame(app.packageName)}
-                      className={`w-16 h-16 rounded-xl transition-all ${
-                        app.boosted ? 'bg-red-500/30 ring-2 ring-red-500' : 'bg-white/5 hover:bg-white/10'
-                      }`}
-                    >
-                      {app.icon ? (
-                        <img src={`data:image/png;base64,${app.icon}`} alt={app.appName} className="w-12 h-12 mx-auto rounded-lg" />
-                      ) : (
-                        <div className="w-12 h-12 mx-auto rounded-lg bg-red-500/20 flex items-center justify-center text-red-500 font-bold text-lg">
-                          {app.appName.charAt(0)}
-                        </div>
-                      )}
-                    </button>
-                  ))}
+              {/* Add App Button */}
+              <button
+                onClick={openAppPicker}
+                className="w-full flex items-center gap-4 p-2 rounded-xl transition-all hover:bg-white/5"
+              >
+                <div className="w-16 h-16 rounded-2xl bg-gray-700/50 flex items-center justify-center">
+                  <Plus className="w-8 h-8 text-white/50" />
                 </div>
-              )}
+                <span className="text-white/50 font-medium">Add Game</span>
+              </button>
             </div>
-          </>
+            
+            {includedApps.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-white/30 text-lg">No games added yet</p>
+                <p className="text-white/20 text-sm mt-2">Tap the + button to add games</p>
+              </div>
+            )}
+          </div>
         ) : (
           <div className="space-y-6 px-6 w-full max-w-2xl">
             {/* Apps Grid for Super Base */}
