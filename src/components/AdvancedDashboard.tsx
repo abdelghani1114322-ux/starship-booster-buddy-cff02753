@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { X, Home, Zap, Grid3X3, Plus, Music, Users, Loader2, ArrowLeft } from "lucide-react";
+import { X, Home, Zap, Grid3X3, Plus, Music, Users, Loader2, Video, Play } from "lucide-react";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { Capacitor } from "@capacitor/core";
@@ -28,6 +28,16 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   const [showBoostAnimation, setShowBoostAnimation] = useState(false);
   const [boostingApp, setBoostingApp] = useState<string>("");
   const [isLoadingApps, setIsLoadingApps] = useState(false);
+  const [showRecordings, setShowRecordings] = useState(false);
+
+  // Mock screen recordings data
+  const mockRecordings = [
+    { id: 1, name: "PUBG Mobile Gameplay", duration: "12:34", date: "Today", thumbnail: null },
+    { id: 2, name: "Free Fire Match", duration: "08:22", date: "Today", thumbnail: null },
+    { id: 3, name: "Genshin Impact", duration: "25:10", date: "Yesterday", thumbnail: null },
+    { id: 4, name: "Mobile Legends Ranked", duration: "18:45", date: "Yesterday", thumbnail: null },
+    { id: 5, name: "Among Us Session", duration: "32:00", date: "2 days ago", thumbnail: null },
+  ];
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -443,6 +453,23 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
               </div>
             )}
 
+            {/* Red Magic Time Section */}
+            <div className="mt-8">
+              <button
+                onClick={() => setShowRecordings(true)}
+                className="w-full p-4 rounded-xl bg-gradient-to-r from-red-900/40 to-red-800/20 border border-red-500/30 hover:border-red-500/60 transition-all flex items-center gap-4"
+              >
+                <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center">
+                  <Video className="w-6 h-6 text-red-500" />
+                </div>
+                <div className="flex-1 text-left">
+                  <h3 className="text-white font-semibold">Red Magic Time</h3>
+                  <p className="text-white/50 text-sm">View your screen recordings</p>
+                </div>
+                <div className="text-white/50 text-sm">{mockRecordings.length} videos</div>
+              </button>
+            </div>
+
             {/* Quick Actions */}
             <div className="grid grid-cols-4 gap-3 mt-8">
               <Button
@@ -576,7 +603,59 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
         </div>
       )}
 
-      {/* Right Side Icons */}
+      {/* Screen Recordings Overlay */}
+      {showRecordings && (
+        <div className="fixed inset-0 z-60 bg-black/95 flex flex-col overflow-hidden">
+          <div className="flex flex-col w-full max-w-lg mx-auto h-full overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-white/10 shrink-0">
+              <div className="flex items-center gap-3">
+                <Video className="w-6 h-6 text-red-500" />
+                <h3 className="text-xl font-bold text-white">Red Magic Time</h3>
+              </div>
+              <button 
+                onClick={() => setShowRecordings(false)}
+                className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center hover:bg-red-500/30 transition-colors"
+              >
+                <X className="w-5 h-5 text-white/70" />
+              </button>
+            </div>
+            
+            {/* Recordings Count */}
+            <div className="px-4 py-3 text-white/60 text-sm shrink-0">
+              {mockRecordings.length} Screen Recordings
+            </div>
+            
+            {/* Recordings List */}
+            <div className="flex-1 overflow-y-auto px-4 pb-4 min-h-0">
+              <div className="space-y-3">
+                {mockRecordings.map((recording) => (
+                  <div
+                    key={recording.id}
+                    className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/10 hover:border-red-500/30 transition-colors"
+                  >
+                    {/* Thumbnail */}
+                    <div className="w-20 h-14 rounded-lg bg-gradient-to-br from-red-900/30 to-black flex items-center justify-center shrink-0">
+                      <Play className="w-6 h-6 text-red-500" />
+                    </div>
+
+                    {/* Recording Info */}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-white font-medium truncate">{recording.name}</h4>
+                      <div className="flex items-center gap-2 text-white/50 text-sm">
+                        <span>{recording.duration}</span>
+                        <span>•</span>
+                        <span>{recording.date}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="absolute bottom-24 right-6 flex gap-2">
         <button className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10">
           <Grid3X3 className="w-5 h-5 text-white/50" />
