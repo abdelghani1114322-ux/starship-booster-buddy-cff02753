@@ -199,57 +199,55 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
 
   return (
     <>
-      {/* Mini App Floating Window - Video plays INSIDE while app is running */}
+      {/* Fullscreen Video at Bottom when app is running */}
       {runningApp && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70">
-          <div className="relative w-72 h-72 rounded-3xl overflow-hidden shadow-2xl border-2 border-red-500/50 bg-black">
-            {/* Close X Button */}
-            <button
-              onClick={closeRunningApp}
-              className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-red-600 flex items-center justify-center hover:bg-red-700 transition-colors shadow-lg"
-            >
-              <X className="w-5 h-5 text-white" />
-            </button>
+        <div className="fixed inset-0 z-[100] flex flex-col bg-black">
+          {/* Close X Button at top */}
+          <button
+            onClick={closeRunningApp}
+            className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-red-600 flex items-center justify-center hover:bg-red-700 transition-colors shadow-lg"
+          >
+            <X className="w-6 h-6 text-white" />
+          </button>
+          
+          {/* App Info at top */}
+          <div className="p-4 flex items-center gap-3 bg-gradient-to-b from-black to-transparent z-10">
+            {/* App Icon */}
+            <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg flex-shrink-0">
+              {runningApp.icon ? (
+                <img 
+                  src={`data:image/png;base64,${runningApp.icon}`} 
+                  alt={runningApp.appName} 
+                  className="w-full h-full object-cover" 
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-xl">
+                  {runningApp.appName.charAt(0)}
+                </div>
+              )}
+            </div>
             
-            {/* Boost Video Animation Playing INSIDE the running app */}
+            <div className="flex-1">
+              <h3 className="text-white font-bold text-lg">{runningApp.appName}</h3>
+              <div className="flex items-center gap-2 mt-1">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-green-400 text-sm">Running</span>
+                <Zap className="w-4 h-4 text-red-400 ml-2" />
+                <span className="text-red-400 text-sm">Boosted</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Fullscreen Video at bottom */}
+          <div className="flex-1 w-full">
             <video
               src={gameBoostAnimation}
               autoPlay
               loop
               muted
               playsInline
-              className="absolute inset-0 w-full h-full object-cover"
+              className="w-full h-full object-cover"
             />
-            
-            {/* App Info Overlay on top of video */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4 z-10">
-              <div className="flex items-center gap-3">
-                {/* App Icon */}
-                <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg flex-shrink-0">
-                  {runningApp.icon ? (
-                    <img 
-                      src={`data:image/png;base64,${runningApp.icon}`} 
-                      alt={runningApp.appName} 
-                      className="w-full h-full object-cover" 
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-xl">
-                      {runningApp.appName.charAt(0)}
-                    </div>
-                  )}
-                </div>
-                
-                <div className="flex-1">
-                  <h3 className="text-white font-bold text-sm">{runningApp.appName}</h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-green-400 text-xs">Running</span>
-                    <Zap className="w-3 h-3 text-red-400 ml-2" />
-                    <span className="text-red-400 text-xs">Boosted</span>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       )}
