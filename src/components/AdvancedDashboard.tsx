@@ -34,6 +34,7 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   const [showRecordings, setShowRecordings] = useState(false);
   const [showAssistant, setShowAssistant] = useState(false);
   const [wifiEnabled, setWifiEnabled] = useState(false);
+  const [runningApp, setRunningApp] = useState<InstalledApp | null>(null);
   const [performanceMode, setPerformanceMode] = useState<"saving" | "balance" | "boost">("balance");
   const [cpuUsage, setCpuUsage] = useState(45);
   const [ramUsage, setRamUsage] = useState(62);
@@ -160,11 +161,19 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   const startGame = (packageName: string) => {
     const app = includedApps.find(a => a.packageName === packageName);
     if (app) {
-      setBoostingApp(app.appName);
-      setShowBoostAnimation(true);
+      // Launch app directly in mini window - no intro animation
+      setRunningApp(app);
       setIncludedApps(prev => 
         prev.map(a => a.packageName === packageName ? { ...a, boosted: true } : a)
       );
+      toast.success(`${app.appName} launched`);
+    }
+  };
+
+  const closeRunningApp = () => {
+    if (runningApp) {
+      toast.info(`${runningApp.appName} closed`);
+      setRunningApp(null);
     }
   };
 
@@ -190,16 +199,51 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
 
   return (
     <>
-      {/* Video Animation Overlay */}
-      {showBoostAnimation && (
-        <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center">
-          <video
-            src={startAnimation}
-            autoPlay
-            playsInline
-            className="w-full h-full object-cover"
-            onEnded={handleBoostComplete}
-          />
+      {/* Mini App Floating Window */}
+      {runningApp && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70">
+          <div className="relative w-64 h-64 rounded-3xl overflow-hidden shadow-2xl border-2 border-white/20 bg-gradient-to-br from-gray-900 to-black">
+            {/* Close X Button */}
+            <button
+              onClick={closeRunningApp}
+              className="absolute top-2 right-2 z-10 w-8 h-8 rounded-full bg-red-500/80 flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
+            >
+              <X className="w-5 h-5 text-white" />
+            </button>
+            
+            {/* App Content */}
+            <div className="w-full h-full flex flex-col items-center justify-center p-4">
+              {/* App Icon */}
+              <div className="w-20 h-20 rounded-2xl overflow-hidden mb-4 shadow-xl">
+                {runningApp.icon ? (
+                  <img 
+                    src={`data:image/png;base64,${runningApp.icon}`} 
+                    alt={runningApp.appName} 
+                    className="w-full h-full object-cover" 
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-3xl">
+                    {runningApp.appName.charAt(0)}
+                  </div>
+                )}
+              </div>
+              
+              {/* App Name */}
+              <h3 className="text-white font-bold text-lg mb-2">{runningApp.appName}</h3>
+              
+              {/* Running indicator */}
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-green-400 text-sm">Running</span>
+              </div>
+              
+              {/* Boost indicator */}
+              <div className="mt-4 flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20">
+                <Zap className="w-4 h-4 text-red-400" />
+                <span className="text-red-400 text-xs">Boosted</span>
+              </div>
+            </div>
+          </div>
         </div>
       )}
       
