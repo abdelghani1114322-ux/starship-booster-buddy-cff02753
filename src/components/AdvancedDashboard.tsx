@@ -161,12 +161,12 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   const startGame = (packageName: string) => {
     const app = includedApps.find(a => a.packageName === packageName);
     if (app) {
-      // Launch app directly in mini window - no intro animation
-      setRunningApp(app);
+      // Launch app directly - no overlay, just mark as boosted
       setIncludedApps(prev => 
         prev.map(a => a.packageName === packageName ? { ...a, boosted: true } : a)
       );
-      toast.success(`${app.appName} launched`);
+      toast.success(`${app.appName} launched and boosted!`);
+      // App launches directly, no video overlay shown
     }
   };
 
