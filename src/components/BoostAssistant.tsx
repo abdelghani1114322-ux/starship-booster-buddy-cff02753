@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Slider } from "./ui/slider";
 import { toast } from "sonner";
+import { Capacitor } from "@capacitor/core";
 
 import wifiOn from "@/assets/wifi-on.webp";
 import wifiOff from "@/assets/wifi-off.webp";
@@ -244,12 +245,76 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   };
 
   const gameApps = [
-    { name: "Instagram", icon: instagramIcon },
-    { name: "Facebook", icon: facebookIcon },
-    { name: "Chrome", icon: chromeIcon },
-    { name: "YouTube", icon: youtubeIcon },
-    { name: "WhatsApp", icon: whatsappIcon },
+    { name: "Instagram", icon: instagramIcon, packageName: "com.instagram.android", webUrl: "https://www.instagram.com" },
+    { name: "Facebook", icon: facebookIcon, packageName: "com.facebook.katana", webUrl: "https://www.facebook.com" },
+    { name: "Chrome", icon: chromeIcon, packageName: "com.android.chrome", webUrl: "https://www.google.com" },
+    { name: "YouTube", icon: youtubeIcon, packageName: "com.google.android.youtube", webUrl: "https://www.youtube.com" },
+    { name: "WhatsApp", icon: whatsappIcon, packageName: "com.whatsapp", webUrl: "https://web.whatsapp.com" },
   ];
+
+  // Function to launch apps
+  const launchApp = async (app: typeof gameApps[0]) => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        // Try to open the app using Android Intent
+        const { App } = await import("@capacitor/app");
+        
+        // For Android, we can use startActivity with package name
+        if (Capacitor.getPlatform() === "android") {
+          try {
+            // Try using the App plugin to check if app exists
+            const canOpen = await (window as any).Capacitor?.Plugins?.AppLauncher?.canOpenUrl({ url: app.packageName });
+            
+            if (canOpen?.value) {
+              await (window as any).Capacitor?.Plugins?.AppLauncher?.openUrl({ url: app.packageName });
+              toast.success(`Opening ${app.name}`);
+            } else {
+              // Fallback: try opening with intent
+              window.open(`intent://#Intent;package=${app.packageName};end`, "_system");
+              toast.success(`Launching ${app.name}`);
+            }
+          } catch {
+            // Direct intent approach
+            window.open(`intent://#Intent;package=${app.packageName};end`, "_system");
+            toast.success(`Launching ${app.name}`);
+          }
+        } else if (Capacitor.getPlatform() === "ios") {
+          // iOS uses URL schemes
+          const iosSchemes: Record<string, string> = {
+            "Instagram": "instagram://",
+            "Facebook": "fb://",
+            "Chrome": "googlechrome://",
+            "YouTube": "youtube://",
+            "WhatsApp": "whatsapp://",
+          };
+          const scheme = iosSchemes[app.name];
+          if (scheme) {
+            window.open(scheme, "_system");
+            toast.success(`Opening ${app.name}`);
+          } else {
+            window.open(app.webUrl, "_blank");
+          }
+        }
+      } catch (error) {
+        console.error("Error launching app:", error);
+        // Fallback to web URL
+        window.open(app.webUrl, "_blank");
+        toast.info(`Opening ${app.name} in browser`);
+      }
+    } else {
+      // Web fallback - open mini app for YouTube/Chrome, or open web URL
+      if (app.name === "YouTube") {
+        setMiniApp("youtube");
+        toast.success("Opening YouTube mini player");
+      } else if (app.name === "Chrome") {
+        setMiniApp("chrome");
+        toast.success("Opening Chrome mini browser");
+      } else {
+        window.open(app.webUrl, "_blank");
+        toast.success(`Opening ${app.name} in new tab`);
+      }
+    }
+  };
 
   const gamingTools = [
     { name: "Monitor", icon: Flame, action: () => setShowMonitor(true) },
@@ -839,17 +904,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 size="icon"
                 variant="ghost"
                 className="hover:opacity-80 hover:scale-110 h-12 w-12 rounded-lg shadow-lg transition-all p-1 bg-muted/20"
-                onClick={() => {
-                  if (app.name === "YouTube") {
-                    setMiniApp("youtube");
-                    toast.success("Opening YouTube mini player");
-                  } else if (app.name === "Chrome") {
-                    setMiniApp("chrome");
-                    toast.success("Opening Chrome mini browser");
-                  } else {
-                    toast.success(`Launching ${app.name}`);
-                  }
-                }}
+                onClick={() => launchApp(app)}
               >
                 <img src={app.icon} alt={app.name} className="h-8 w-8 object-contain" />
               </Button>
