@@ -492,29 +492,29 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
 
       {/* App Picker Overlay - Add Games */}
       {showAppPicker && (
-        <div className="fixed inset-0 z-60 bg-black/95 flex flex-col" onClick={() => setShowAppPicker(false)}>
+        <div className="fixed inset-0 z-60 bg-black/95 flex flex-col overflow-hidden" onClick={() => setShowAppPicker(false)}>
           <div 
-            className="flex-1 flex flex-col w-full max-w-lg mx-auto"
+            className="flex flex-col w-full max-w-lg mx-auto h-full overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center gap-4 p-4 border-b border-white/10">
+            <div className="flex items-center justify-between p-4 border-b border-white/10 shrink-0">
+              <h3 className="text-xl font-bold text-white">Add Games</h3>
               <button 
                 onClick={() => setShowAppPicker(false)}
-                className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20"
+                className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center hover:bg-red-500/30 transition-colors"
               >
-                <ArrowLeft className="w-5 h-5 text-white/70" />
+                <X className="w-5 h-5 text-white/70" />
               </button>
-              <h3 className="text-xl font-bold text-white">Add Games</h3>
             </div>
             
             {/* Not Added Count */}
-            <div className="px-4 py-3 text-white/60 text-sm">
+            <div className="px-4 py-3 text-white/60 text-sm shrink-0">
               {notIncludedApps.length} Not added
             </div>
             
             {/* App List */}
-            <div className="flex-1 overflow-y-auto px-4 pb-4">
+            <div className="flex-1 overflow-y-auto px-4 pb-4 min-h-0">
               {isLoadingApps ? (
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="w-8 h-8 animate-spin text-red-500" />
