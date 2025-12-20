@@ -7,7 +7,7 @@ import { BoostAssistant } from "./BoostAssistant";
 import gameSpaceBg from "@/assets/game-space-bg.png";
 import backButton from "@/assets/back-button.png";
 import assistantToggle from "@/assets/assistant-toggle.png";
-import gameBoostAnimation from "@/assets/game-boost-animation.mp4";
+import energyXAnimation from "@/assets/energy-x-animation.mp4";
 
 interface AdvancedDashboardProps {
   onClose: () => void;
@@ -214,7 +214,7 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
         <div className="fixed inset-0 z-[200] pointer-events-none">
           {/* Video Animation Overlay */}
           <video
-            src={gameBoostAnimation}
+            src={energyXAnimation}
             autoPlay
             muted
             playsInline
