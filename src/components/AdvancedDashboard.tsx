@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Capacitor } from "@capacitor/core";
 import BoostAnimation from "./BoostAnimation";
 import gameSpaceBg from "@/assets/game-space-bg.png";
+import backButton from "@/assets/back-button.png";
 
 interface AdvancedDashboardProps {
   onClose: () => void;
@@ -529,9 +530,9 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
               <h3 className="text-xl font-bold text-white">Add Games</h3>
               <button 
                 onClick={() => setShowAppPicker(false)}
-                className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center hover:bg-red-500/30 transition-colors"
+                className="w-12 h-12 rounded-lg overflow-hidden hover:scale-105 transition-transform"
               >
-                <X className="w-5 h-5 text-white/70" />
+                <img src={backButton} alt="Back" className="w-full h-full object-cover" />
               </button>
             </div>
             
