@@ -161,12 +161,17 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   const startGame = (packageName: string) => {
     const app = includedApps.find(a => a.packageName === packageName);
     if (app) {
-      // Launch app with video inside the running window
+      // Show boost animation for 4 seconds when app starts
       setRunningApp(app);
       setIncludedApps(prev => 
         prev.map(a => a.packageName === packageName ? { ...a, boosted: true } : a)
       );
-      toast.success(`${app.appName} launched and boosted!`);
+      
+      // Auto-close after 4 seconds
+      setTimeout(() => {
+        setRunningApp(null);
+        toast.success(`${app.appName} launched and boosted!`);
+      }, 4000);
     }
   };
 
@@ -199,21 +204,21 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
 
   return (
     <>
-      {/* Fullscreen Video at Bottom when app is running */}
+      {/* Energy-X Boost Animation - shows for 4 seconds when app starts */}
       {runningApp && (
-        <div className="fixed inset-0 z-[100] flex flex-col bg-black">
-          {/* Close X Button at top */}
-          <button
-            onClick={closeRunningApp}
-            className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-red-600 flex items-center justify-center hover:bg-red-700 transition-colors shadow-lg"
-          >
-            <X className="w-6 h-6 text-white" />
-          </button>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90">
+          {/* Fullscreen Video */}
+          <video
+            src={gameBoostAnimation}
+            autoPlay
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          />
           
-          {/* App Info at top */}
-          <div className="p-4 flex items-center gap-3 bg-gradient-to-b from-black to-transparent z-10">
-            {/* App Icon */}
-            <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg flex-shrink-0">
+          {/* App Info Overlay */}
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3">
+            <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-lg border-2 border-red-500">
               {runningApp.icon ? (
                 <img 
                   src={`data:image/png;base64,${runningApp.icon}`} 
@@ -221,33 +226,16 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
                   className="w-full h-full object-cover" 
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-xl">
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-2xl">
                   {runningApp.appName.charAt(0)}
                 </div>
               )}
             </div>
-            
-            <div className="flex-1">
-              <h3 className="text-white font-bold text-lg">{runningApp.appName}</h3>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-green-400 text-sm">Running</span>
-                <Zap className="w-4 h-4 text-red-400 ml-2" />
-                <span className="text-red-400 text-sm">Boosted</span>
-              </div>
+            <h3 className="text-white font-bold text-xl">{runningApp.appName}</h3>
+            <div className="flex items-center gap-2">
+              <Zap className="w-5 h-5 text-red-400 animate-pulse" />
+              <span className="text-red-400 font-semibold">BOOSTING...</span>
             </div>
-          </div>
-          
-          {/* Fullscreen Video at bottom */}
-          <div className="flex-1 w-full">
-            <video
-              src={gameBoostAnimation}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-            />
           </div>
         </div>
       )}
