@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap, Crosshair, Music, X, Play, RotateCcw, Target } from "lucide-react";
+import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap, Crosshair, Music, X, Play, RotateCcw, Target, ZoomIn, Move } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Slider } from "./ui/slider";
@@ -96,6 +96,10 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [macroTab, setMacroTab] = useState<"performance" | "display" | "audio">("performance");
   const [macroMode, setMacroMode] = useState<"auto" | "gpu" | "cpu" | "super">("auto");
   const [miniApp, setMiniApp] = useState<"youtube" | "chrome" | null>(null);
+  const [showZoomMode, setShowZoomMode] = useState(false);
+  const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
+  const [zoomLevel, setZoomLevel] = useState(2);
+  const zoomRef = useRef<HTMLDivElement>(null);
 
   // Apply filter effect to document (including hunter mode)
   useEffect(() => {
@@ -713,6 +717,17 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                   alt="60Hz" 
                   className="w-full h-full object-cover" 
                 />
+              </button>
+
+              {/* Zoom Mode Button */}
+              <button
+                onClick={() => {
+                  setShowZoomMode(true);
+                  toast.info("Zoom Mode: Drag to select area");
+                }}
+                className="w-12 h-12 rounded-full overflow-hidden border border-border/50 hover:border-accent/50 transition-all hover:scale-105 bg-[#2a2a3e] flex items-center justify-center"
+              >
+                <ZoomIn className="w-6 h-6 text-accent" />
               </button>
             </div>
 
@@ -2415,6 +2430,147 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
+          </div>
+        </div>
+      )}
+
+      {/* Zoom Mode Overlay */}
+      {showZoomMode && (
+        <div className="fixed inset-0 z-[70] bg-black/30">
+          {/* Close button */}
+          <button
+            onClick={() => setShowZoomMode(false)}
+            className="absolute top-4 right-4 w-12 h-12 rounded-full bg-red-500/80 hover:bg-red-500 flex items-center justify-center z-[80] transition-colors"
+          >
+            <X className="w-6 h-6 text-white" />
+          </button>
+
+          {/* Zoom controls */}
+          <div className="absolute top-4 left-4 bg-black/80 rounded-xl p-3 z-[80] space-y-2">
+            <div className="text-white text-sm font-medium mb-2">Zoom Level: {zoomLevel}x</div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setZoomLevel(prev => Math.max(1.5, prev - 0.5))}
+                className="w-10 h-10 rounded-lg bg-white/20 hover:bg-white/30 flex items-center justify-center text-white font-bold"
+              >
+                -
+              </button>
+              <button
+                onClick={() => setZoomLevel(prev => Math.min(5, prev + 0.5))}
+                className="w-10 h-10 rounded-lg bg-white/20 hover:bg-white/30 flex items-center justify-center text-white font-bold"
+              >
+                +
+              </button>
+            </div>
+            <div className="text-white/60 text-xs flex items-center gap-1">
+              <Move className="w-3 h-3" />
+              Drag circle to move
+            </div>
+          </div>
+
+          {/* Draggable zoom circle */}
+          <div
+            ref={zoomRef}
+            className="absolute w-40 h-40 rounded-full border-4 border-white/80 shadow-[0_0_30px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(0,0,0,0.3)] cursor-move overflow-hidden"
+            style={{
+              left: `calc(${zoomPosition.x}% - 80px)`,
+              top: `calc(${zoomPosition.y}% - 80px)`,
+              background: `radial-gradient(circle at center, transparent 60%, rgba(0,0,0,0.3) 100%)`,
+            }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              const startX = e.clientX;
+              const startY = e.clientY;
+              const startPosX = zoomPosition.x;
+              const startPosY = zoomPosition.y;
+
+              const handleMouseMove = (moveEvent: MouseEvent) => {
+                const deltaX = ((moveEvent.clientX - startX) / window.innerWidth) * 100;
+                const deltaY = ((moveEvent.clientY - startY) / window.innerHeight) * 100;
+                setZoomPosition({
+                  x: Math.max(10, Math.min(90, startPosX + deltaX)),
+                  y: Math.max(10, Math.min(90, startPosY + deltaY)),
+                });
+              };
+
+              const handleMouseUp = () => {
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+              };
+
+              document.addEventListener('mousemove', handleMouseMove);
+              document.addEventListener('mouseup', handleMouseUp);
+            }}
+            onTouchStart={(e) => {
+              const touch = e.touches[0];
+              const startX = touch.clientX;
+              const startY = touch.clientY;
+              const startPosX = zoomPosition.x;
+              const startPosY = zoomPosition.y;
+
+              const handleTouchMove = (moveEvent: TouchEvent) => {
+                const moveTouch = moveEvent.touches[0];
+                const deltaX = ((moveTouch.clientX - startX) / window.innerWidth) * 100;
+                const deltaY = ((moveTouch.clientY - startY) / window.innerHeight) * 100;
+                setZoomPosition({
+                  x: Math.max(10, Math.min(90, startPosX + deltaX)),
+                  y: Math.max(10, Math.min(90, startPosY + deltaY)),
+                });
+              };
+
+              const handleTouchEnd = () => {
+                document.removeEventListener('touchmove', handleTouchMove);
+                document.removeEventListener('touchend', handleTouchEnd);
+              };
+
+              document.addEventListener('touchmove', handleTouchMove);
+              document.addEventListener('touchend', handleTouchEnd);
+            }}
+          >
+            {/* Magnified content simulation */}
+            <div 
+              className="absolute inset-0 rounded-full overflow-hidden"
+              style={{
+                transform: `scale(${zoomLevel})`,
+                transformOrigin: 'center',
+              }}
+            >
+              <div className="w-full h-full bg-gradient-to-br from-green-900/20 via-transparent to-blue-900/20" />
+            </div>
+            
+            {/* Crosshair in center */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-6 h-0.5 bg-red-500/80 absolute" />
+              <div className="w-0.5 h-6 bg-red-500/80 absolute" />
+              <div className="w-3 h-3 border-2 border-red-500/80 rounded-full" />
+            </div>
+
+            {/* Tick marks around edge */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none">
+              {Array.from({ length: 12 }).map((_, i) => {
+                const angle = (i * 30 - 90) * (Math.PI / 180);
+                const x1 = 80 + 75 * Math.cos(angle);
+                const y1 = 80 + 75 * Math.sin(angle);
+                const x2 = 80 + 70 * Math.cos(angle);
+                const y2 = 80 + 70 * Math.sin(angle);
+                return (
+                  <line
+                    key={i}
+                    x1={x1}
+                    y1={y1}
+                    x2={x2}
+                    y2={y2}
+                    stroke="rgba(255,255,255,0.6)"
+                    strokeWidth="2"
+                  />
+                );
+              })}
+            </svg>
+          </div>
+
+          {/* Info text */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/80 rounded-xl px-4 py-2 text-white text-sm">
+            Smart Target - Zoom {zoomLevel}x
           </div>
         </div>
       )}
