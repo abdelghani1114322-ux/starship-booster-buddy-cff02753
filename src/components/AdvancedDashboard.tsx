@@ -7,7 +7,7 @@ import { BoostAssistant } from "./BoostAssistant";
 import gameSpaceBg from "@/assets/game-space-bg.png";
 import backButton from "@/assets/back-button.png";
 import assistantToggle from "@/assets/assistant-toggle.png";
-import startAnimation from "@/assets/start_animation.mp4";
+import gameBoostAnimation from "@/assets/game-boost-animation.mp4";
 
 interface AdvancedDashboardProps {
   onClose: () => void;
@@ -213,7 +213,7 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
             
             {/* Boost Video Animation Playing INSIDE the running app */}
             <video
-              src={startAnimation}
+              src={gameBoostAnimation}
               autoPlay
               loop
               muted
