@@ -210,21 +210,34 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
 
   return (
     <>
-      {/* Energy-X Boost Overlay - shows for 4 seconds when app starts */}
+      {/* Energy-X Bottom Banner - shows for 4 seconds when app starts */}
       {showBoostOverlay && runningApp && (
-        <div className="fixed inset-0 z-[300] pointer-events-none">
-          {/* Engine Init Video Animation */}
-          <video
-            src={engineInitVideo}
-            autoPlay
-            muted
-            playsInline
-            className="w-full h-full object-cover"
-          />
-          
-          {/* App Info Centered */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-2xl border-2 border-red-500 mb-4">
+        <div className="fixed bottom-0 left-0 right-0 z-[300] pointer-events-none p-4">
+          <div className="bg-gradient-to-r from-red-900/90 via-red-800/90 to-red-900/90 backdrop-blur-sm rounded-2xl border border-red-500/50 shadow-[0_0_30px_rgba(239,68,68,0.4)] p-4 flex items-center gap-4 animate-fade-in">
+            {/* Video thumbnail */}
+            <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 border-2 border-red-500">
+              <video
+                src={engineInitVideo}
+                autoPlay
+                muted
+                playsInline
+                loop
+                className="w-full h-full object-cover"
+              />
+            </div>
+            
+            {/* App Info */}
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <Zap className="w-5 h-5 text-red-400 animate-pulse" />
+                <span className="text-red-400 font-bold text-sm">ENERGY-X ACTIVE</span>
+              </div>
+              <h3 className="text-white font-bold text-lg">{runningApp.appName}</h3>
+              <p className="text-white/60 text-xs">Game boosted successfully • Performance optimized</p>
+            </div>
+            
+            {/* App Icon */}
+            <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0">
               {runningApp.icon ? (
                 <img 
                   src={`data:image/png;base64,${runningApp.icon}`} 
@@ -232,15 +245,10 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
                   className="w-full h-full object-cover" 
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-3xl">
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-xl">
                   {runningApp.appName.charAt(0)}
                 </div>
               )}
-            </div>
-            <h3 className="text-white font-bold text-2xl drop-shadow-lg">{runningApp.appName}</h3>
-            <div className="flex items-center gap-2 mt-2">
-              <Zap className="w-6 h-6 text-red-400 animate-pulse" />
-              <span className="text-red-400 font-bold text-lg">ENERGY-X BOOSTING...</span>
             </div>
           </div>
         </div>
