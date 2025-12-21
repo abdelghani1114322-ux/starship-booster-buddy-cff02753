@@ -160,23 +160,22 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   }, [boostingApp]);
 
   const [showBoostOverlay, setShowBoostOverlay] = useState(false);
-  const [showGameScreen, setShowGameScreen] = useState(false);
 
   const startGame = (packageName: string) => {
     const app = includedApps.find(a => a.packageName === packageName);
     if (app) {
-      // Open the game screen and show Energy-X overlay
+      // Show Energy-X overlay for 2 seconds then auto-hide
       setRunningApp(app);
-      setShowGameScreen(true);
       setShowBoostOverlay(true);
       setIncludedApps(prev => 
         prev.map(a => a.packageName === packageName ? { ...a, boosted: true } : a)
       );
       
-      // Auto-hide Energy-X overlay after 3 seconds (game keeps running)
+      // Auto-hide Energy-X overlay after 2 seconds
       setTimeout(() => {
         setShowBoostOverlay(false);
-      }, 3000);
+        setRunningApp(null);
+      }, 2000);
     }
   };
 
@@ -185,7 +184,6 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
       toast.info(`${runningApp.appName} closed`);
       setRunningApp(null);
       setShowBoostOverlay(false);
-      setShowGameScreen(false);
     }
   };
 
@@ -211,71 +209,29 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
 
   return (
     <>
-      {/* Game Screen - shows when a game is launched (simulates the game running) */}
-      {showGameScreen && runningApp && (
-        <div className="fixed inset-0 z-[400] bg-black">
-          {/* Simulated Game Background */}
-          <div className="w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-black flex flex-col">
-            {/* Game header with back button */}
-            <div className="flex items-center justify-between p-4 bg-black/50">
-              <button 
-                onClick={closeRunningApp}
-                className="flex items-center gap-2 text-white/70 hover:text-white"
-              >
-                <img src={backButton} alt="Back" className="w-6 h-6 invert opacity-70" />
-                <span className="text-sm">Exit Game</span>
-              </button>
-              <span className="text-white/50 text-sm">{runningApp.appName}</span>
-            </div>
-            
-            {/* Simulated game content */}
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center">
-                {runningApp.icon ? (
-                  <img 
-                    src={`data:image/png;base64,${runningApp.icon}`} 
-                    alt={runningApp.appName}
-                    className="w-24 h-24 rounded-2xl mx-auto mb-4 opacity-50"
-                  />
-                ) : (
-                  <div className="w-24 h-24 rounded-2xl mx-auto mb-4 bg-gradient-to-br from-purple-500/50 to-pink-500/50 flex items-center justify-center text-white/50 text-4xl font-bold">
-                    {runningApp.appName.charAt(0)}
-                  </div>
-                )}
-                <p className="text-white/30 text-lg">{runningApp.appName} is running...</p>
-                <p className="text-white/20 text-sm mt-2">Game simulation</p>
+      {/* Energy-X Transparent Notification - appears at bottom when game launches */}
+      {showBoostOverlay && runningApp && (
+        <div className="fixed bottom-8 left-4 right-4 z-[9999] pointer-events-none animate-fade-in">
+          <div className="bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden">
+            <div className="flex items-center gap-3 px-4 py-2">
+              {/* Video Animation */}
+              <div className="w-10 h-10 rounded-md overflow-hidden flex-shrink-0">
+                <video
+                  src={engineInitVideo}
+                  autoPlay
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              
+              {/* Text */}
+              <div className="flex-1">
+                <span className="text-red-500 font-bold text-xs">ENERGY-X</span>
+                <p className="text-white/80 text-sm">{runningApp.appName} Boosted</p>
               </div>
             </div>
           </div>
-          
-          {/* Energy-X Notification Overlay - appears at bottom like a message */}
-          {showBoostOverlay && (
-            <div className="absolute bottom-6 left-4 right-4 z-[500] animate-fade-in">
-              <div className="bg-black/70 backdrop-blur-md rounded-xl overflow-hidden border border-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.3)]">
-                <div className="flex items-center gap-3 p-3">
-                  {/* Video Animation */}
-                  <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
-                    <video
-                      src={engineInitVideo}
-                      autoPlay
-                      muted
-                      playsInline
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  
-                  {/* Text */}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-1">
-                      <Zap className="w-4 h-4 text-red-500" />
-                      <span className="text-red-500 font-bold text-xs">ENERGY-X</span>
-                    </div>
-                    <p className="text-white/90 text-sm font-medium">Game Boosted Successfully</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       )}
       
