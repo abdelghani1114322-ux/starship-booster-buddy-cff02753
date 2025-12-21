@@ -330,6 +330,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
   const gamingTools = [
     { name: "Monitor", icon: Flame, action: () => setShowMonitor(true) },
+    { name: "Aim\nAssistant", icon: Crosshair, action: () => setShowAimAssistant(true) },
     { name: "Tactic X", icon: Target, action: () => setShowTacticX(true) },
     { name: "Macro", icon: Gamepad2, action: () => setShowMacro(true) },
     { name: "Sounds\nEqualizer", icon: Music, action: () => setShowEqualizer(true) },
