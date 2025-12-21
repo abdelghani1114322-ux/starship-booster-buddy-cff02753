@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
-import { X, Home, Zap, Grid3X3, Plus, Music, Users, Loader2, Video, Play } from "lucide-react";
+import { X, Home, Zap, Grid3X3, Plus, Music, Users, Loader2, Video, Play, Shield } from "lucide-react";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { Capacitor } from "@capacitor/core";
 import { BoostAssistant } from "./BoostAssistant";
+import { overlayService } from "@/lib/overlay-service";
 import gameSpaceBg from "@/assets/game-space-bg.png";
 import backButton from "@/assets/back-button.png";
 import assistantToggle from "@/assets/assistant-toggle.png";
@@ -41,6 +42,8 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   const [ramUsage, setRamUsage] = useState(62);
   const [fps, setFps] = useState(60);
   const [gpuUsage, setGpuUsage] = useState(38);
+  const [overlayEnabled, setOverlayEnabled] = useState(false);
+  const [overlayPermissionGranted, setOverlayPermissionGranted] = useState(false);
   const mockRecordings = [
     { id: 1, name: "PUBG Mobile Gameplay", duration: "12:34", date: "Today", thumbnail: null },
     { id: 2, name: "Free Fire Match", duration: "08:22", date: "Today", thumbnail: null },
@@ -48,6 +51,17 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
     { id: 4, name: "Mobile Legends Ranked", duration: "18:45", date: "Yesterday", thumbnail: null },
     { id: 5, name: "Among Us Session", duration: "32:00", date: "2 days ago", thumbnail: null },
   ];
+
+  // Check overlay permission on mount
+  useEffect(() => {
+    const checkPermission = async () => {
+      if (Capacitor.isNativePlatform()) {
+        const granted = await overlayService.checkOverlayPermission();
+        setOverlayPermissionGranted(granted);
+      }
+    };
+    checkPermission();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -160,6 +174,36 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   }, [boostingApp]);
 
   const [showBoostOverlay, setShowBoostOverlay] = useState(false);
+
+  // Toggle native overlay service
+  const toggleOverlayService = async () => {
+    if (!Capacitor.isNativePlatform()) {
+      toast.info("Native overlay only works on Android device");
+      return;
+    }
+
+    if (!overlayPermissionGranted) {
+      const granted = await overlayService.requestOverlayPermission();
+      setOverlayPermissionGranted(granted);
+      if (!granted) {
+        toast.error("Overlay permission denied");
+        return;
+      }
+    }
+
+    if (overlayEnabled) {
+      await overlayService.stopOverlayService();
+      setOverlayEnabled(false);
+      toast.success("Energy-X overlay disabled");
+    } else {
+      // Set monitored games
+      const packages = includedApps.map(app => app.packageName);
+      await overlayService.setMonitoredGames(packages);
+      await overlayService.startOverlayService();
+      setOverlayEnabled(true);
+      toast.success("Energy-X overlay enabled - will show on game launch");
+    }
+  };
 
   const startGame = (packageName: string) => {
     const app = includedApps.find(a => a.packageName === packageName);
@@ -277,6 +321,16 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          {/* Energy-X Overlay Toggle */}
+          <button 
+            onClick={toggleOverlayService}
+            className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+              overlayEnabled ? 'bg-red-500/50 border border-red-500' : 'bg-white/10'
+            }`}
+            title="Energy-X Overlay"
+          >
+            <Shield className={`w-4 h-4 ${overlayEnabled ? 'text-red-400' : 'text-white/70'}`} />
+          </button>
           <button className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
             <Zap className="w-4 h-4 text-white/70" />
           </button>
