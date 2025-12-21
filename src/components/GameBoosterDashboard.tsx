@@ -5,6 +5,7 @@ import { Card } from "./ui/card";
 import { Zap, Cpu, MemoryStick, Gauge, Monitor, Settings, TrendingUp, PanelLeftOpen, Battery, Grid3X3, X, HardDrive, Thermometer, Clock } from "lucide-react";
 import { BoostAssistant } from "./BoostAssistant";
 import { AdvancedDashboard } from "./AdvancedDashboard";
+import { GravityXDashboard } from "./GravityXDashboard";
 import { toast } from "sonner";
 import wifiOn from "@/assets/wifi-on.webp";
 import wifiOff from "@/assets/wifi-off.webp";
@@ -23,6 +24,7 @@ export const GameBoosterDashboard = () => {
   const [wifiEnabled, setWifiEnabled] = useState(false);
   const [showGamesLobby, setShowGamesLobby] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showGravityX, setShowGravityX] = useState(false);
   const [showIntroVideo, setShowIntroVideo] = useState(false);
   const [cpuTemp, setCpuTemp] = useState(47);
   const [gpuTemp, setGpuTemp] = useState(46);
@@ -256,6 +258,15 @@ export const GameBoosterDashboard = () => {
               />
             </Button>
             <Button 
+              variant={showGravityX ? "default" : "outline"} 
+              size="icon"
+              onClick={() => setShowGravityX(!showGravityX)}
+              className={showGravityX ? "bg-red-600 hover:bg-red-700 border-red-500" : ""}
+              title="Gravity-X Dashboard"
+            >
+              <Thermometer className="h-5 w-5" />
+            </Button>
+            <Button 
               variant="outline" 
               size="icon"
               onClick={() => navigate("/my-apps")}
@@ -279,6 +290,21 @@ export const GameBoosterDashboard = () => {
             </Button>
           </div>
         </div>
+
+        {/* Gravity-X Dashboard */}
+        {showGravityX && (
+          <GravityXDashboard
+            cpuTemp={cpuTemp}
+            gpuTemp={gpuTemp}
+            cpuMHz={cpuMHz}
+            gpuMHz={gpuMHz}
+            memoryUsed={memoryUsed}
+            memoryTotal={8}
+            storageUsed={storageUsed}
+            storageTotal={128}
+            batteryTimeRemaining={batteryTimeRemaining}
+          />
+        )}
 
         {/* Central Performance Display with Mode Selector */}
         <div className="relative py-12">
