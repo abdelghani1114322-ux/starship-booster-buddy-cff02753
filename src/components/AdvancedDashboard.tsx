@@ -37,7 +37,6 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   const [wifiEnabled, setWifiEnabled] = useState(false);
   const [runningApp, setRunningApp] = useState<InstalledApp | null>(null);
   const [performanceMode, setPerformanceMode] = useState<"saving" | "balance" | "boost">("balance");
-  const [showEngineInit, setShowEngineInit] = useState(true);
   const [cpuUsage, setCpuUsage] = useState(45);
   const [ramUsage, setRamUsage] = useState(62);
   const [fps, setFps] = useState(60);
@@ -49,14 +48,6 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
     { id: 4, name: "Mobile Legends Ranked", duration: "18:45", date: "Yesterday", thumbnail: null },
     { id: 5, name: "Among Us Session", duration: "32:00", date: "2 days ago", thumbnail: null },
   ];
-
-  // Engine initialization - show for 4 seconds on component mount
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowEngineInit(false);
-    }, 4000);
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -219,29 +210,16 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
 
   return (
     <>
-      {/* Engine Initialization - shows for 4 seconds when Game Space opens */}
-      {showEngineInit && (
-        <div className="fixed inset-0 z-[300] bg-black">
+      {/* Energy-X Boost Overlay - shows for 4 seconds when app starts */}
+      {showBoostOverlay && runningApp && (
+        <div className="fixed inset-0 z-[300] pointer-events-none">
+          {/* Engine Init Video Animation */}
           <video
             src={engineInitVideo}
             autoPlay
             muted
             playsInline
             className="w-full h-full object-cover"
-          />
-        </div>
-      )}
-
-      {/* Energy-X Boost Overlay - shows for 4 seconds when app starts (appears OVER the app) */}
-      {showBoostOverlay && runningApp && (
-        <div className="fixed inset-0 z-[200] pointer-events-none">
-          {/* Video Animation Overlay */}
-          <video
-            src={gameBoostAnimation}
-            autoPlay
-            muted
-            playsInline
-            className="w-full h-full object-cover opacity-80"
           />
           
           {/* App Info Centered */}
