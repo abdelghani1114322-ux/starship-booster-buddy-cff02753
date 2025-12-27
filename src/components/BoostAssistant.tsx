@@ -332,7 +332,15 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     { name: "Monitor", icon: Flame, action: () => setShowMonitor(true) },
     { name: "Aim\nAssistant", icon: Crosshair, action: () => setShowAimAssistant(true) },
     { name: "Tactic X", icon: Target, action: () => setShowTacticX(true) },
-    { name: "Macro", icon: Gamepad2, action: () => setShowMacro(true) },
+    { name: "Macro", icon: Gamepad2, action: () => {
+      if (performanceMode === "boost") {
+        setShowMacro(true);
+      } else {
+        toast.error("Macro only available in Gamer Mode", {
+          description: "Switch to Gamer Mode to access Game Boost features",
+        });
+      }
+    }},
     { name: "Sounds\nEqualizer", icon: Music, action: () => setShowEqualizer(true) },
     { name: "Graphique\nSettings", icon: Wind, action: () => setShowGraphiqueSettings(true) },
   ];
