@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Wifi, Bell, HelpCircle, User, ChevronDown, Grid3X3, Shield, Moon, Volume2, Vibrate, BellOff, Eye, Lock, RotateCcw, Smartphone, Settings as SettingsIcon } from "lucide-react";
+import { Wifi, Bell, HelpCircle, User, ChevronDown, Grid3X3, Shield, Moon, Volume2, Vibrate, BellOff, Eye, Lock, RotateCcw, Smartphone, Settings as SettingsIcon, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 export default function Settings() {
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState<"stats" | "general" | "notifications" | "permissions">("general");
+  const [activeSection, setActiveSection] = useState<"stats" | "general" | "notifications" | "permissions" | "about">("general");
   const [activeTab, setActiveTab] = useState<"precent" | "summary">("precent");
   const [timeFrame, setTimeFrame] = useState<"today" | "week">("today");
   const [totalHours] = useState(0);
@@ -135,12 +135,12 @@ export default function Settings() {
             <span className="text-base">Usage Stats</span>
           </Button>
           <Button
-            variant="ghost"
+            variant={activeSection === "about" ? "default" : "ghost"}
             className="w-full justify-start text-left h-auto py-4 hover:bg-primary/10"
-            onClick={() => {}}
+            onClick={() => setActiveSection("about")}
           >
-            <HelpCircle className="w-5 h-5 mr-3" />
-            <span className="text-base">Help</span>
+            <Info className="w-5 h-5 mr-3" />
+            <span className="text-base">About This App</span>
           </Button>
         </nav>
       </div>
@@ -353,6 +353,76 @@ export default function Settings() {
                 </div>
                 <span className="text-green-500 text-sm font-medium">Granted</span>
               </Card>
+            </div>
+          )}
+
+          {activeSection === "about" && (
+            <div className="space-y-6 max-w-2xl">
+              <h2 className="text-3xl font-semibold mb-8">About This App</h2>
+              
+              {/* App Logo and Name */}
+              <Card className="p-6 text-center">
+                <div className="w-24 h-24 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary to-destructive flex items-center justify-center">
+                  <span className="text-4xl font-bold text-primary-foreground">EX</span>
+                </div>
+                <h3 className="text-2xl font-bold text-foreground">Energy-X Game Space</h3>
+                <p className="text-muted-foreground mt-2">Version 1.0.0</p>
+              </Card>
+
+              {/* App Description */}
+              <Card className="p-4">
+                <div className="flex items-start gap-4">
+                  <Info className="w-6 h-6 text-primary mt-1" />
+                  <div>
+                    <h3 className="font-semibold">Description</h3>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Energy-X Game Space is your ultimate gaming companion. Optimize your device performance, 
+                      manage your games, and enhance your gaming experience with advanced tools like Gravity-X 
+                      temperature control, game boosting, and smart notifications management.
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Features */}
+              <Card className="p-4">
+                <h3 className="font-semibold mb-4">Key Features</h3>
+                <ul className="space-y-3 text-sm text-muted-foreground">
+                  <li className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-primary" />
+                    Game Boost Mode - Optimize CPU & GPU performance
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-destructive" />
+                    Gravity-X - Advanced temperature monitoring
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-green-500" />
+                    Smart Notifications - Block interruptions while gaming
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
+                    Floating Assistant - Quick access game tools
+                  </li>
+                </ul>
+              </Card>
+
+              {/* Developer Info */}
+              <Card className="p-4">
+                <div className="flex items-center gap-4">
+                  <User className="w-6 h-6 text-primary" />
+                  <div>
+                    <h3 className="font-semibold">Developer</h3>
+                    <p className="text-sm text-muted-foreground">GodTSpeed Team</p>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Copyright */}
+              <div className="text-center text-sm text-muted-foreground pt-4">
+                <p>© 2024 Energy-X Game Space</p>
+                <p className="mt-1">All rights reserved</p>
+              </div>
             </div>
           )}
 
