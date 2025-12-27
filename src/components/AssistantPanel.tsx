@@ -2,7 +2,6 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Fuel, Trophy, Zap } from "lucide-react";
 import assistantButton from "@/assets/assistant-button.png";
-import wifiDisplayButton from "@/assets/wifi-display-button.png";
 
 interface AssistantPanelProps {
   score: number;
@@ -15,28 +14,15 @@ export const AssistantPanel = ({ score, fuel, boosts }: AssistantPanelProps) => 
 
   return (
     <>
-      {/* Floating buttons */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
-        {/* WiFi Display button */}
-        <motion.button
-          onClick={() => {/* WiFi display functionality */}}
-          className="w-14 h-14 rounded-full bg-transparent flex items-center justify-center"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <img src={wifiDisplayButton} alt="WiFi Display" className="w-full h-full object-contain" />
-        </motion.button>
-        
-        {/* Assistant trigger button */}
-        <motion.button
-          onClick={() => setIsOpen(true)}
-          className="w-14 h-14 rounded-full bg-transparent flex items-center justify-center"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <img src={assistantButton} alt="Assistant" className="w-full h-full object-contain" />
-        </motion.button>
-      </div>
+      {/* Floating trigger button */}
+      <motion.button
+        onClick={() => setIsOpen(true)}
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-transparent flex items-center justify-center"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <img src={assistantButton} alt="Assistant" className="w-full h-full object-contain" />
+      </motion.button>
 
       {/* Panel overlay */}
       <AnimatePresence>

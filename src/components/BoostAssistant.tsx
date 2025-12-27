@@ -30,6 +30,7 @@ import fanOff from "@/assets/fan_off.png";
 import fanOn from "@/assets/fan_on.png";
 import hunterModeIcon from "@/assets/hunter-mode-icon.png";
 import refreshRate60Hz from "@/assets/refresh-rate-60hz.png";
+import wifiDisplayButton from "@/assets/wifi-display-button.png";
 interface BoostAssistantProps {
   cpuUsage: number;
   ramUsage: number;
@@ -806,6 +807,16 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 className="w-12 h-12 rounded-full overflow-hidden border border-border/50 hover:border-accent/50 transition-all hover:scale-105 bg-[#2a2a3e] flex items-center justify-center"
               >
                 <ZoomIn className="w-6 h-6 text-accent" />
+              </button>
+              
+              {/* WiFi Display Button */}
+              <button
+                onClick={() => {
+                  toast.info("WiFi Display: Screen casting mode");
+                }}
+                className="w-12 h-12 rounded-full overflow-hidden border border-border/50 hover:border-accent/50 transition-all hover:scale-105"
+              >
+                <img src={wifiDisplayButton} alt="WiFi Display" className="w-full h-full object-cover" />
               </button>
             </div>
 
