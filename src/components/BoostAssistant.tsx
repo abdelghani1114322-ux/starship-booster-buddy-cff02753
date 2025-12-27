@@ -113,6 +113,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
   const [zoomLevel, setZoomLevel] = useState(2);
   const zoomRef = useRef<HTMLDivElement>(null);
+  const [showFpsOverlay, setShowFpsOverlay] = useState(false);
 
   // Apply filter effect to document (including hunter mode)
   useEffect(() => {
@@ -812,9 +813,10 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               {/* WiFi Display Button */}
               <button
                 onClick={() => {
-                  toast.info("WiFi Display: Screen casting mode");
+                  setShowFpsOverlay(!showFpsOverlay);
+                  toast.info(showFpsOverlay ? "FPS Display: OFF" : "FPS Display: ON");
                 }}
-                className="w-12 h-12 rounded-full overflow-hidden border border-border/50 hover:border-accent/50 transition-all hover:scale-105"
+                className={`w-12 h-12 rounded-full overflow-hidden border transition-all hover:scale-105 ${showFpsOverlay ? 'border-accent ring-2 ring-accent/50' : 'border-border/50 hover:border-accent/50'}`}
               >
                 <img src={wifiDisplayButton} alt="WiFi Display" className="w-full h-full object-cover" />
               </button>
@@ -2696,6 +2698,14 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/80 rounded-xl px-4 py-2 text-white text-sm">
             Smart Target - Zoom {zoomLevel}x
           </div>
+        </div>
+      )}
+
+      {/* FPS Overlay */}
+      {showFpsOverlay && (
+        <div className="fixed bottom-4 left-4 z-[100] bg-black/80 px-3 py-1.5 rounded text-white font-mono text-sm flex items-center gap-2">
+          <span className="text-muted-foreground">FPS</span>
+          <span className="text-accent font-bold">{fps}</span>
         </div>
       )}
     </>
