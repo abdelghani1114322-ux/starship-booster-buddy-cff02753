@@ -1051,9 +1051,8 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             </div>
 
             {/* WiFi Toggle */}
-            <Button
-              variant={wifiEnabled ? "default" : "outline"}
-              className="w-full"
+            <button
+              className="p-2 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors"
               onClick={() => {
                 setWifiEnabled(!wifiEnabled);
                 toast.success(wifiEnabled ? "WiFi Disabled" : "WiFi Enabled");
@@ -1062,10 +1061,9 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               <img 
                 src={wifiEnabled ? wifiOn : wifiOff} 
                 alt="WiFi" 
-                className="w-4 h-4 mr-2"
+                className="w-6 h-6"
               />
-              WiFi: {wifiEnabled ? "ON" : "OFF"}
-            </Button>
+            </button>
 
             {/* Crosshair Toggle */}
             <Button
