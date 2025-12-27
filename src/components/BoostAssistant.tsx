@@ -352,6 +352,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     { name: "Tactic X", icon: Target, action: () => setShowTacticX(true) },
     { name: "Macro", icon: Gamepad2, action: () => setShowMacro(true) },
     { name: "Sounds\nEqualizer", icon: Music, action: () => setShowEqualizer(true) },
+    { name: "Graphique\nSettings", icon: Wind, action: () => setShowGraphiqueSettings(true) },
     { name: "Hide\nNotification", icon: BellOff, action: toggleHideNotifications, isActive: hideNotifications },
   ];
 
