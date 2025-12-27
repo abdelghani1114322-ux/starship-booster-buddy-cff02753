@@ -802,12 +802,16 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               {/* Zoom Mode Button */}
               <button
                 onClick={() => {
-                  setShowZoomMode(true);
-                  toast.info("Zoom Mode: Drag to select area");
+                  setShowZoomMode(!showZoomMode);
+                  if (!showZoomMode) {
+                    toast.info("Zoom Mode: ON");
+                  } else {
+                    toast.info("Zoom Mode: OFF");
+                  }
                 }}
-                className="w-12 h-12 rounded-full overflow-hidden border border-border/50 hover:border-accent/50 transition-all hover:scale-105 bg-[#2a2a3e] flex items-center justify-center"
+                className={`w-12 h-12 rounded-full overflow-hidden border transition-all hover:scale-105 bg-[#2a2a3e] flex items-center justify-center ${showZoomMode ? 'border-accent ring-2 ring-accent/50' : 'border-border/50 hover:border-accent/50'}`}
               >
-                <ZoomIn className="w-6 h-6 text-accent" />
+                <ZoomIn className={`w-6 h-6 ${showZoomMode ? 'text-accent' : 'text-accent'}`} />
               </button>
               
               {/* WiFi Display Button */}
@@ -2562,46 +2566,36 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
 
       {/* Zoom Mode Overlay */}
       {showZoomMode && (
-        <div className="fixed inset-0 z-[70] bg-black/30">
-          {/* Close button */}
-          <button
-            onClick={() => setShowZoomMode(false)}
-            className="absolute top-4 right-4 w-12 h-12 rounded-full bg-red-500/80 hover:bg-red-500 flex items-center justify-center z-[80] transition-colors"
-          >
-            <X className="w-6 h-6 text-white" />
-          </button>
-
-          {/* Zoom controls */}
-          <div className="absolute top-4 left-4 bg-black/80 rounded-xl p-3 z-[80] space-y-2">
-            <div className="text-white text-sm font-medium mb-2">Zoom Level: {zoomLevel}x</div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setZoomLevel(prev => Math.max(1.5, prev - 0.5))}
-                className="w-10 h-10 rounded-lg bg-white/20 hover:bg-white/30 flex items-center justify-center text-white font-bold"
-              >
-                -
-              </button>
-              <button
-                onClick={() => setZoomLevel(prev => Math.min(5, prev + 0.5))}
-                className="w-10 h-10 rounded-lg bg-white/20 hover:bg-white/30 flex items-center justify-center text-white font-bold"
-              >
-                +
-              </button>
-            </div>
-            <div className="text-white/60 text-xs flex items-center gap-1">
-              <Move className="w-3 h-3" />
-              Drag circle to move
+        <div className="fixed inset-0 z-[70] pointer-events-none">
+          {/* Zoom controls - positioned at bottom center */}
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-black/90 rounded-2xl p-4 z-[80] pointer-events-auto">
+            <div className="flex items-center gap-4">
+              <span className="text-white text-sm font-medium">Zoom</span>
+              <div className="flex gap-2">
+                {[1.5, 2, 2.5, 3, 4].map((level) => (
+                  <button
+                    key={level}
+                    onClick={() => setZoomLevel(level)}
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${
+                      zoomLevel === level 
+                        ? 'bg-accent text-white' 
+                        : 'bg-white/20 text-white hover:bg-white/30'
+                    }`}
+                  >
+                    {level}x
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Draggable zoom circle */}
           <div
             ref={zoomRef}
-            className="absolute w-40 h-40 rounded-full border-4 border-white/80 shadow-[0_0_30px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(0,0,0,0.3)] cursor-move overflow-hidden"
+            className="absolute w-36 h-36 rounded-full border-4 border-white/80 shadow-[0_0_30px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(0,0,0,0.3)] cursor-move overflow-hidden pointer-events-auto"
             style={{
-              left: `calc(${zoomPosition.x}% - 80px)`,
-              top: `calc(${zoomPosition.y}% - 80px)`,
-              background: `radial-gradient(circle at center, transparent 60%, rgba(0,0,0,0.3) 100%)`,
+              left: `calc(${zoomPosition.x}% - 72px)`,
+              top: `calc(${zoomPosition.y}% - 72px)`,
             }}
             onMouseDown={(e) => {
               e.preventDefault();
@@ -2655,13 +2649,13 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
           >
             {/* Magnified content simulation */}
             <div 
-              className="absolute inset-0 rounded-full overflow-hidden"
+              className="absolute inset-0 rounded-full overflow-hidden bg-black/20"
               style={{
                 transform: `scale(${zoomLevel})`,
                 transformOrigin: 'center',
               }}
             >
-              <div className="w-full h-full bg-gradient-to-br from-green-900/20 via-transparent to-blue-900/20" />
+              <div className="w-full h-full bg-gradient-to-br from-accent/10 via-transparent to-primary/10" />
             </div>
             
             {/* Crosshair in center */}
@@ -2671,14 +2665,19 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               <div className="w-3 h-3 border-2 border-red-500/80 rounded-full" />
             </div>
 
+            {/* Zoom level indicator */}
+            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-black/60 px-2 py-0.5 rounded text-white text-xs font-bold">
+              {zoomLevel}x
+            </div>
+
             {/* Tick marks around edge */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none">
               {Array.from({ length: 12 }).map((_, i) => {
                 const angle = (i * 30 - 90) * (Math.PI / 180);
-                const x1 = 80 + 75 * Math.cos(angle);
-                const y1 = 80 + 75 * Math.sin(angle);
-                const x2 = 80 + 70 * Math.cos(angle);
-                const y2 = 80 + 70 * Math.sin(angle);
+                const x1 = 72 + 67 * Math.cos(angle);
+                const y1 = 72 + 67 * Math.sin(angle);
+                const x2 = 72 + 62 * Math.cos(angle);
+                const y2 = 72 + 62 * Math.sin(angle);
                 return (
                   <line
                     key={i}
@@ -2692,11 +2691,6 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 );
               })}
             </svg>
-          </div>
-
-          {/* Info text */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/80 rounded-xl px-4 py-2 text-white text-sm">
-            Smart Target - Zoom {zoomLevel}x
           </div>
         </div>
       )}
