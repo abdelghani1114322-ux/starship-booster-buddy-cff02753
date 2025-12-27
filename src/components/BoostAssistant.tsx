@@ -314,11 +314,16 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     }
   };
 
-  // Function to launch apps - opens mini app directly, no intro video
+  // Function to launch apps - uses native launch on mobile, opens in new tab on web
   const launchApp = (app: typeof gameApps[0]) => {
-    // Directly open mini app window - no video intro
-    setMiniApp({ name: app.name, icon: app.icon, webUrl: app.webUrl });
-    toast.success(`${app.name} launched`);
+    if (Capacitor.isNativePlatform()) {
+      // Use native app launching
+      performAppLaunch(app);
+    } else {
+      // Web: open in new tab since iframes are blocked by most sites
+      window.open(app.webUrl, "_blank");
+      toast.success(`Opening ${app.name}`);
+    }
   };
 
   // Handle video end - launch the app
