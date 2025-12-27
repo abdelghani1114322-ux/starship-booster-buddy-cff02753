@@ -2705,7 +2705,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
       {showFpsOverlay && (
         <div className="fixed bottom-4 left-4 z-[100] bg-black/80 px-3 py-1.5 rounded font-mono text-sm flex items-center gap-2">
           <span className="text-white">FPS</span>
-          <span className="text-white font-bold">{fps}</span>
+          <span className="text-white font-bold">{Math.round(fps)}</span>
         </div>
       )}
     </>
