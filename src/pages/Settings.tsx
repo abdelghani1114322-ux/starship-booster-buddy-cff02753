@@ -413,7 +413,7 @@ export default function Settings() {
                   <User className="w-6 h-6 text-primary" />
                   <div>
                     <h3 className="font-semibold">Developer</h3>
-                    <p className="text-sm text-muted-foreground">GodTSpeed Team</p>
+                    <p className="text-sm text-muted-foreground">B.Taha</p>
                   </div>
                 </div>
               </Card>
