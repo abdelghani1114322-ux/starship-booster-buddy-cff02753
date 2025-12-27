@@ -1,5 +1,6 @@
 package app.lovable.energyx;
 
+import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -21,6 +22,7 @@ public class EnergyXOverlayPlugin extends Plugin {
 
     private static final int OVERLAY_PERMISSION_REQUEST_CODE = 1234;
     private static final int WRITE_SETTINGS_REQUEST_CODE = 1235;
+    private static final int USAGE_STATS_REQUEST_CODE = 1236;
 
     @PluginMethod
     public void checkOverlayPermission(PluginCall call) {
@@ -157,6 +159,35 @@ public class EnergyXOverlayPlugin extends Plugin {
         call.resolve();
     }
 
+    @PluginMethod
+    public void checkUsageStatsPermission(PluginCall call) {
+        boolean granted = hasUsageStatsPermission();
+        JSObject result = new JSObject();
+        result.put("granted", granted);
+        call.resolve(result);
+    }
+
+    @PluginMethod
+    public void requestUsageStatsPermission(PluginCall call) {
+        if (hasUsageStatsPermission()) {
+            JSObject result = new JSObject();
+            result.put("granted", true);
+            call.resolve(result);
+            return;
+        }
+
+        // Open settings to grant usage stats permission
+        Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        getContext().startActivity(intent);
+        
+        // Resolve immediately - we'll check permission when user returns
+        JSObject result = new JSObject();
+        result.put("granted", false);
+        result.put("opened", true);
+        call.resolve(result);
+    }
+
     private boolean hasOverlayPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return Settings.canDrawOverlays(getContext());
@@ -169,5 +200,15 @@ public class EnergyXOverlayPlugin extends Plugin {
             return Settings.System.canWrite(getContext());
         }
         return true;
+    }
+
+    private boolean hasUsageStatsPermission() {
+        AppOpsManager appOps = (AppOpsManager) getContext().getSystemService(Context.APP_OPS_SERVICE);
+        int mode = appOps.checkOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            android.os.Process.myUid(),
+            getContext().getPackageName()
+        );
+        return mode == AppOpsManager.MODE_ALLOWED;
     }
 }

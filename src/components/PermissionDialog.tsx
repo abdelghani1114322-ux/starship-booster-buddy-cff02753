@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import { App } from "@capacitor/app";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, Layers, Settings, CheckCircle, ChevronRight } from "lucide-react";
+import { Shield, Layers, Settings, CheckCircle, ChevronRight, BarChart3 } from "lucide-react";
 
 interface PermissionDialogProps {
   onAllPermissionsGranted: () => void;
@@ -13,15 +13,18 @@ interface EnergyXOverlayPlugin {
   requestOverlayPermission(): Promise<{ granted: boolean }>;
   checkWriteSettingsPermission(): Promise<{ granted: boolean }>;
   requestWriteSettingsPermission(): Promise<{ granted: boolean }>;
+  checkUsageStatsPermission(): Promise<{ granted: boolean }>;
+  requestUsageStatsPermission(): Promise<{ granted: boolean }>;
   startOverlayService(): Promise<void>;
 }
 
-type PermissionStep = "intro" | "overlay" | "write_settings" | "done";
+type PermissionStep = "intro" | "overlay" | "usage_stats" | "write_settings" | "done";
 
 export const PermissionDialog = ({ onAllPermissionsGranted }: PermissionDialogProps) => {
   const [currentStep, setCurrentStep] = useState<PermissionStep>("intro");
   const [isVisible, setIsVisible] = useState(true);
   const [overlayGranted, setOverlayGranted] = useState(false);
+  const [usageStatsGranted, setUsageStatsGranted] = useState(false);
   const [writeSettingsGranted, setWriteSettingsGranted] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
 
@@ -38,17 +41,23 @@ export const PermissionDialog = ({ onAllPermissionsGranted }: PermissionDialogPr
       const overlayResult = await EnergyXOverlay.checkOverlayPermission();
       setOverlayGranted(overlayResult.granted);
       
+      const usageResult = await EnergyXOverlay.checkUsageStatsPermission();
+      setUsageStatsGranted(usageResult.granted);
+      
       const writeResult = await EnergyXOverlay.checkWriteSettingsPermission();
       setWriteSettingsGranted(writeResult.granted);
 
       // Auto-advance if permissions are granted
       if (overlayResult.granted && currentStep === "overlay") {
+        setCurrentStep("usage_stats");
+      }
+      if (usageResult.granted && currentStep === "usage_stats") {
         setCurrentStep("write_settings");
       }
       if (writeResult.granted && currentStep === "write_settings") {
         handleComplete();
       }
-      if (overlayResult.granted && writeResult.granted) {
+      if (overlayResult.granted && usageResult.granted && writeResult.granted) {
         handleComplete();
       }
     } catch (error) {
@@ -84,7 +93,7 @@ export const PermissionDialog = ({ onAllPermissionsGranted }: PermissionDialogPr
   const handleOverlayPermission = async () => {
     if (!EnergyXOverlay) {
       // Fallback for non-native (testing)
-      setCurrentStep("write_settings");
+      setCurrentStep("usage_stats");
       return;
     }
 
@@ -93,6 +102,21 @@ export const PermissionDialog = ({ onAllPermissionsGranted }: PermissionDialogPr
       await EnergyXOverlay.requestOverlayPermission();
     } catch (error) {
       console.error("Error requesting overlay permission:", error);
+    }
+  };
+
+  const handleUsageStatsPermission = async () => {
+    if (!EnergyXOverlay) {
+      // Fallback for non-native (testing)
+      setCurrentStep("write_settings");
+      return;
+    }
+
+    try {
+      // This will open Android settings for usage access permission
+      await EnergyXOverlay.requestUsageStatsPermission();
+    } catch (error) {
+      console.error("Error requesting usage stats permission:", error);
     }
   };
 
@@ -187,6 +211,15 @@ export const PermissionDialog = ({ onAllPermissionsGranted }: PermissionDialogPr
                   </div>
                   
                   <div className="flex items-center gap-3 bg-gray-800/50 p-3 rounded-xl border border-gray-700">
+                    <BarChart3 className="w-6 h-6 text-orange-500" />
+                    <div className="flex-1">
+                      <p className="text-white text-sm font-medium">Usage access</p>
+                      <p className="text-gray-500 text-xs">Detect running games</p>
+                    </div>
+                    {usageStatsGranted && <CheckCircle className="w-5 h-5 text-green-500" />}
+                  </div>
+                  
+                  <div className="flex items-center gap-3 bg-gray-800/50 p-3 rounded-xl border border-gray-700">
                     <Settings className="w-6 h-6 text-orange-500" />
                     <div className="flex-1">
                       <p className="text-white text-sm font-medium">Modify settings</p>
@@ -228,6 +261,7 @@ export const PermissionDialog = ({ onAllPermissionsGranted }: PermissionDialogPr
                 <div className="flex justify-center gap-2 mb-4">
                   <div className="w-3 h-3 rounded-full bg-orange-500" />
                   <div className="w-3 h-3 rounded-full bg-gray-600" />
+                  <div className="w-3 h-3 rounded-full bg-gray-600" />
                 </div>
                 
                 <h2 className="text-xl font-bold text-white text-center mb-2">
@@ -242,7 +276,7 @@ export const PermissionDialog = ({ onAllPermissionsGranted }: PermissionDialogPr
                     <CheckCircle className="w-12 h-12 text-green-500" />
                     <p className="text-green-400 font-medium">Permission Granted!</p>
                     <button
-                      onClick={() => setCurrentStep("write_settings")}
+                      onClick={() => setCurrentStep("usage_stats")}
                       className="w-full py-3 px-6 bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold rounded-2xl"
                     >
                       Continue
@@ -252,6 +286,60 @@ export const PermissionDialog = ({ onAllPermissionsGranted }: PermissionDialogPr
                   <>
                     <button
                       onClick={handleOverlayPermission}
+                      disabled={isChecking}
+                      className="w-full py-3 px-6 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold rounded-2xl transition-all shadow-lg shadow-orange-500/30 disabled:opacity-50"
+                    >
+                      {isChecking ? "Checking..." : "Open Settings"}
+                    </button>
+                    
+                    <p className="text-gray-500 text-xs text-center mt-4">
+                      After enabling, return to this app
+                    </p>
+                  </>
+                )}
+              </motion.div>
+            )}
+
+            {/* Usage Stats Permission Step */}
+            {currentStep === "usage_stats" && (
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+              >
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
+                    <BarChart3 className="w-8 h-8 text-white" />
+                  </div>
+                </div>
+
+                <div className="flex justify-center gap-2 mb-4">
+                  <div className="w-3 h-3 rounded-full bg-green-500" />
+                  <div className="w-3 h-3 rounded-full bg-orange-500" />
+                  <div className="w-3 h-3 rounded-full bg-gray-600" />
+                </div>
+                
+                <h2 className="text-xl font-bold text-white text-center mb-2">
+                  Usage Access
+                </h2>
+                <p className="text-gray-400 text-center text-sm mb-6">
+                  Tap the button below, find this app and enable "Allow usage access"
+                </p>
+
+                {usageStatsGranted ? (
+                  <div className="flex flex-col items-center gap-3">
+                    <CheckCircle className="w-12 h-12 text-green-500" />
+                    <p className="text-green-400 font-medium">Permission Granted!</p>
+                    <button
+                      onClick={() => setCurrentStep("write_settings")}
+                      className="w-full py-3 px-6 bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold rounded-2xl"
+                    >
+                      Continue
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleUsageStatsPermission}
                       disabled={isChecking}
                       className="w-full py-3 px-6 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold rounded-2xl transition-all shadow-lg shadow-orange-500/30 disabled:opacity-50"
                     >
@@ -279,6 +367,7 @@ export const PermissionDialog = ({ onAllPermissionsGranted }: PermissionDialogPr
                 </div>
 
                 <div className="flex justify-center gap-2 mb-4">
+                  <div className="w-3 h-3 rounded-full bg-green-500" />
                   <div className="w-3 h-3 rounded-full bg-green-500" />
                   <div className="w-3 h-3 rounded-full bg-orange-500" />
                 </div>
