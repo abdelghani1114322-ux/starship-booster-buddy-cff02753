@@ -171,6 +171,31 @@ export default function MyApps() {
     }
   };
 
+  // Map package names to web URLs for common apps
+  const getWebUrl = (packageName: string): string | null => {
+    const webUrls: Record<string, string> = {
+      "com.instagram.android": "https://www.instagram.com",
+      "com.facebook.katana": "https://www.facebook.com",
+      "com.whatsapp": "https://web.whatsapp.com",
+      "com.google.android.youtube": "https://www.youtube.com",
+      "com.spotify.music": "https://open.spotify.com",
+      "com.netflix.mediaclient": "https://www.netflix.com",
+      "com.twitter.android": "https://twitter.com",
+      "com.snapchat.android": "https://www.snapchat.com",
+      "com.zhiliaoapp.musically": "https://www.tiktok.com",
+      "com.discord": "https://discord.com/app",
+      "com.telegram.messenger": "https://web.telegram.org",
+      "com.tencent.ig": "https://www.pubgmobile.com",
+      "com.activision.callofduty.shooter": "https://www.callofduty.com/mobile",
+      "com.dts.freefireth": "https://ff.garena.com",
+      "com.mobile.legends": "https://m.mobilelegends.com",
+      "com.miHoYo.GenshinImpact": "https://genshin.hoyoverse.com",
+      "com.supercell.clashofclans": "https://supercell.com/en/games/clashofclans",
+      "com.innersloth.spacemafia": "https://www.innersloth.com/games/among-us",
+    };
+    return webUrls[packageName] || null;
+  };
+
   const handleLaunchApp = async (packageName: string, appName: string) => {
     if (Capacitor.isNativePlatform() && InstalledAppsNative) {
       try {
@@ -186,9 +211,14 @@ export default function MyApps() {
         }
       }
     } else {
-      toast.info(`Would launch: ${appName}`, {
-        description: "App launching works on native Android only"
-      });
+      // Web: try to open web version
+      const webUrl = getWebUrl(packageName);
+      if (webUrl) {
+        window.open(webUrl, "_blank");
+        toast.success(`Opening ${appName}`);
+      } else {
+        toast.info(`${appName} has no web version available`);
+      }
     }
   };
 
