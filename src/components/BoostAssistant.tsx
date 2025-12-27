@@ -8,7 +8,7 @@ import { Capacitor } from "@capacitor/core";
 import startAnimation from "@/assets/start_animation.mp4";
 
 import wifiOn from "@/assets/wifi-on.webp";
-import wifiOff from "@/assets/wifi-off.webp";
+import wifiOff from "@/assets/no-network.png";
 import instagramIcon from "@/assets/instagram-icon.png";
 import facebookIcon from "@/assets/facebook-icon.png";
 import chromeIcon from "@/assets/chrome-icon.png";
