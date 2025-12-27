@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Cpu, HardDrive, Thermometer, Clock, Zap } from "lucide-react";
+import { Thermometer, Clock, Zap, Fan } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 
 interface GravityXDashboardProps {
   cpuTemp: number;
@@ -25,11 +26,41 @@ export const GravityXDashboard = ({
   batteryTimeRemaining,
 }: GravityXDashboardProps) => {
   const [centralTemp, setCentralTemp] = useState(40);
+  const [fanSpeed, setFanSpeed] = useState(50);
+  const [fanMode, setFanMode] = useState<'auto' | 'manual'>('auto');
   
   // Calculate average temp
   useEffect(() => {
     setCentralTemp(Math.round((cpuTemp + gpuTemp) / 2));
   }, [cpuTemp, gpuTemp]);
+
+  // Auto fan speed based on temperature
+  useEffect(() => {
+    if (fanMode === 'auto') {
+      if (centralTemp < 40) setFanSpeed(30);
+      else if (centralTemp < 50) setFanSpeed(50);
+      else if (centralTemp < 60) setFanSpeed(70);
+      else setFanSpeed(100);
+    }
+  }, [centralTemp, fanMode]);
+
+  // Get fan speed label
+  const getFanSpeedLabel = (speed: number) => {
+    if (speed < 30) return "Silent";
+    if (speed < 50) return "Low";
+    if (speed < 70) return "Medium";
+    if (speed < 90) return "High";
+    return "Max";
+  };
+
+  // Get fan color based on speed
+  const getFanColor = (speed: number) => {
+    if (speed < 30) return "text-blue-400";
+    if (speed < 50) return "text-cyan-400";
+    if (speed < 70) return "text-yellow-400";
+    if (speed < 90) return "text-orange-400";
+    return "text-red-500";
+  };
 
   // Format remaining time
   const formatRemainingTime = (minutes: number | null) => {
@@ -178,8 +209,75 @@ export const GravityXDashboard = ({
         </div>
       </div>
 
+      {/* Fan Speed Control Section */}
+      <div className="relative mt-6 bg-gray-900/50 rounded-xl p-4 border border-red-900/30">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Fan 
+              className={`w-6 h-6 ${getFanColor(fanSpeed)} ${fanSpeed > 0 ? 'animate-spin' : ''}`}
+              style={{ animationDuration: `${Math.max(0.1, 1 - fanSpeed / 100)}s` }}
+            />
+            <span className="text-white font-bold text-sm">Fan Speed</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setFanMode(fanMode === 'auto' ? 'manual' : 'auto')}
+              className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
+                fanMode === 'auto' 
+                  ? 'bg-red-600 text-white' 
+                  : 'bg-gray-700 text-white/60 hover:bg-gray-600'
+              }`}
+            >
+              AUTO
+            </button>
+            <span className={`text-lg font-bold ${getFanColor(fanSpeed)}`}>
+              {fanSpeed}%
+            </span>
+          </div>
+        </div>
+        
+        {/* Fan Speed Slider */}
+        <div className="flex items-center gap-3">
+          <span className="text-blue-400 text-xs">🌀</span>
+          <Slider
+            value={[fanSpeed]}
+            onValueChange={(value) => {
+              setFanMode('manual');
+              setFanSpeed(value[0]);
+            }}
+            min={0}
+            max={100}
+            step={5}
+            className="flex-1"
+          />
+          <span className="text-red-500 text-xs">🔥</span>
+        </div>
+        
+        {/* Speed Level Indicator */}
+        <div className="flex items-center justify-between mt-3">
+          <span className={`text-xs font-semibold ${getFanColor(fanSpeed)}`}>
+            {getFanSpeedLabel(fanSpeed)}
+          </span>
+          <div className="flex gap-1">
+            {[0, 25, 50, 75, 100].map((level) => (
+              <div
+                key={level}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  fanSpeed >= level 
+                    ? level < 50 ? 'bg-cyan-400' : level < 75 ? 'bg-yellow-400' : 'bg-red-500'
+                    : 'bg-gray-700'
+                }`}
+              />
+            ))}
+          </div>
+          <span className="text-white/40 text-xs">
+            {fanMode === 'auto' ? 'Auto Mode' : 'Manual'}
+          </span>
+        </div>
+      </div>
+
       {/* Bottom - Remaining Time */}
-      <div className="relative mt-6 text-center">
+      <div className="relative mt-4 text-center">
         <div className="inline-flex items-center gap-2 bg-gray-900/50 px-4 py-2 rounded-lg border border-red-900/30">
           <Clock className="w-4 h-4 text-red-400" />
           <span className="text-white/60 text-sm">Remaining time</span>
