@@ -1438,30 +1438,53 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                   <div className="flex flex-col items-center gap-2">
                     <span className="text-xs landscape:text-[10px] text-white/60">CPU</span>
                     <div className="flex flex-col gap-1">
-                      {Array.from({ length: 4 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className={`w-10 h-1.5 landscape:w-8 landscape:h-1 rounded-full transition-all ${
-                            i < (macroMode === "cpu" || macroMode === "super" ? 4 : macroMode === "auto" ? 3 : 2)
-                              ? "bg-gradient-to-r from-red-600 to-red-400 shadow-[0_0_8px_rgba(239,68,68,0.6)]"
-                              : "bg-slate-700/60"
-                          }`}
-                        />
-                      ))}
+                      {Array.from({ length: 4 }).map((_, i) => {
+                        const isActive = i < (macroMode === "cpu" || macroMode === "super" ? 4 : macroMode === "auto" ? 3 : 2);
+                        return (
+                          <div
+                            key={i}
+                            className={`h-1.5 landscape:h-1 rounded-full transition-all duration-500 ease-out ${
+                              isActive
+                                ? "bg-gradient-to-r from-red-600 to-red-400"
+                                : "bg-slate-700/60"
+                            }`}
+                            style={{
+                              width: isActive ? '2.5rem' : '2.5rem',
+                              transform: isActive ? 'scaleX(1)' : 'scaleX(0.6)',
+                              transformOrigin: 'right',
+                              opacity: isActive ? 1 : 0.4,
+                              boxShadow: isActive ? '0 0 12px rgba(239,68,68,0.7)' : 'none',
+                              transitionDelay: `${i * 80}ms`,
+                            }}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
 
                   {/* Center Logo - RedMagic style */}
                   <div className="relative">
                     {/* Outer glow ring */}
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-500/20 via-transparent to-cyan-500/20 blur-xl" />
+                    <div className={`absolute inset-0 rounded-full transition-all duration-500 ${
+                      macroMode === "super" 
+                        ? "bg-gradient-to-r from-red-500/40 via-purple-500/30 to-cyan-500/40 blur-xl animate-pulse" 
+                        : "bg-gradient-to-r from-red-500/20 via-transparent to-cyan-500/20 blur-xl"
+                    }`} />
                     
                     {/* Main circle */}
-                    <div className="relative w-20 h-20 landscape:w-16 landscape:h-16 rounded-full bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-red-500/60 flex items-center justify-center shadow-[0_0_30px_rgba(239,68,68,0.3),inset_0_0_20px_rgba(0,0,0,0.5)]">
+                    <div className={`relative w-20 h-20 landscape:w-16 landscape:h-16 rounded-full bg-gradient-to-b from-slate-800 to-slate-900 flex items-center justify-center shadow-[inset_0_0_20px_rgba(0,0,0,0.5)] transition-all duration-300 ${
+                      macroMode === "super" 
+                        ? "border-2 border-red-400 shadow-[0_0_40px_rgba(239,68,68,0.5)]" 
+                        : "border-2 border-red-500/60 shadow-[0_0_30px_rgba(239,68,68,0.3)]"
+                    }`}>
                       {/* Inner circle with icon */}
-                      <div className="w-14 h-14 landscape:w-11 landscape:h-11 rounded-full bg-gradient-to-b from-red-900/80 to-red-950 border border-red-600/50 flex items-center justify-center">
+                      <div className={`w-14 h-14 landscape:w-11 landscape:h-11 rounded-full bg-gradient-to-b from-red-900/80 to-red-950 flex items-center justify-center transition-all duration-300 ${
+                        macroMode === "super" ? "border-2 border-red-500" : "border border-red-600/50"
+                      }`}>
                         {/* RedMagic-style claw icon */}
-                        <svg viewBox="0 0 24 24" className="w-7 h-7 landscape:w-5 landscape:h-5 text-red-500" fill="currentColor">
+                        <svg viewBox="0 0 24 24" className={`w-7 h-7 landscape:w-5 landscape:h-5 transition-all duration-300 ${
+                          macroMode === "super" ? "text-red-400 drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]" : "text-red-500"
+                        }`} fill="currentColor">
                           <path d="M8 4C8 4 7 8 7 12C7 16 8 20 8 20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/>
                           <path d="M12 2C12 2 12 8 12 12C12 16 12 22 12 22" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/>
                           <path d="M16 4C16 4 17 8 17 12C17 16 16 20 16 20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/>
@@ -1470,24 +1493,39 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                     </div>
                     
                     {/* Animated accent dots */}
-                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full animate-pulse" />
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-cyan-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+                    <div className={`absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full transition-all duration-300 ${
+                      macroMode === "cpu" || macroMode === "super" ? "animate-ping" : "animate-pulse"
+                    }`} />
+                    <div className={`absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-cyan-400 rounded-full transition-all duration-300 ${
+                      macroMode === "gpu" || macroMode === "super" ? "animate-ping" : "animate-pulse"
+                    }`} style={{ animationDelay: '0.5s' }} />
                   </div>
 
                   {/* GPU Side - Horizontal bars */}
                   <div className="flex flex-col items-center gap-2">
                     <span className="text-xs landscape:text-[10px] text-white/60">GPU</span>
                     <div className="flex flex-col gap-1">
-                      {Array.from({ length: 4 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className={`w-10 h-1.5 landscape:w-8 landscape:h-1 rounded-full transition-all ${
-                            i < (macroMode === "gpu" || macroMode === "super" ? 4 : macroMode === "auto" ? 3 : 2)
-                              ? "bg-gradient-to-r from-cyan-400 to-blue-500 shadow-[0_0_8px_rgba(6,182,212,0.6)]"
-                              : "bg-slate-700/60"
-                          }`}
-                        />
-                      ))}
+                      {Array.from({ length: 4 }).map((_, i) => {
+                        const isActive = i < (macroMode === "gpu" || macroMode === "super" ? 4 : macroMode === "auto" ? 3 : 2);
+                        return (
+                          <div
+                            key={i}
+                            className={`h-1.5 landscape:h-1 rounded-full transition-all duration-500 ease-out ${
+                              isActive
+                                ? "bg-gradient-to-r from-cyan-400 to-blue-500"
+                                : "bg-slate-700/60"
+                            }`}
+                            style={{
+                              width: isActive ? '2.5rem' : '2.5rem',
+                              transform: isActive ? 'scaleX(1)' : 'scaleX(0.6)',
+                              transformOrigin: 'left',
+                              opacity: isActive ? 1 : 0.4,
+                              boxShadow: isActive ? '0 0 12px rgba(6,182,212,0.7)' : 'none',
+                              transitionDelay: `${i * 80}ms`,
+                            }}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
