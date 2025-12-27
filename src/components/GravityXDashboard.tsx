@@ -118,72 +118,67 @@ export const GravityXDashboard = ({
           </div>
         </div>
 
-        {/* Center - Main Temperature Circle */}
+        {/* Center - Main Temperature Circle with X Lines */}
         <div className="relative flex-shrink-0 mx-4">
-          {/* Outer rotating ring */}
-          <div className="relative w-36 h-36">
-            {/* Animated outer ring */}
-            <svg className="absolute inset-0 w-full h-full animate-spin-slow" viewBox="0 0 100 100">
-              <defs>
-                <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#ef4444" />
-                  <stop offset="50%" stopColor="#dc2626" />
-                  <stop offset="100%" stopColor="#991b1b" />
-                </linearGradient>
-              </defs>
-              <circle
-                cx="50"
-                cy="50"
-                r="46"
-                fill="none"
-                stroke="url(#ringGradient)"
-                strokeWidth="2"
-                strokeDasharray="20 10"
-                className="opacity-60"
-              />
-            </svg>
-            
-            {/* Static middle ring */}
+          <div className="relative w-44 h-44">
+            {/* Diagonal X lines - Top Left (red) */}
+            <div className="absolute -top-2 -left-2 w-12 h-1 bg-gradient-to-r from-red-500 to-red-400 rounded-full transform -rotate-45 origin-right shadow-[0_0_10px_rgba(239,68,68,0.6)]" />
+            {/* Diagonal X lines - Top Right (blue) */}
+            <div className="absolute -top-2 -right-2 w-12 h-1 bg-gradient-to-l from-cyan-400 to-blue-500 rounded-full transform rotate-45 origin-left shadow-[0_0_10px_rgba(34,211,238,0.6)]" />
+            {/* Diagonal X lines - Bottom Left (blue) */}
+            <div className="absolute -bottom-2 -left-2 w-12 h-1 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full transform rotate-45 origin-right shadow-[0_0_10px_rgba(34,211,238,0.6)]" />
+            {/* Diagonal X lines - Bottom Right (red) */}
+            <div className="absolute -bottom-2 -right-2 w-12 h-1 bg-gradient-to-l from-red-500 to-red-400 rounded-full transform -rotate-45 origin-left shadow-[0_0_10px_rgba(239,68,68,0.6)]" />
+
+            {/* Outer circular ring with gradient */}
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
+              <defs>
+                <linearGradient id="ringGradientNew" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#f87171" stopOpacity="0.8" />
+                  <stop offset="25%" stopColor="#dc2626" stopOpacity="0.9" />
+                  <stop offset="50%" stopColor="#7f1d1d" stopOpacity="0.7" />
+                  <stop offset="75%" stopColor="#e5e5e5" stopOpacity="0.5" />
+                  <stop offset="100%" stopColor="#f87171" stopOpacity="0.8" />
+                </linearGradient>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+              {/* Main ring */}
               <circle
                 cx="50"
                 cy="50"
-                r="40"
+                r="42"
                 fill="none"
-                stroke="#dc2626"
-                strokeWidth="3"
-                className="opacity-80"
-              />
-              {/* Arc indicators */}
-              <circle
-                cx="50"
-                cy="50"
-                r="40"
-                fill="none"
-                stroke="#ef4444"
-                strokeWidth="3"
-                strokeDasharray={`${centralTemp * 2.5} 251`}
-                strokeLinecap="round"
-                transform="rotate(-90 50 50)"
-                className="drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]"
+                stroke="url(#ringGradientNew)"
+                strokeWidth="4"
+                filter="url(#glow)"
               />
             </svg>
             
-            {/* Inner circle with temperature */}
-            <div className="absolute inset-4 rounded-full bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-red-900/50 flex items-center justify-center shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
-              <div className="text-center">
-                <span className={`text-4xl font-bold ${getTempColor(centralTemp)} drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]`}>
-                  {centralTemp}
-                </span>
-                <span className="text-xl text-white/60">°C</span>
+            {/* Inner glowing orb */}
+            <div className="absolute inset-6 rounded-full overflow-hidden">
+              {/* Multiple layers for depth */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent rounded-full" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#ef4444_0%,_#dc2626_30%,_#991b1b_50%,_#7f1d1d_70%,_transparent_100%)] rounded-full shadow-[0_0_60px_rgba(239,68,68,0.5),inset_0_0_30px_rgba(239,68,68,0.3)]" />
+              {/* Central bright glow */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-1/2 h-1/2 bg-[radial-gradient(circle_at_center,_#fca5a5_0%,_#ef4444_40%,_transparent_80%)] rounded-full blur-sm animate-pulse" />
+              </div>
+              {/* Temperature display */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <span className={`text-4xl font-bold ${getTempColor(centralTemp)} drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]`}>
+                    {centralTemp}
+                  </span>
+                  <span className="text-xl text-white/80">°C</span>
+                </div>
               </div>
             </div>
-            
-            {/* Corner accent lights */}
-            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
-            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
-            <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
-            <div className="absolute top-1/2 -right-1 -translate-y-1/2 w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
           </div>
         </div>
 
