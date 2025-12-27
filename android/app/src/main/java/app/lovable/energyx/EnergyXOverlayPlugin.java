@@ -20,10 +20,19 @@ import java.util.List;
 public class EnergyXOverlayPlugin extends Plugin {
 
     private static final int OVERLAY_PERMISSION_REQUEST_CODE = 1234;
+    private static final int WRITE_SETTINGS_REQUEST_CODE = 1235;
 
     @PluginMethod
     public void checkOverlayPermission(PluginCall call) {
         boolean granted = hasOverlayPermission();
+        JSObject result = new JSObject();
+        result.put("granted", granted);
+        call.resolve(result);
+    }
+
+    @PluginMethod
+    public void checkWriteSettingsPermission(PluginCall call) {
+        boolean granted = hasWriteSettingsPermission();
         JSObject result = new JSObject();
         result.put("granted", granted);
         call.resolve(result);
@@ -44,7 +53,44 @@ public class EnergyXOverlayPlugin extends Plugin {
                 Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                 Uri.parse("package:" + getContext().getPackageName())
             );
-            startActivityForResult(call, intent, OVERLAY_PERMISSION_REQUEST_CODE);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getContext().startActivity(intent);
+            
+            // Resolve immediately - we'll check permission when user returns
+            JSObject result = new JSObject();
+            result.put("granted", false);
+            result.put("opened", true);
+            call.resolve(result);
+        } else {
+            JSObject result = new JSObject();
+            result.put("granted", true);
+            call.resolve(result);
+        }
+    }
+
+    @PluginMethod
+    public void requestWriteSettingsPermission(PluginCall call) {
+        if (hasWriteSettingsPermission()) {
+            JSObject result = new JSObject();
+            result.put("granted", true);
+            call.resolve(result);
+            return;
+        }
+
+        // Open settings to grant write settings permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Intent intent = new Intent(
+                Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                Uri.parse("package:" + getContext().getPackageName())
+            );
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getContext().startActivity(intent);
+            
+            // Resolve immediately - we'll check permission when user returns
+            JSObject result = new JSObject();
+            result.put("granted", false);
+            result.put("opened", true);
+            call.resolve(result);
         } else {
             JSObject result = new JSObject();
             result.put("granted", true);
@@ -54,6 +100,11 @@ public class EnergyXOverlayPlugin extends Plugin {
 
     @PluginMethod
     public void startOverlayService(PluginCall call) {
+        if (!hasOverlayPermission()) {
+            call.reject("Overlay permission not granted");
+            return;
+        }
+        
         Context context = getContext();
         Intent serviceIntent = new Intent(context, EnergyXOverlayService.class);
         
@@ -113,17 +164,10 @@ public class EnergyXOverlayPlugin extends Plugin {
         return true;
     }
 
-    @Override
-    protected void handleOnActivityResult(int requestCode, int resultCode, Intent data) {
-        super.handleOnActivityResult(requestCode, resultCode, data);
-        
-        if (requestCode == OVERLAY_PERMISSION_REQUEST_CODE) {
-            PluginCall savedCall = getSavedCall();
-            if (savedCall != null) {
-                JSObject result = new JSObject();
-                result.put("granted", hasOverlayPermission());
-                savedCall.resolve(result);
-            }
+    private boolean hasWriteSettingsPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return Settings.System.canWrite(getContext());
         }
+        return true;
     }
 }
