@@ -353,7 +353,6 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     { name: "Macro", icon: Gamepad2, action: () => setShowMacro(true) },
     { name: "Sounds\nEqualizer", icon: Music, action: () => setShowEqualizer(true) },
     { name: "Graphique\nSettings", icon: Wind, action: () => setShowGraphiqueSettings(true) },
-    { name: "Hide\nNotification", icon: BellOff, action: toggleHideNotifications, isActive: hideNotifications },
   ];
 
   const graphiqueFilters = [
@@ -1084,6 +1083,14 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 alt="WiFi" 
                 className="w-6 h-6"
               />
+            </button>
+
+            {/* Hide Notification Toggle */}
+            <button
+              className={`p-2 rounded-lg transition-colors ${hideNotifications ? "bg-primary/30 border border-primary" : "bg-muted/20 hover:bg-muted/40"}`}
+              onClick={toggleHideNotifications}
+            >
+              <BellOff className={`w-6 h-6 ${hideNotifications ? "text-primary" : "text-muted-foreground"}`} />
             </button>
 
             {/* Crosshair Toggle */}
