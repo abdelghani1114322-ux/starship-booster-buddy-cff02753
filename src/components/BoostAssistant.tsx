@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap, Crosshair, Music, X, Play, RotateCcw, Target, ZoomIn, Move, BellOff } from "lucide-react";
+import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap, Crosshair, Music, X, Play, RotateCcw, Target, ZoomIn, Move, BellOff, Moon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Slider } from "./ui/slider";
@@ -339,11 +339,22 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     return localStorage.getItem("hideNotifications") === "true";
   });
 
+  const [doNotDisturb, setDoNotDisturb] = useState(() => {
+    return localStorage.getItem("doNotDisturb") === "true";
+  });
+
   const toggleHideNotifications = () => {
     const newValue = !hideNotifications;
     setHideNotifications(newValue);
     localStorage.setItem("hideNotifications", String(newValue));
     toast.success(newValue ? "Notifications hidden" : "Notifications visible");
+  };
+
+  const toggleDoNotDisturb = () => {
+    const newValue = !doNotDisturb;
+    setDoNotDisturb(newValue);
+    localStorage.setItem("doNotDisturb", String(newValue));
+    toast.success(newValue ? "Do Not Disturb enabled" : "Do Not Disturb disabled");
   };
 
   const gamingTools = [
@@ -1091,6 +1102,14 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               onClick={toggleHideNotifications}
             >
               <BellOff className={`w-6 h-6 ${hideNotifications ? "text-primary" : "text-muted-foreground"}`} />
+            </button>
+
+            {/* Do Not Disturb Toggle */}
+            <button
+              className={`p-2 rounded-lg transition-colors ${doNotDisturb ? "bg-purple-500/30 border border-purple-500" : "bg-muted/20 hover:bg-muted/40"}`}
+              onClick={toggleDoNotDisturb}
+            >
+              <Moon className={`w-6 h-6 ${doNotDisturb ? "text-purple-500" : "text-muted-foreground"}`} />
             </button>
 
             {/* Crosshair Toggle */}
