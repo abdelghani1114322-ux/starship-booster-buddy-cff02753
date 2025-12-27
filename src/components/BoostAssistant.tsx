@@ -332,15 +332,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     { name: "Monitor", icon: Flame, action: () => setShowMonitor(true) },
     { name: "Aim\nAssistant", icon: Crosshair, action: () => setShowAimAssistant(true) },
     { name: "Tactic X", icon: Target, action: () => setShowTacticX(true) },
-    { name: "Macro", icon: Gamepad2, action: () => {
-      if (performanceMode === "boost") {
-        setShowMacro(true);
-      } else {
-        toast.error("Macro only available in Gamer Mode", {
-          description: "Switch to Gamer Mode to access Game Boost features",
-        });
-      }
-    }},
+    { name: "Macro", icon: Gamepad2, action: () => setShowMacro(true) },
     { name: "Sounds\nEqualizer", icon: Music, action: () => setShowEqualizer(true) },
     { name: "Graphique\nSettings", icon: Wind, action: () => setShowGraphiqueSettings(true) },
   ];
@@ -1398,11 +1390,11 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
       {/* Macro / Game Boost Overlay */}
       {showMacro && (
         <div 
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-background/80 backdrop-blur-sm"
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm"
           onClick={() => setShowMacro(false)}
         >
           <div 
-            className="bg-gradient-to-b from-slate-900 to-slate-800 border-2 border-red-500/40 rounded-xl p-4 landscape:p-2 shadow-[0_0_40px_rgba(239,68,68,0.3)] w-[360px] landscape:w-[280px] max-w-[95vw] max-h-[85vh] landscape:max-h-[75vh] overflow-y-auto"
+            className="bg-gradient-to-b from-[#1a1a2e] via-[#16162a] to-[#0d0d1a] border border-cyan-500/20 rounded-2xl p-5 landscape:p-3 shadow-[0_0_60px_rgba(6,182,212,0.15)] w-[340px] landscape:w-[300px] max-w-[95vw]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -1410,14 +1402,14 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
               <h2 className="text-lg landscape:text-sm font-bold text-white">Game Boost</h2>
               <button 
                 onClick={() => setShowMacro(false)}
-                className="w-8 h-8 landscape:w-6 landscape:h-6 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
+                className="w-7 h-7 landscape:w-6 landscape:h-6 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
               >
-                <X className="w-5 h-5 landscape:w-4 landscape:h-4 text-white/70" />
+                <X className="w-5 h-5 landscape:w-4 landscape:h-4 text-white/60" />
               </button>
             </div>
 
             {/* Tabs */}
-            <div className="flex justify-center gap-6 landscape:gap-3 mb-6 landscape:mb-3">
+            <div className="flex justify-center gap-8 landscape:gap-4 mb-5 landscape:mb-3">
               {[
                 { id: "performance", label: "Performance" },
                 { id: "display", label: "Display" },
@@ -1426,10 +1418,10 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 <button
                   key={tab.id}
                   onClick={() => setMacroTab(tab.id as typeof macroTab)}
-                  className={`text-sm landscape:text-xs font-medium pb-1 border-b-2 transition-all ${
+                  className={`text-sm landscape:text-xs font-medium transition-all ${
                     macroTab === tab.id 
-                      ? "text-white border-red-500" 
-                      : "text-white/50 border-transparent hover:text-white/70"
+                      ? "text-white" 
+                      : "text-white/40 hover:text-white/60"
                   }`}
                 >
                   {tab.label}
@@ -1440,52 +1432,59 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
             {/* Performance Tab Content */}
             {macroTab === "performance" && (
               <>
-                {/* Center Logo with CPU/GPU */}
-                <div className="flex items-center justify-center gap-4 landscape:gap-2 mb-6 landscape:mb-3">
-                  {/* CPU Bars */}
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-xs landscape:text-[10px] text-white/70 mb-1">CPU</span>
-                    <div className="flex gap-0.5">
-                      {Array.from({ length: 5 }).map((_, i) => (
+                {/* Center Logo with CPU/GPU horizontal bars */}
+                <div className="flex items-center justify-center gap-6 landscape:gap-4 mb-6 landscape:mb-4">
+                  {/* CPU Side - Horizontal bars */}
+                  <div className="flex flex-col items-center gap-2">
+                    <span className="text-xs landscape:text-[10px] text-white/60">CPU</span>
+                    <div className="flex flex-col gap-1">
+                      {Array.from({ length: 4 }).map((_, i) => (
                         <div
                           key={i}
-                          className={`w-2 h-6 landscape:w-1.5 landscape:h-4 rounded-sm transition-all ${
-                            i < (macroMode === "cpu" || macroMode === "super" ? 5 : macroMode === "auto" ? 3 : 2)
-                              ? "bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.5)]"
-                              : "bg-slate-700"
+                          className={`w-10 h-1.5 landscape:w-8 landscape:h-1 rounded-full transition-all ${
+                            i < (macroMode === "cpu" || macroMode === "super" ? 4 : macroMode === "auto" ? 3 : 2)
+                              ? "bg-gradient-to-r from-red-600 to-red-400 shadow-[0_0_8px_rgba(239,68,68,0.6)]"
+                              : "bg-slate-700/60"
                           }`}
                         />
                       ))}
                     </div>
                   </div>
 
-                  {/* Center Logo */}
+                  {/* Center Logo - RedMagic style */}
                   <div className="relative">
-                    <div className="w-20 h-20 landscape:w-14 landscape:h-14 rounded-full border-4 landscape:border-2 border-red-500/50 bg-gradient-to-b from-slate-800 to-slate-900 flex items-center justify-center shadow-[0_0_30px_rgba(239,68,68,0.3)]">
-                      <div className="w-16 h-16 landscape:w-11 landscape:h-11 rounded-full border-2 landscape:border border-red-500 bg-gradient-to-b from-red-900/50 to-red-950 flex items-center justify-center">
-                        <svg viewBox="0 0 24 24" className="w-8 h-8 landscape:w-5 landscape:h-5 text-red-500" fill="currentColor">
-                          <path d="M12 2C11 2 10 3 10 4V8C10 8 8 8 8 10V12C8 12 6 12 6 14V20C6 21 7 22 8 22H16C17 22 18 21 18 20V14C18 12 16 12 16 12V10C16 8 14 8 14 8V4C14 3 13 2 12 2Z" />
+                    {/* Outer glow ring */}
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-500/20 via-transparent to-cyan-500/20 blur-xl" />
+                    
+                    {/* Main circle */}
+                    <div className="relative w-20 h-20 landscape:w-16 landscape:h-16 rounded-full bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-red-500/60 flex items-center justify-center shadow-[0_0_30px_rgba(239,68,68,0.3),inset_0_0_20px_rgba(0,0,0,0.5)]">
+                      {/* Inner circle with icon */}
+                      <div className="w-14 h-14 landscape:w-11 landscape:h-11 rounded-full bg-gradient-to-b from-red-900/80 to-red-950 border border-red-600/50 flex items-center justify-center">
+                        {/* RedMagic-style claw icon */}
+                        <svg viewBox="0 0 24 24" className="w-7 h-7 landscape:w-5 landscape:h-5 text-red-500" fill="currentColor">
+                          <path d="M8 4C8 4 7 8 7 12C7 16 8 20 8 20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                          <path d="M12 2C12 2 12 8 12 12C12 16 12 22 12 22" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                          <path d="M16 4C16 4 17 8 17 12C17 16 16 20 16 20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/>
                         </svg>
                       </div>
                     </div>
-                    {/* Animated particles - hidden in landscape */}
-                    <div className="absolute -top-1 left-1/2 w-1 h-3 bg-red-500 rounded-full animate-pulse landscape:hidden" style={{ transform: 'translateX(-50%) rotate(-30deg)' }} />
-                    <div className="absolute -top-1 right-2 w-1 h-3 bg-red-500 rounded-full animate-pulse landscape:hidden" style={{ animationDelay: '0.2s', transform: 'rotate(30deg)' }} />
-                    <div className="absolute -bottom-1 left-3 w-1 h-3 bg-cyan-400 rounded-full animate-pulse landscape:hidden" style={{ animationDelay: '0.4s', transform: 'rotate(-30deg)' }} />
-                    <div className="absolute -bottom-1 right-3 w-1 h-3 bg-cyan-400 rounded-full animate-pulse landscape:hidden" style={{ animationDelay: '0.6s', transform: 'rotate(30deg)' }} />
+                    
+                    {/* Animated accent dots */}
+                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full animate-pulse" />
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-cyan-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
                   </div>
 
-                  {/* GPU Bars */}
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-xs landscape:text-[10px] text-white/70 mb-1">GPU</span>
-                    <div className="flex gap-0.5">
-                      {Array.from({ length: 5 }).map((_, i) => (
+                  {/* GPU Side - Horizontal bars */}
+                  <div className="flex flex-col items-center gap-2">
+                    <span className="text-xs landscape:text-[10px] text-white/60">GPU</span>
+                    <div className="flex flex-col gap-1">
+                      {Array.from({ length: 4 }).map((_, i) => (
                         <div
                           key={i}
-                          className={`w-2 h-6 landscape:w-1.5 landscape:h-4 rounded-sm transition-all ${
-                            i < (macroMode === "gpu" || macroMode === "super" ? 5 : macroMode === "auto" ? 3 : 2)
-                              ? "bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.5)]"
-                              : "bg-slate-700"
+                          className={`w-10 h-1.5 landscape:w-8 landscape:h-1 rounded-full transition-all ${
+                            i < (macroMode === "gpu" || macroMode === "super" ? 4 : macroMode === "auto" ? 3 : 2)
+                              ? "bg-gradient-to-r from-cyan-400 to-blue-500 shadow-[0_0_8px_rgba(6,182,212,0.6)]"
+                              : "bg-slate-700/60"
                           }`}
                         />
                       ))}
@@ -1493,8 +1492,8 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                   </div>
                 </div>
 
-                {/* Mode Buttons */}
-                <div className="grid grid-cols-2 gap-3 landscape:gap-1.5 mb-4 landscape:mb-2">
+                {/* Mode Buttons - 2x2 grid */}
+                <div className="grid grid-cols-2 gap-2.5 landscape:gap-1.5 mb-4 landscape:mb-2">
                   {[
                     { id: "auto", label: "Auto" },
                     { id: "gpu", label: "GPU Turbo" },
@@ -1507,10 +1506,10 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                         setMacroMode(mode.id as typeof macroMode);
                         toast.success(`${mode.label} Activated`);
                       }}
-                      className={`py-3 px-4 landscape:py-1.5 landscape:px-2 rounded-lg font-medium text-sm landscape:text-[10px] transition-all ${
+                      className={`py-2.5 px-4 landscape:py-1.5 landscape:px-2 rounded-lg font-medium text-sm landscape:text-[10px] transition-all ${
                         macroMode === mode.id
-                          ? "bg-gradient-to-r from-red-600 to-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]"
-                          : "bg-slate-700/80 text-white/80 hover:bg-slate-600/80"
+                          ? "bg-gradient-to-r from-red-600 to-red-500 text-white shadow-[0_4px_15px_rgba(239,68,68,0.4)]"
+                          : "bg-[#2a2a40] text-white/70 hover:bg-[#3a3a50] hover:text-white"
                       }`}
                     >
                       {mode.label}
@@ -1519,7 +1518,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                 </div>
 
                 {/* Description */}
-                <p className="text-xs landscape:text-[9px] text-white/50 text-center">
+                <p className="text-xs landscape:text-[9px] text-white/40 text-center leading-relaxed">
                   {macroMode === "auto" && "Automatically optimizes CPU and GPU for best performance"}
                   {macroMode === "gpu" && "Priority to use GPU core, 3D games for high quality images"}
                   {macroMode === "cpu" && "Priority to use CPU core for faster processing"}
