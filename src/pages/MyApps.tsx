@@ -2,16 +2,27 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Search, Zap, Loader2 } from "lucide-react";
+import { ArrowLeft, Search, Zap, Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
-import { Capacitor } from "@capacitor/core";
+import { Capacitor, registerPlugin } from "@capacitor/core";
 
 interface InstalledApp {
   packageName: string;
   appName: string;
   icon?: string; // Base64 encoded icon
   isOptimized: boolean;
+  isSystemApp?: boolean;
 }
+
+interface InstalledAppsPlugin {
+  getInstalledApps(options?: { includeSystemApps?: boolean; includeIcons?: boolean; iconSize?: number }): Promise<{ apps: InstalledApp[]; count: number }>;
+  launchApp(options: { packageName: string }): Promise<{ success: boolean }>;
+  getAppIcon(options: { packageName: string; iconSize?: number }): Promise<{ icon: string }>;
+}
+
+const InstalledAppsNative = Capacitor.isNativePlatform() 
+  ? registerPlugin<InstalledAppsPlugin>("InstalledApps") 
+  : null;
 
 export default function MyApps() {
   const navigate = useNavigate();
@@ -19,10 +30,11 @@ export default function MyApps() {
   const [filteredApps, setFilteredApps] = useState<InstalledApp[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [showSystemApps, setShowSystemApps] = useState(false);
 
   useEffect(() => {
     loadInstalledApps();
-  }, []);
+  }, [showSystemApps]);
 
   useEffect(() => {
     if (searchQuery.trim() === "") {
@@ -42,41 +54,61 @@ export default function MyApps() {
   const loadInstalledApps = async () => {
     setIsLoading(true);
     
-    if (Capacitor.isNativePlatform()) {
+    if (Capacitor.isNativePlatform() && InstalledAppsNative) {
       try {
-        // Try to use the native plugin
-        const { CapacitorUsageStatsManager } = await import(
-          "@capgo/capacitor-android-usagestatsmanager"
-        );
+        const result = await InstalledAppsNative.getInstalledApps({
+          includeSystemApps: showSystemApps,
+          includeIcons: true,
+          iconSize: 128,
+        });
         
-        const permissionResult = await CapacitorUsageStatsManager.isUsageStatsPermissionGranted();
-        
-        if (!permissionResult.granted) {
-          toast.info("Permission required", {
-            description: "Please grant usage access to see installed apps",
-          });
-          await CapacitorUsageStatsManager.openUsageStatsSettings();
-          setIsLoading(false);
-          return;
-        }
-        
-        const packages = await CapacitorUsageStatsManager.queryAllPackages();
-        
-        if (packages && packages.packages) {
-          const installedApps: InstalledApp[] = packages.packages.map((pkg: any) => ({
-            packageName: pkg.packageName || pkg,
-            appName: extractAppName(pkg.packageName || pkg),
-            icon: pkg.icon,
+        if (result && result.apps) {
+          const installedApps: InstalledApp[] = result.apps.map((app: any) => ({
+            packageName: app.packageName,
+            appName: app.appName,
+            icon: app.icon,
             isOptimized: false,
+            isSystemApp: app.isSystemApp,
           }));
           
           setApps(installedApps.sort((a, b) => a.appName.localeCompare(b.appName)));
+          toast.success(`Found ${result.count} apps`);
         }
       } catch (error) {
         console.error("Error loading apps:", error);
-        toast.error("Could not load installed apps");
-        // Load mock data as fallback
-        loadMockApps();
+        // Fallback to usage stats manager
+        try {
+          const { CapacitorUsageStatsManager } = await import(
+            "@capgo/capacitor-android-usagestatsmanager"
+          );
+          
+          const permissionResult = await CapacitorUsageStatsManager.isUsageStatsPermissionGranted();
+          
+          if (!permissionResult.granted) {
+            toast.info("Permission required", {
+              description: "Please grant usage access to see installed apps",
+            });
+            await CapacitorUsageStatsManager.openUsageStatsSettings();
+            setIsLoading(false);
+            return;
+          }
+          
+          const packages = await CapacitorUsageStatsManager.queryAllPackages();
+          
+          if (packages && packages.packages) {
+            const installedApps: InstalledApp[] = packages.packages.map((pkg: any) => ({
+              packageName: pkg.packageName || pkg,
+              appName: extractAppName(pkg.packageName || pkg),
+              icon: pkg.icon,
+              isOptimized: false,
+            }));
+            
+            setApps(installedApps.sort((a, b) => a.appName.localeCompare(b.appName)));
+          }
+        } catch (fallbackError) {
+          console.error("Fallback also failed:", fallbackError);
+          loadMockApps();
+        }
       }
     } else {
       // Web fallback - show mock data
@@ -94,23 +126,26 @@ export default function MyApps() {
   };
 
   const loadMockApps = () => {
-    // Mock data for web preview
+    // Mock data for web preview with sample icons
     const mockApps: InstalledApp[] = [
-      { packageName: "com.sobrr.agnes", appName: "Agnes", isOptimized: false },
-      { packageName: "net.bat.store", appName: "AHA Games", isOptimized: false },
-      { packageName: "com.gallery20", appName: "AI Gallery", isOptimized: false },
-      { packageName: "com.innersloth.spacemafia", appName: "Among Us", isOptimized: true },
-      { packageName: "com.gmail.heagoo.apkeditor", appName: "APK Editor", isOptimized: false },
-      { packageName: "com.gmail.heagoo.apkeditor.pro", appName: "APK Editor Pro", isOptimized: false },
-      { packageName: "com.apkeditor.new.explorer3", appName: "APK Explorer", isOptimized: false },
-      { packageName: "ru.maximoff.apktool", appName: "Apktool M", isOptimized: false },
+      { packageName: "com.instagram.android", appName: "Instagram", isOptimized: false },
+      { packageName: "com.facebook.katana", appName: "Facebook", isOptimized: false },
+      { packageName: "com.whatsapp", appName: "WhatsApp", isOptimized: false },
+      { packageName: "com.google.android.youtube", appName: "YouTube", isOptimized: false },
       { packageName: "com.tencent.ig", appName: "PUBG Mobile", isOptimized: true },
       { packageName: "com.activision.callofduty.shooter", appName: "Call of Duty Mobile", isOptimized: true },
       { packageName: "com.dts.freefireth", appName: "Free Fire", isOptimized: false },
       { packageName: "com.mobile.legends", appName: "Mobile Legends", isOptimized: true },
       { packageName: "com.miHoYo.GenshinImpact", appName: "Genshin Impact", isOptimized: false },
       { packageName: "com.supercell.clashofclans", appName: "Clash of Clans", isOptimized: false },
-      { packageName: "com.king.candycrushsaga", appName: "Candy Crush Saga", isOptimized: false },
+      { packageName: "com.innersloth.spacemafia", appName: "Among Us", isOptimized: true },
+      { packageName: "com.spotify.music", appName: "Spotify", isOptimized: false },
+      { packageName: "com.netflix.mediaclient", appName: "Netflix", isOptimized: false },
+      { packageName: "com.twitter.android", appName: "Twitter", isOptimized: false },
+      { packageName: "com.snapchat.android", appName: "Snapchat", isOptimized: false },
+      { packageName: "com.zhiliaoapp.musically", appName: "TikTok", isOptimized: false },
+      { packageName: "com.discord", appName: "Discord", isOptimized: false },
+      { packageName: "com.telegram.messenger", appName: "Telegram", isOptimized: false },
     ].sort((a, b) => a.appName.localeCompare(b.appName));
     
     setApps(mockApps);
@@ -137,13 +172,18 @@ export default function MyApps() {
   };
 
   const handleLaunchApp = async (packageName: string, appName: string) => {
-    if (Capacitor.isNativePlatform()) {
+    if (Capacitor.isNativePlatform() && InstalledAppsNative) {
       try {
-        // Use Browser plugin or direct window location for Android intent
-        window.location.href = `intent://#Intent;package=${packageName};end`;
+        await InstalledAppsNative.launchApp({ packageName });
         toast.success(`Launching ${appName}...`);
       } catch (error) {
-        toast.error(`Cannot launch ${appName}`);
+        // Fallback to intent
+        try {
+          window.location.href = `intent://#Intent;package=${packageName};end`;
+          toast.success(`Launching ${appName}...`);
+        } catch (e) {
+          toast.error(`Cannot launch ${appName}`);
+        }
       }
     } else {
       toast.info(`Would launch: ${appName}`, {
@@ -162,33 +202,50 @@ export default function MyApps() {
           </span>
         </div>
         <div className="px-4 py-3">
-          <div className="flex items-center gap-3 mb-3">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/")}
+                className="shrink-0"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div className="flex items-center gap-2">
+                <span className="text-destructive text-3xl font-bold">X</span>
+                <div>
+                  <p className="text-muted-foreground text-sm leading-none">MY</p>
+                  <h1 className="text-xl font-bold text-destructive leading-none">APPS</h1>
+                </div>
+              </div>
+            </div>
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate("/")}
+              onClick={loadInstalledApps}
+              disabled={isLoading}
               className="shrink-0"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <RefreshCw className={`h-5 w-5 ${isLoading ? 'animate-spin' : ''}`} />
             </Button>
-            <div className="flex items-center gap-2">
-              <span className="text-destructive text-3xl font-bold">X</span>
-              <div>
-                <p className="text-muted-foreground text-sm leading-none">GAME</p>
-                <h1 className="text-xl font-bold text-destructive leading-none">MENU</h1>
-              </div>
-            </div>
           </div>
           
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search for Games"
+              placeholder="Search apps..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 bg-card border-border"
             />
+          </div>
+
+          {/* Stats */}
+          <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
+            <span>{filteredApps.length} apps</span>
+            <span>{apps.filter(a => a.isOptimized).length} optimized</span>
           </div>
         </div>
       </header>
