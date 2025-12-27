@@ -120,15 +120,15 @@ export const GravityXDashboard = ({
 
         {/* Center - Main Temperature Circle with X Lines */}
         <div className="relative flex-shrink-0 mx-4">
-          <div className="relative w-44 h-44">
+          <div className="relative w-44 h-44 animate-[spin_20s_linear_infinite]">
             {/* Diagonal X lines - Top Left (red) */}
-            <div className="absolute -top-2 -left-2 w-12 h-1 bg-gradient-to-r from-red-500 to-red-400 rounded-full transform -rotate-45 origin-right shadow-[0_0_10px_rgba(239,68,68,0.6)]" />
+            <div className="absolute -top-2 -left-2 w-12 h-1 bg-gradient-to-r from-red-500 to-red-400 rounded-full transform -rotate-45 origin-right shadow-[0_0_10px_rgba(239,68,68,0.6)] animate-[pulse_2s_ease-in-out_infinite]" />
             {/* Diagonal X lines - Top Right (blue) */}
-            <div className="absolute -top-2 -right-2 w-12 h-1 bg-gradient-to-l from-cyan-400 to-blue-500 rounded-full transform rotate-45 origin-left shadow-[0_0_10px_rgba(34,211,238,0.6)]" />
+            <div className="absolute -top-2 -right-2 w-12 h-1 bg-gradient-to-l from-cyan-400 to-blue-500 rounded-full transform rotate-45 origin-left shadow-[0_0_10px_rgba(34,211,238,0.6)] animate-[pulse_2s_ease-in-out_infinite_0.5s]" />
             {/* Diagonal X lines - Bottom Left (blue) */}
-            <div className="absolute -bottom-2 -left-2 w-12 h-1 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full transform rotate-45 origin-right shadow-[0_0_10px_rgba(34,211,238,0.6)]" />
+            <div className="absolute -bottom-2 -left-2 w-12 h-1 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full transform rotate-45 origin-right shadow-[0_0_10px_rgba(34,211,238,0.6)] animate-[pulse_2s_ease-in-out_infinite_1s]" />
             {/* Diagonal X lines - Bottom Right (red) */}
-            <div className="absolute -bottom-2 -right-2 w-12 h-1 bg-gradient-to-l from-red-500 to-red-400 rounded-full transform -rotate-45 origin-left shadow-[0_0_10px_rgba(239,68,68,0.6)]" />
+            <div className="absolute -bottom-2 -right-2 w-12 h-1 bg-gradient-to-l from-red-500 to-red-400 rounded-full transform -rotate-45 origin-left shadow-[0_0_10px_rgba(239,68,68,0.6)] animate-[pulse_2s_ease-in-out_infinite_1.5s]" />
 
             {/* Outer circular ring with gradient */}
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
