@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap, Crosshair, Music, X, Play, RotateCcw, Target, ZoomIn, Move } from "lucide-react";
+import { Cpu, Monitor, Flame, Wind, Thermometer, Gamepad2, Chrome, Youtube, MessageSquare, Volume2, Sun, Video, Battery, Gauge, Zap, Crosshair, Music, X, Play, RotateCcw, Target, ZoomIn, Move, BellOff } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Slider } from "./ui/slider";
@@ -335,13 +335,24 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
     }
   };
 
+  const [hideNotifications, setHideNotifications] = useState(() => {
+    return localStorage.getItem("hideNotifications") === "true";
+  });
+
+  const toggleHideNotifications = () => {
+    const newValue = !hideNotifications;
+    setHideNotifications(newValue);
+    localStorage.setItem("hideNotifications", String(newValue));
+    toast.success(newValue ? "Notifications hidden" : "Notifications visible");
+  };
+
   const gamingTools = [
     { name: "Monitor", icon: Flame, action: () => setShowMonitor(true) },
     { name: "Aim\nAssistant", icon: Crosshair, action: () => setShowAimAssistant(true) },
     { name: "Tactic X", icon: Target, action: () => setShowTacticX(true) },
     { name: "Macro", icon: Gamepad2, action: () => setShowMacro(true) },
     { name: "Sounds\nEqualizer", icon: Music, action: () => setShowEqualizer(true) },
-    { name: "Graphique\nSettings", icon: Wind, action: () => setShowGraphiqueSettings(true) },
+    { name: "Hide\nNotification", icon: BellOff, action: toggleHideNotifications, isActive: hideNotifications },
   ];
 
   const graphiqueFilters = [
@@ -1005,7 +1016,11 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                   <Button
                     key={index}
                     variant="ghost"
-                    className="flex flex-col items-center justify-center h-20 landscape:h-10 p-2 landscape:p-1 bg-muted/30 hover:bg-primary/20 border border-primary/20 rounded-lg transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                    className={`flex flex-col items-center justify-center h-20 landscape:h-10 p-2 landscape:p-1 hover:bg-primary/20 border rounded-lg transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)] ${
+                      (tool as any).isActive 
+                        ? "bg-primary/30 border-primary text-primary" 
+                        : "bg-muted/30 border-primary/20"
+                    }`}
                     onClick={() => {
                       if (tool.action) {
                         tool.action();
@@ -1014,7 +1029,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
                       }
                     }}
                   >
-                    <tool.icon className="w-5 h-5 landscape:w-3 landscape:h-3 mb-1 landscape:mb-0.5 text-primary" />
+                    <tool.icon className={`w-5 h-5 landscape:w-3 landscape:h-3 mb-1 landscape:mb-0.5 ${(tool as any).isActive ? "text-primary" : "text-primary"}`} />
                     <span className="text-[9px] landscape:text-[6px] font-medium text-center leading-tight whitespace-pre-line">
                       {tool.name}
                     </span>
