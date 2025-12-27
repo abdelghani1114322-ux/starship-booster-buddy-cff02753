@@ -111,7 +111,7 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
   const [miniApp, setMiniApp] = useState<{ name: string; icon: string; webUrl: string } | null>(null);
   const [showZoomMode, setShowZoomMode] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
-  const [zoomLevel, setZoomLevel] = useState(2);
+  const zoomLevel = 4; // Fixed 4x zoom
   const zoomRef = useRef<HTMLDivElement>(null);
   const [showFpsOverlay, setShowFpsOverlay] = useState(false);
 
@@ -2567,27 +2567,6 @@ export const BoostAssistant = ({ cpuUsage, ramUsage, fps, gpuUsage, performanceM
       {/* Zoom Mode Overlay */}
       {showZoomMode && (
         <div className="fixed inset-0 z-[70] pointer-events-none">
-          {/* Zoom controls - positioned at bottom center */}
-          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-black/90 rounded-2xl p-4 z-[80] pointer-events-auto">
-            <div className="flex items-center gap-4">
-              <span className="text-white text-sm font-medium">Zoom</span>
-              <div className="flex gap-2">
-                {[1.5, 2, 2.5, 3, 4].map((level) => (
-                  <button
-                    key={level}
-                    onClick={() => setZoomLevel(level)}
-                    className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${
-                      zoomLevel === level 
-                        ? 'bg-accent text-white' 
-                        : 'bg-white/20 text-white hover:bg-white/30'
-                    }`}
-                  >
-                    {level}x
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
 
           {/* Draggable zoom circle */}
           <div
