@@ -1,15 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
-import { X, Home, Zap, Grid3X3, Plus, Music, Users, Loader2, Video, Play, Shield } from "lucide-react";
-import { Button } from "./ui/button";
+import { ArrowLeft, Menu, ChevronRight, Plus, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { Capacitor } from "@capacitor/core";
 import { BoostAssistant } from "./BoostAssistant";
-import { overlayService } from "@/lib/overlay-service";
-import gameSpaceBg from "@/assets/game-space-bg.png";
-import backButton from "@/assets/back-button.png";
 import assistantToggle from "@/assets/assistant-toggle.png";
-import gameBoostAnimation from "@/assets/game-boost-animation.mp4";
-import engineInitVideo from "@/assets/engine-init.mp4";
+import backButton from "@/assets/back-button.png";
 
 interface AdvancedDashboardProps {
   onClose: () => void;
@@ -24,48 +19,30 @@ interface InstalledApp {
 }
 
 export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
-  const [activeTab, setActiveTab] = useState<"lobby" | "superbase">("lobby");
   const [includedApps, setIncludedApps] = useState<InstalledApp[]>([]);
   const [allApps, setAllApps] = useState<InstalledApp[]>([]);
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentAppIndex, setCurrentAppIndex] = useState(0);
   const [batteryLevel, setBatteryLevel] = useState(88);
   const [showAppPicker, setShowAppPicker] = useState(false);
-  const [showBoostAnimation, setShowBoostAnimation] = useState(false);
-  const [boostingApp, setBoostingApp] = useState<string>("");
   const [isLoadingApps, setIsLoadingApps] = useState(false);
-  const [showRecordings, setShowRecordings] = useState(false);
   const [showAssistant, setShowAssistant] = useState(false);
   const [wifiEnabled, setWifiEnabled] = useState(false);
-  const [runningApp, setRunningApp] = useState<InstalledApp | null>(null);
   const [performanceMode, setPerformanceMode] = useState<"saving" | "balance" | "boost">("balance");
   const [cpuUsage, setCpuUsage] = useState(45);
   const [ramUsage, setRamUsage] = useState(62);
   const [fps, setFps] = useState(60);
   const [gpuUsage, setGpuUsage] = useState(38);
-  const [overlayEnabled, setOverlayEnabled] = useState(false);
-  const [overlayPermissionGranted, setOverlayPermissionGranted] = useState(false);
-  const mockRecordings = [
-    { id: 1, name: "PUBG Mobile Gameplay", duration: "12:34", date: "Today", thumbnail: null },
-    { id: 2, name: "Free Fire Match", duration: "08:22", date: "Today", thumbnail: null },
-    { id: 3, name: "Genshin Impact", duration: "25:10", date: "Yesterday", thumbnail: null },
-    { id: 4, name: "Mobile Legends Ranked", duration: "18:45", date: "Yesterday", thumbnail: null },
-    { id: 5, name: "Among Us Session", duration: "32:00", date: "2 days ago", thumbnail: null },
-  ];
+  const [ping, setPing] = useState(196);
+  const [temperature, setTemperature] = useState(28.0);
+  const [showMenu, setShowMenu] = useState(false);
 
-  // Check overlay permission on mount
+  // Simulate ping and temperature updates
   useEffect(() => {
-    const checkPermission = async () => {
-      if (Capacitor.isNativePlatform()) {
-        const granted = await overlayService.checkOverlayPermission();
-        setOverlayPermissionGranted(granted);
-      }
-    };
-    checkPermission();
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
-    return () => clearInterval(timer);
+    const interval = setInterval(() => {
+      setPing(Math.floor(Math.random() * 100) + 50);
+      setTemperature(parseFloat((25 + Math.random() * 10).toFixed(1)));
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -76,9 +53,8 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
     }
   }, []);
 
-  // Load installed apps when app picker opens
   const loadInstalledApps = async () => {
-    if (allApps.length > 0) return; // Already loaded
+    if (allApps.length > 0) return;
     
     setIsLoadingApps(true);
     
@@ -131,10 +107,7 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
 
   const loadMockApps = () => {
     const mockApps: InstalledApp[] = [
-      { packageName: "com.sobrr.agnes", appName: "Agnes", icon: undefined, isIncluded: false, boosted: false },
-      { packageName: "net.bat.store", appName: "AHA Games", icon: undefined, isIncluded: false, boosted: false },
-      { packageName: "com.gallery20", appName: "AI Gallery", icon: undefined, isIncluded: false, boosted: false },
-      { packageName: "com.innersloth.spacemafia", appName: "Among Us", icon: undefined, isIncluded: false, boosted: false },
+      { packageName: "com.DVloper.Granny3", appName: "Granny 3", icon: undefined, isIncluded: false, boosted: false },
       { packageName: "com.tencent.ig", appName: "PUBG Mobile", icon: undefined, isIncluded: false, boosted: false },
       { packageName: "com.dts.freefireth", appName: "Free Fire", icon: undefined, isIncluded: false, boosted: false },
       { packageName: "com.mobile.legends", appName: "Mobile Legends", icon: undefined, isIncluded: false, boosted: false },
@@ -152,7 +125,7 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
     const app = allApps.find(a => a.packageName === packageName);
     if (app) {
       setIncludedApps(prev => [...prev, { ...app, isIncluded: true }]);
-      toast.success(`${app.appName} added to dashboard`);
+      toast.success(`${app.appName} added`);
     }
   };
 
@@ -163,85 +136,8 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
     setIncludedApps(prev => prev.filter(app => app.packageName !== packageName));
     const app = allApps.find(a => a.packageName === packageName);
     if (app) {
-      toast.success(`${app.appName} removed from dashboard`);
+      toast.success(`${app.appName} removed`);
     }
-  };
-
-  const handleBoostComplete = useCallback(() => {
-    setShowBoostAnimation(false);
-    toast.success(`${boostingApp} Started!`);
-    setBoostingApp("");
-  }, [boostingApp]);
-
-  const [showBoostOverlay, setShowBoostOverlay] = useState(false);
-
-  // Toggle native overlay service
-  const toggleOverlayService = async () => {
-    if (!Capacitor.isNativePlatform()) {
-      toast.info("Native overlay only works on Android device");
-      return;
-    }
-
-    if (!overlayPermissionGranted) {
-      const granted = await overlayService.requestOverlayPermission();
-      setOverlayPermissionGranted(granted);
-      if (!granted) {
-        toast.error("Overlay permission denied");
-        return;
-      }
-    }
-
-    if (overlayEnabled) {
-      await overlayService.stopOverlayService();
-      setOverlayEnabled(false);
-      toast.success("Energy-X overlay disabled");
-    } else {
-      // Set monitored games
-      const packages = includedApps.map(app => app.packageName);
-      await overlayService.setMonitoredGames(packages);
-      await overlayService.startOverlayService();
-      setOverlayEnabled(true);
-      toast.success("Energy-X overlay enabled - will show on game launch");
-    }
-  };
-
-  const startGame = (packageName: string) => {
-    const app = includedApps.find(a => a.packageName === packageName);
-    if (app) {
-      // Show Energy-X overlay for 2 seconds then auto-hide
-      setRunningApp(app);
-      setShowBoostOverlay(true);
-      setIncludedApps(prev => 
-        prev.map(a => a.packageName === packageName ? { ...a, boosted: true } : a)
-      );
-      
-      // Auto-hide Energy-X overlay after 2 seconds
-      setTimeout(() => {
-        setShowBoostOverlay(false);
-        setRunningApp(null);
-      }, 2000);
-    }
-  };
-
-  const closeRunningApp = () => {
-    if (runningApp) {
-      toast.info(`${runningApp.appName} closed`);
-      setRunningApp(null);
-      setShowBoostOverlay(false);
-    }
-  };
-
-  const toggleBoost = (packageName: string) => {
-    setIncludedApps(prev => 
-      prev.map(app => {
-        if (app.packageName === packageName) {
-          const newBoosted = !app.boosted;
-          toast.success(newBoosted ? `${app.appName} Boosted!` : `${app.appName} Boost Disabled`);
-          return { ...app, boosted: newBoosted };
-        }
-        return app;
-      })
-    );
   };
 
   const openAppPicker = () => {
@@ -249,309 +145,252 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
     loadInstalledApps();
   };
 
+  const startGame = () => {
+    if (includedApps.length === 0) {
+      toast.info("Add a game first");
+      return;
+    }
+    const app = includedApps[currentAppIndex];
+    setIncludedApps(prev => 
+      prev.map((a, i) => i === currentAppIndex ? { ...a, boosted: true } : a)
+    );
+    toast.success(`${app.appName} Boosted & Started!`);
+  };
+
+  const nextApp = () => {
+    if (includedApps.length > 0) {
+      setCurrentAppIndex((prev) => (prev + 1) % includedApps.length);
+    }
+  };
+
+  const prevApp = () => {
+    if (includedApps.length > 0) {
+      setCurrentAppIndex((prev) => (prev - 1 + includedApps.length) % includedApps.length);
+    }
+  };
+
   const notIncludedApps = allApps.filter(app => !app.isIncluded);
+  const currentApp = includedApps[currentAppIndex];
 
   return (
-    <>
-      {/* Energy-X Transparent Notification - appears at bottom when game launches */}
-      {showBoostOverlay && runningApp && (
-        <div className="fixed bottom-8 left-4 right-4 z-[9999] pointer-events-none animate-fade-in">
-          <div className="bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden">
-            <div className="flex items-center gap-3 px-4 py-2">
-              {/* Video Animation */}
-              <div className="w-10 h-10 rounded-md overflow-hidden flex-shrink-0">
-                <video
-                  src={engineInitVideo}
-                  autoPlay
-                  muted
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              
-              {/* Text */}
-              <div className="flex-1">
-                <span className="text-red-500 font-bold text-xs">ENERGY-X</span>
-                <p className="text-white/80 text-sm">{runningApp.appName} Boosted</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      
-    <div className="fixed inset-0 z-50 bg-black overflow-hidden" style={{ backgroundImage: `url(${gameSpaceBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-      {/* Tech Background Pattern */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-0 left-0 w-1/3 h-1/2 border-r border-b border-red-900/50" />
-        <div className="absolute top-0 right-0 w-1/3 h-1/2 border-l border-b border-red-900/50" />
-        <div className="absolute bottom-0 left-0 w-1/3 h-1/3 border-r border-t border-red-900/50" />
-        <div className="absolute bottom-0 right-0 w-1/3 h-1/3 border-l border-t border-red-900/50" />
-        {/* Diagonal lines */}
-        <svg className="absolute inset-0 w-full h-full">
-          <line x1="0" y1="50%" x2="25%" y2="30%" stroke="rgba(127, 29, 29, 0.3)" strokeWidth="2" />
-          <line x1="100%" y1="50%" x2="75%" y2="30%" stroke="rgba(127, 29, 29, 0.3)" strokeWidth="2" />
-          <line x1="0" y1="50%" x2="25%" y2="70%" stroke="rgba(127, 29, 29, 0.3)" strokeWidth="2" />
-          <line x1="100%" y1="50%" x2="75%" y2="70%" stroke="rgba(127, 29, 29, 0.3)" strokeWidth="2" />
-          {/* Horizontal accent lines */}
-          <line x1="0" y1="50%" x2="30%" y2="50%" stroke="rgba(220, 38, 38, 0.4)" strokeWidth="1" />
-          <line x1="70%" y1="50%" x2="100%" y2="50%" stroke="rgba(220, 38, 38, 0.4)" strokeWidth="1" />
-        </svg>
+    <div className="fixed inset-0 z-50 bg-[#0a1929] overflow-hidden">
+      {/* Diagonal Accent Lines - Left */}
+      <div className="absolute left-0 top-0 bottom-0 w-24 overflow-hidden pointer-events-none">
+        <div 
+          className="absolute left-8 top-[10%] w-1 h-[35%] bg-gradient-to-b from-transparent via-cyan-400 to-cyan-400/50 transform rotate-12"
+          style={{ boxShadow: '0 0 20px rgba(34, 211, 238, 0.6)' }}
+        />
+        <div 
+          className="absolute left-8 bottom-[10%] w-1 h-[35%] bg-gradient-to-t from-transparent via-cyan-400 to-cyan-400/50 transform -rotate-12"
+          style={{ boxShadow: '0 0 20px rgba(34, 211, 238, 0.6)' }}
+        />
       </div>
 
-      {/* Corner Tech Elements */}
-      <div className="absolute top-4 left-4 w-16 h-16 border-l-2 border-t-2 border-red-800/50" />
-      <div className="absolute top-4 right-4 w-16 h-16 border-r-2 border-t-2 border-red-800/50" />
-      <div className="absolute bottom-20 left-4 w-16 h-16 border-l-2 border-b-2 border-red-800/50" />
-      <div className="absolute bottom-20 right-4 w-16 h-16 border-r-2 border-b-2 border-red-800/50" />
+      {/* Diagonal Accent Lines - Right */}
+      <div className="absolute right-0 top-0 bottom-0 w-24 overflow-hidden pointer-events-none">
+        <div 
+          className="absolute right-8 top-[10%] w-1 h-[35%] bg-gradient-to-b from-transparent via-cyan-400 to-cyan-400/50 transform -rotate-12"
+          style={{ boxShadow: '0 0 20px rgba(34, 211, 238, 0.6)' }}
+        />
+        <div 
+          className="absolute right-8 bottom-[10%] w-1 h-[35%] bg-gradient-to-t from-transparent via-cyan-400 to-cyan-400/50 transform rotate-12"
+          style={{ boxShadow: '0 0 20px rgba(34, 211, 238, 0.6)' }}
+        />
+      </div>
 
       {/* Header */}
-      <div className="relative flex items-center justify-between px-6 py-3 z-10">
-        <h1 className="text-xl font-bold tracking-[0.3em] text-white/90" style={{ fontFamily: 'system-ui' }}>
-          REDMAGIC
-        </h1>
-        <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-white/80">
-            {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
-          </span>
-          <div className="flex items-center gap-1">
-            <div className="w-6 h-3 rounded-sm border border-green-500 relative overflow-hidden">
-              <div className="absolute inset-0.5 bg-green-500" style={{ width: `${batteryLevel}%` }} />
-            </div>
-            <span className="text-xs text-white/70">{batteryLevel}%</span>
-          </div>
+      <div className="relative flex items-center justify-between px-6 py-4 z-10">
+        {/* Back Button */}
+        <button
+          onClick={onClose}
+          className="w-10 h-10 flex items-center justify-center text-cyan-400 hover:text-cyan-300 transition-colors"
+        >
+          <ArrowLeft className="w-6 h-6" />
+        </button>
+
+        {/* Logo */}
+        <div className="flex items-center gap-2">
+          <svg className="w-8 h-8 text-cyan-400" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L4 6v12l8 4 8-4V6l-8-4zm0 2.18l6 3v9.64l-6 3-6-3V7.18l6-3zm-2 4.82v6l2 1 2-1v-6l-2-1-2 1z"/>
+          </svg>
+          <span className="text-xl font-bold text-white tracking-wider">FFORCE</span>
         </div>
-        <div className="flex items-center gap-3">
-          {/* Energy-X Overlay Toggle */}
-          <button 
-            onClick={toggleOverlayService}
-            className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-              overlayEnabled ? 'bg-red-500/50 border border-red-500' : 'bg-white/10'
-            }`}
-            title="Energy-X Overlay"
-          >
-            <Shield className={`w-4 h-4 ${overlayEnabled ? 'text-red-400' : 'text-white/70'}`} />
-          </button>
-          <button className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-            <Zap className="w-4 h-4 text-white/70" />
-          </button>
-          <button className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-            <Grid3X3 className="w-4 h-4 text-white/70" />
-          </button>
-          <button className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-            <Music className="w-4 h-4 text-white/70" />
-          </button>
-          <button 
-            onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-red-500/30 transition-colors"
-          >
-            <X className="w-4 h-4 text-white/70" />
-          </button>
-        </div>
+
+        {/* Menu Button */}
+        <button
+          onClick={() => setShowMenu(!showMenu)}
+          className="w-10 h-10 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
       </div>
 
       {/* Main Content */}
-      <div className="relative flex-1 flex flex-col h-[calc(100vh-140px)] overflow-auto">
-        {activeTab === "lobby" ? (
-          <div className="flex-1 px-4 py-6">
-            {/* Apps List - Like reference image */}
-            <div className="space-y-3">
-              {includedApps.map((app) => (
-                <button
-                  key={app.packageName}
-                  onClick={() => startGame(app.packageName)}
-                  className={`w-full flex items-center gap-4 p-2 rounded-xl transition-all hover:bg-white/5 ${
-                    app.boosted ? 'bg-red-500/10' : ''
-                  }`}
-                >
-                  {/* App Icon */}
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-gray-700 to-gray-900">
-                    {app.icon ? (
-                      <img 
-                        src={`data:image/png;base64,${app.icon}`} 
-                        alt={app.appName} 
-                        className="w-full h-full object-cover" 
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-2xl">
-                        {app.appName.charAt(0)}
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* App Info */}
-                  <div className="flex-1 text-left">
-                    <h3 className="text-white font-medium text-lg">{app.appName}</h3>
-                    <p className="text-white/40 text-sm">
-                      {"<1h"} · {Math.floor(Math.random() * 90) + 1}d · {Math.floor(Math.random() * 5)}GB
-                    </p>
-                  </div>
-                  
-                  {/* Boost indicator */}
-                  {app.boosted && (
-                    <Zap className="w-5 h-5 text-red-500" />
-                  )}
-                </button>
-              ))}
-              
-              {/* Add App Button */}
-              <button
-                onClick={openAppPicker}
-                className="w-full flex items-center gap-4 p-2 rounded-xl transition-all hover:bg-white/5"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-gray-700/50 flex items-center justify-center">
-                  <Plus className="w-8 h-8 text-white/50" />
-                </div>
-                <span className="text-white/50 font-medium">Add Game</span>
-              </button>
-            </div>
-            
-            {includedApps.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-white/30 text-lg">No games added yet</p>
-                <p className="text-white/20 text-sm mt-2">Tap the + button to add games</p>
-              </div>
-            )}
+      <div className="relative flex items-center justify-between h-[calc(100vh-180px)] px-4">
+        {/* Left Stats */}
+        <div className="flex flex-col items-center gap-4 w-32">
+          <div className="text-center">
+            <p className="text-white/60 text-xs tracking-widest mb-1">CURRENT PING</p>
+            <p className="text-3xl font-bold text-white">
+              {ping} <span className="text-cyan-400 text-lg">ms</span>
+            </p>
           </div>
-        ) : (
-          <div className="space-y-6 px-6 w-full max-w-2xl">
-            {/* Apps Grid for Super Base */}
-            <h2 className="text-lg font-semibold text-white/90 flex items-center gap-2">
-              <Grid3X3 className="w-5 h-5 text-red-500" />
-              Boost Your Apps
-            </h2>
-            {includedApps.length === 0 ? (
-              <div className="text-center py-8 text-white/50">
-                <p>No apps added yet</p>
-                <p className="text-sm mt-1">Tap + to add games</p>
+          <div className="text-center w-full">
+            <p className="text-white/60 text-xs tracking-widest mb-2">BATTERY</p>
+            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-cyan-400 rounded-full transition-all"
+                style={{ width: `${batteryLevel}%` }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Center Game Card */}
+        <div className="flex-1 flex items-center justify-center max-w-md mx-4">
+          {includedApps.length > 0 && currentApp ? (
+            <div 
+              className="relative w-full bg-black/60 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
+              style={{ boxShadow: '0 0 60px rgba(0,0,0,0.5)' }}
+            >
+              {/* Blurred background effect */}
+              <div className="absolute inset-0 rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-b from-gray-800/50 to-black/80" />
               </div>
-            ) : (
-              <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
-                {includedApps.map((app) => (
-                  <button
-                    key={app.packageName}
-                    onClick={() => toggleBoost(app.packageName)}
-                    className={`relative p-4 rounded-xl border transition-all ${
-                      app.boosted
-                        ? "bg-red-500/20 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]"
-                        : "bg-white/5 border-white/10 hover:border-red-500/50"
-                    }`}
-                  >
-                    <div className="flex flex-col items-center gap-2">
-                      {app.icon ? (
-                        <img
-                          src={`data:image/png;base64,${app.icon}`}
-                          alt={app.appName}
-                          className="w-10 h-10 rounded-lg object-cover"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center text-red-500 font-bold">
-                          {app.appName.charAt(0)}
-                        </div>
-                      )}
-                      <span className="text-[10px] text-white/70 truncate w-full text-center">
-                        {app.appName}
-                      </span>
-                      {app.boosted && (
-                        <Zap className="absolute top-1 right-1 w-3 h-3 text-red-500" />
-                      )}
+
+              {/* Game Icon */}
+              <div className="relative flex flex-col items-center">
+                <div className="w-28 h-28 rounded-2xl overflow-hidden mb-4 border-2 border-white/20">
+                  {currentApp.icon ? (
+                    <img 
+                      src={`data:image/png;base64,${currentApp.icon}`} 
+                      alt={currentApp.appName} 
+                      className="w-full h-full object-cover" 
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-600 to-pink-600 text-white font-bold text-4xl">
+                      {currentApp.appName.charAt(0)}
                     </div>
-                  </button>
-                ))}
+                  )}
+                </div>
+                
+                {/* Game Name */}
+                <h2 className="text-white text-xl font-bold mb-1">{currentApp.appName}</h2>
+                <p className="text-white/50 text-sm">{currentApp.packageName}</p>
               </div>
-            )}
 
-            {/* Red Magic Time Section */}
-            <div className="mt-8">
-              <button
-                onClick={() => setShowRecordings(true)}
-                className="w-full p-4 rounded-xl bg-gradient-to-r from-red-900/40 to-red-800/20 border border-red-500/30 hover:border-red-500/60 transition-all flex items-center gap-4"
-              >
-                <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center">
-                  <Video className="w-6 h-6 text-red-500" />
-                </div>
-                <div className="flex-1 text-left">
-                  <h3 className="text-white font-semibold">Red Magic Time</h3>
-                  <p className="text-white/50 text-sm">View your screen recordings</p>
-                </div>
-                <div className="text-white/50 text-sm">{mockRecordings.length} videos</div>
-              </button>
+              {/* Navigation arrows */}
+              {includedApps.length > 1 && (
+                <>
+                  <button
+                    onClick={prevApp}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-white/50 hover:text-white transition-colors"
+                  >
+                    <ChevronRight className="w-6 h-6 rotate-180" />
+                  </button>
+                  <button
+                    onClick={nextApp}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-white/50 hover:text-white transition-colors"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                </>
+              )}
             </div>
+          ) : (
+            <div 
+              className="w-full bg-black/60 backdrop-blur-sm rounded-2xl p-8 border border-white/10 text-center"
+              onClick={openAppPicker}
+            >
+              <div className="w-20 h-20 mx-auto rounded-2xl bg-white/5 border border-dashed border-white/30 flex items-center justify-center mb-4">
+                <Plus className="w-10 h-10 text-white/40" />
+              </div>
+              <p className="text-white/60 text-lg">Add a game to start</p>
+              <p className="text-white/40 text-sm mt-1">Tap to browse games</p>
+            </div>
+          )}
+        </div>
 
-            {/* Quick Actions */}
-            <div className="grid grid-cols-4 gap-3 mt-8">
-              <Button
-                variant="ghost"
-                className="h-16 flex-col gap-1 bg-white/5 hover:bg-red-500/20 border border-white/10"
-                onClick={() => toast.success("All Apps Boosted!")}
-              >
-                <Zap className="w-5 h-5 text-red-500" />
-                <span className="text-[10px] text-white/70">Boost All</span>
-              </Button>
-              <Button
-                variant="ghost"
-                className="h-16 flex-col gap-1 bg-white/5 hover:bg-red-500/20 border border-white/10"
-                onClick={() => toast.success("Cache Cleared!")}
-              >
-                <span className="text-lg">🧹</span>
-                <span className="text-[10px] text-white/70">Clear</span>
-              </Button>
-              <Button
-                variant="ghost"
-                className="h-16 flex-col gap-1 bg-white/5 hover:bg-red-500/20 border border-white/10"
-                onClick={() => toast.success("RAM Optimized!")}
-              >
-                <span className="text-lg">💾</span>
-                <span className="text-[10px] text-white/70">RAM</span>
-              </Button>
-              <Button
-                variant="ghost"
-                className="h-16 flex-col gap-1 bg-white/5 hover:bg-red-500/20 border border-white/10"
-                onClick={() => toast.success("GPU Turbo!")}
-              >
-                <span className="text-lg">⚡</span>
-                <span className="text-[10px] text-white/70">GPU</span>
-              </Button>
+        {/* Right Stats */}
+        <div className="flex flex-col items-center gap-4 w-32">
+          <div className="text-center">
+            <p className="text-white/60 text-xs tracking-widest mb-1">TEMPERATURE</p>
+            <p className="text-3xl font-bold text-white">
+              {temperature}<span className="text-cyan-400 text-lg align-top">°C</span>
+            </p>
+          </div>
+          <div className="text-center w-full">
+            <p className="text-white/60 text-xs tracking-widest mb-2">+ POWER</p>
+            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-cyan-400 rounded-full"
+                style={{ width: '70%' }}
+              />
             </div>
           </div>
-        )}
+        </div>
       </div>
 
-      {/* Plus Button - Bottom Left */}
-      <button 
+      {/* Panel Toggle Button - Left Side */}
+      <button
+        onClick={() => setShowAssistant(!showAssistant)}
+        className="fixed left-0 top-1/2 -translate-y-1/2 z-40 w-12 h-12 rounded-full border-2 border-cyan-400 flex items-center justify-center bg-[#0a1929]/80"
+        style={{ boxShadow: '0 0 15px rgba(34, 211, 238, 0.4)' }}
+      >
+        <ChevronRight className="w-6 h-6 text-cyan-400" />
+      </button>
+
+      {/* START Button */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md px-6">
+        <button
+          onClick={startGame}
+          disabled={includedApps.length === 0}
+          className="w-full py-5 bg-gradient-to-r from-cyan-400 to-cyan-500 text-[#0a1929] font-bold text-2xl tracking-widest rounded-lg transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ 
+            clipPath: 'polygon(5% 0, 100% 0, 100% 70%, 95% 100%, 0 100%, 0 30%)',
+            boxShadow: '0 0 30px rgba(34, 211, 238, 0.5)'
+          }}
+        >
+          START
+        </button>
+      </div>
+
+      {/* Add Game Button - Near panel toggle */}
+      <button
         onClick={openAppPicker}
-        className="absolute bottom-24 left-6 w-14 h-14 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors"
+        className="fixed left-4 bottom-8 w-12 h-12 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors"
       >
         <Plus className="w-6 h-6 text-white/70" />
       </button>
 
-      {/* App Picker Overlay - Add Games */}
+      {/* App Picker Overlay */}
       {showAppPicker && (
-        <div className="fixed inset-0 z-60 bg-black/95 flex flex-col overflow-hidden" onClick={() => setShowAppPicker(false)}>
+        <div className="fixed inset-0 z-60 bg-[#0a1929]/98 flex flex-col overflow-hidden" onClick={() => setShowAppPicker(false)}>
           <div 
             className="flex flex-col w-full max-w-lg mx-auto h-full overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-white/10 shrink-0">
+            <div className="flex items-center justify-between p-4 border-b border-cyan-400/20 shrink-0">
               <h3 className="text-xl font-bold text-white">Add Games</h3>
               <button 
                 onClick={() => setShowAppPicker(false)}
-                className="w-12 h-12 rounded-lg overflow-hidden hover:scale-105 transition-transform"
+                className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center hover:bg-cyan-500/20 transition-colors"
               >
-                <img src={backButton} alt="Back" className="w-full h-full object-cover" />
+                <X className="w-5 h-5 text-white/70" />
               </button>
             </div>
             
             {/* Not Added Count */}
-            <div className="px-4 py-3 text-white/60 text-sm shrink-0">
-              {notIncludedApps.length} Not added
+            <div className="px-4 py-3 text-cyan-400/80 text-sm shrink-0">
+              {notIncludedApps.length} Available games
             </div>
             
             {/* App List */}
             <div className="flex-1 overflow-y-auto px-4 pb-4 min-h-0">
               {isLoadingApps ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="w-8 h-8 animate-spin text-red-500" />
+                  <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
                 </div>
               ) : notIncludedApps.length === 0 ? (
                 <div className="text-center py-12 text-white/50">
@@ -573,8 +412,8 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-red-500/30 to-red-900/30 flex items-center justify-center">
-                            <span className="text-xl font-bold text-red-500">
+                          <div className="w-full h-full bg-gradient-to-br from-cyan-500/30 to-blue-900/30 flex items-center justify-center">
+                            <span className="text-xl font-bold text-cyan-400">
                               {app.appName.charAt(0)}
                             </span>
                           </div>
@@ -586,21 +425,13 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
                         <h4 className="text-white font-medium truncate">{app.appName}</h4>
                       </div>
 
-                      {/* Exclude/Include Buttons */}
-                      <div className="flex items-center gap-1 shrink-0">
-                        <button
-                          onClick={() => handleExcludeApp(app.packageName)}
-                          className="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors"
-                        >
-                          Exclude
-                        </button>
-                        <button
-                          onClick={() => handleIncludeApp(app.packageName)}
-                          className="px-4 py-2 rounded-lg bg-white/10 text-white/70 text-sm font-medium hover:bg-white/20 transition-colors border border-white/20"
-                        >
-                          Include
-                        </button>
-                      </div>
+                      {/* Include Button */}
+                      <button
+                        onClick={() => handleIncludeApp(app.packageName)}
+                        className="px-4 py-2 rounded-lg bg-cyan-500 text-[#0a1929] text-sm font-bold hover:bg-cyan-400 transition-colors"
+                      >
+                        Add
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -610,104 +441,34 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
         </div>
       )}
 
-      {/* Screen Recordings Overlay */}
-      {showRecordings && (
-        <div className="fixed inset-0 z-60 bg-black/95 flex flex-col overflow-hidden">
-          <div className="flex flex-col w-full max-w-lg mx-auto h-full overflow-hidden">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-white/10 shrink-0">
-              <div className="flex items-center gap-3">
-                <Video className="w-6 h-6 text-red-500" />
-                <h3 className="text-xl font-bold text-white">Red Magic Time</h3>
-              </div>
-              <button 
-                onClick={() => setShowRecordings(false)}
-                className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center hover:bg-red-500/30 transition-colors"
-              >
-                <X className="w-5 h-5 text-white/70" />
+      {/* Menu Overlay */}
+      {showMenu && (
+        <div className="fixed inset-0 z-60 bg-black/80" onClick={() => setShowMenu(false)}>
+          <div 
+            className="absolute right-0 top-0 bottom-0 w-64 bg-[#0a1929] border-l border-cyan-400/20 p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-bold text-white mb-6">Menu</h3>
+            <div className="space-y-4">
+              <button className="w-full text-left text-white/70 hover:text-cyan-400 transition-colors py-2">
+                Settings
               </button>
-            </div>
-            
-            {/* Recordings Count */}
-            <div className="px-4 py-3 text-white/60 text-sm shrink-0">
-              {mockRecordings.length} Screen Recordings
-            </div>
-            
-            {/* Recordings List */}
-            <div className="flex-1 overflow-y-auto px-4 pb-4 min-h-0">
-              <div className="space-y-3">
-                {mockRecordings.map((recording) => (
-                  <div
-                    key={recording.id}
-                    className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/10 hover:border-red-500/30 transition-colors"
-                  >
-                    {/* Thumbnail */}
-                    <div className="w-20 h-14 rounded-lg bg-gradient-to-br from-red-900/30 to-black flex items-center justify-center shrink-0">
-                      <Play className="w-6 h-6 text-red-500" />
-                    </div>
-
-                    {/* Recording Info */}
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-white font-medium truncate">{recording.name}</h4>
-                      <div className="flex items-center gap-2 text-white/50 text-sm">
-                        <span>{recording.duration}</span>
-                        <span>•</span>
-                        <span>{recording.date}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <button className="w-full text-left text-white/70 hover:text-cyan-400 transition-colors py-2">
+                Performance Mode
+              </button>
+              <button className="w-full text-left text-white/70 hover:text-cyan-400 transition-colors py-2">
+                Game Library
+              </button>
+              <button 
+                onClick={onClose}
+                className="w-full text-left text-white/70 hover:text-cyan-400 transition-colors py-2"
+              >
+                Exit
+              </button>
             </div>
           </div>
         </div>
       )}
-
-      <div className="absolute bottom-24 right-6 flex gap-2">
-        <button className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10">
-          <Grid3X3 className="w-5 h-5 text-white/50" />
-        </button>
-        <button className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10">
-          <Music className="w-5 h-5 text-white/50" />
-        </button>
-        <button className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10">
-          <Users className="w-5 h-5 text-white/50" />
-        </button>
-      </div>
-
-      {/* Bottom Tab Navigation */}
-      <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-1 p-4 bg-gradient-to-t from-black via-black/80 to-transparent">
-        <button
-          onClick={() => setActiveTab("lobby")}
-          className={`flex items-center gap-2 px-8 py-3 rounded-xl transition-all ${
-            activeTab === "lobby"
-              ? "bg-gradient-to-r from-red-900/60 to-red-800/40 border border-red-500/50 text-white shadow-[0_0_20px_rgba(239,68,68,0.2)]"
-              : "bg-white/5 border border-white/10 text-white/60 hover:text-white"
-          }`}
-        >
-          <Home className="w-5 h-5" />
-          <span className="font-medium text-sm">Game Lobby</span>
-        </button>
-        <button
-          onClick={() => setActiveTab("superbase")}
-          className={`flex items-center gap-2 px-8 py-3 rounded-xl transition-all ${
-            activeTab === "superbase"
-              ? "bg-gradient-to-r from-red-900/60 to-red-800/40 border border-red-500/50 text-white shadow-[0_0_20px_rgba(239,68,68,0.2)]"
-              : "bg-white/5 border border-white/10 text-white/60 hover:text-white"
-          }`}
-        >
-          <Zap className="w-5 h-5" />
-          <span className="font-medium text-sm">Super Base</span>
-        </button>
-      </div>
-
-      {/* Assistant Panel Toggle Button */}
-      <button
-        onClick={() => setShowAssistant(!showAssistant)}
-        className="fixed left-0 top-1/2 -translate-y-1/2 z-40 w-6 h-24 hover:scale-110 transition-transform"
-      >
-        <img src={assistantToggle} alt="Open Panel" className="w-full h-full object-contain" />
-      </button>
 
       {/* Boost Assistant Panel */}
       <BoostAssistant
@@ -722,6 +483,5 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
         setPerformanceMode={setPerformanceMode}
       />
     </div>
-    </>
   );
 };
