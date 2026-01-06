@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { ArrowLeft, Menu, ChevronRight, Plus, Loader2 } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { ArrowLeft, Menu, ChevronRight, Plus, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Capacitor } from "@capacitor/core";
 import { BoostAssistant } from "./BoostAssistant";
@@ -34,6 +34,9 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   const [temperature, setTemperature] = useState(28.0);
   const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
   const [showMenu, setShowMenu] = useState(false);
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isLongPressRef = useRef(false);
 
   // Simulate ping and temperature updates
   useEffect(() => {
@@ -187,6 +190,41 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
     }
   };
 
+  const removeCurrentApp = () => {
+    if (!currentApp) return;
+    
+    // Update allApps to mark as not included
+    setAllApps(prev => prev.map(app => 
+      app.packageName === currentApp.packageName ? { ...app, isIncluded: false } : app
+    ));
+    
+    // Remove from includedApps
+    setIncludedApps(prev => prev.filter(app => app.packageName !== currentApp.packageName));
+    
+    // Adjust index if needed
+    if (currentAppIndex >= includedApps.length - 1) {
+      setCurrentAppIndex(Math.max(0, includedApps.length - 2));
+    }
+    
+    toast.success(`${currentApp.appName} removed`);
+    setShowRemoveConfirm(false);
+  };
+
+  const handleLongPressStart = () => {
+    isLongPressRef.current = false;
+    longPressTimerRef.current = setTimeout(() => {
+      isLongPressRef.current = true;
+      setShowRemoveConfirm(true);
+    }, 600);
+  };
+
+  const handleLongPressEnd = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  };
+
   const notIncludedApps = allApps.filter(app => !app.isIncluded);
   const currentApp = includedApps[currentAppIndex];
 
@@ -268,13 +306,40 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
         <div className="flex-1 flex items-center justify-center max-w-md mx-4">
           {includedApps.length > 0 && currentApp ? (
             <div 
-              className="relative w-full bg-black/60 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
+              className="relative w-full bg-black/60 backdrop-blur-sm rounded-2xl p-6 border border-white/10 select-none"
               style={{ boxShadow: '0 0 60px rgba(0,0,0,0.5)' }}
+              onMouseDown={handleLongPressStart}
+              onMouseUp={handleLongPressEnd}
+              onMouseLeave={handleLongPressEnd}
+              onTouchStart={handleLongPressStart}
+              onTouchEnd={handleLongPressEnd}
             >
               {/* Blurred background effect */}
-              <div className="absolute inset-0 rounded-2xl overflow-hidden">
+              <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
                 <div className="absolute inset-0 bg-gradient-to-b from-gray-800/50 to-black/80" />
               </div>
+
+              {/* Remove Confirmation Overlay */}
+              {showRemoveConfirm && (
+                <div className="absolute inset-0 rounded-2xl bg-black/90 z-20 flex flex-col items-center justify-center gap-4 animate-fade-in">
+                  <Trash2 className="w-12 h-12 text-red-500" />
+                  <p className="text-white text-lg font-medium">Remove {currentApp.appName}?</p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowRemoveConfirm(false)}
+                      className="px-6 py-2 rounded-lg bg-white/10 text-white font-medium hover:bg-white/20 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={removeCurrentApp}
+                      className="px-6 py-2 rounded-lg bg-red-500 text-white font-medium hover:bg-red-600 transition-colors"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Game Icon */}
               <div className="relative flex flex-col items-center">
@@ -291,6 +356,9 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
                     </div>
                   )}
                 </div>
+                
+                {/* Long press hint */}
+                <p className="text-white/30 text-xs mb-2">Hold to remove</p>
                 
                 {/* Game Name */}
                 <h2 className="text-white text-xl font-bold mb-1">{currentApp.appName}</h2>
