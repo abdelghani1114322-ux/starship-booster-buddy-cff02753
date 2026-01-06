@@ -1,10 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
-import { ArrowLeft, Menu, ChevronRight, Plus, Loader2, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowLeft, Menu, ChevronRight, Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Capacitor } from "@capacitor/core";
 import { BoostAssistant } from "./BoostAssistant";
-import assistantToggle from "@/assets/assistant-toggle.png";
-import backButton from "@/assets/back-button.png";
 
 interface AdvancedDashboardProps {
   onClose: () => void;
@@ -34,6 +32,7 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   const [gpuUsage, setGpuUsage] = useState(38);
   const [ping, setPing] = useState(196);
   const [temperature, setTemperature] = useState(28.0);
+  const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
   const [showMenu, setShowMenu] = useState(false);
 
   // Simulate ping and temperature updates
@@ -118,29 +117,48 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
     setAllApps(mockApps);
   };
 
-  const handleIncludeApp = (packageName: string) => {
-    setAllApps(prev => prev.map(app => 
-      app.packageName === packageName ? { ...app, isIncluded: true } : app
-    ));
-    const app = allApps.find(a => a.packageName === packageName);
-    if (app) {
-      setIncludedApps(prev => [...prev, { ...app, isIncluded: true }]);
-      toast.success(`${app.appName} added`);
-    }
+  const toggleAppSelection = (packageName: string) => {
+    setSelectedApps(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(packageName)) {
+        newSet.delete(packageName);
+      } else {
+        newSet.add(packageName);
+      }
+      return newSet;
+    });
   };
 
-  const handleExcludeApp = (packageName: string) => {
-    setAllApps(prev => prev.map(app => 
-      app.packageName === packageName ? { ...app, isIncluded: false } : app
-    ));
-    setIncludedApps(prev => prev.filter(app => app.packageName !== packageName));
-    const app = allApps.find(a => a.packageName === packageName);
-    if (app) {
-      toast.success(`${app.appName} removed`);
+  const confirmAddApps = () => {
+    const appsToAdd = allApps.filter(app => selectedApps.has(app.packageName) && !app.isIncluded);
+    
+    if (appsToAdd.length === 0) {
+      toast.info("No new apps selected");
+      setShowAppPicker(false);
+      return;
     }
+
+    setAllApps(prev => prev.map(app => 
+      selectedApps.has(app.packageName) ? { ...app, isIncluded: true } : app
+    ));
+    
+    setIncludedApps(prev => [
+      ...prev,
+      ...appsToAdd.map(app => ({ ...app, isIncluded: true }))
+    ]);
+    
+    toast.success(`${appsToAdd.length} app(s) added`);
+    setSelectedApps(new Set());
+    setShowAppPicker(false);
+    }
+
+  const cancelAddApps = () => {
+    setSelectedApps(new Set());
+    setShowAppPicker(false);
   };
 
   const openAppPicker = () => {
+    setSelectedApps(new Set());
     setShowAppPicker(true);
     loadInstalledApps();
   };
@@ -363,48 +381,70 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
         <Plus className="w-6 h-6 text-white/70" />
       </button>
 
-      {/* App Picker Overlay */}
+      {/* App Picker Overlay - Grid Layout */}
       {showAppPicker && (
-        <div className="fixed inset-0 z-60 bg-[#0a1929]/98 flex flex-col overflow-hidden" onClick={() => setShowAppPicker(false)}>
-          <div 
-            className="flex flex-col w-full max-w-lg mx-auto h-full overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-cyan-400/20 shrink-0">
-              <h3 className="text-xl font-bold text-white">Add Games</h3>
+        <div className="fixed inset-0 z-60 bg-[#1a2635] flex flex-col overflow-hidden">
+          {/* Header with OK/CANCEL */}
+          <div className="flex items-center justify-between px-4 py-3 bg-[#0d1a2a] shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-cyan-400 rounded-lg flex items-center justify-center">
+                <ChevronRight className="w-6 h-6 text-[#0a1929] -rotate-180" />
+              </div>
+              <h3 className="text-lg font-medium text-white">Add apps to Game Assist</h3>
+            </div>
+            <div className="flex items-center gap-2">
               <button 
-                onClick={() => setShowAppPicker(false)}
-                className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center hover:bg-cyan-500/20 transition-colors"
+                onClick={confirmAddApps}
+                className="px-6 py-2 rounded-lg bg-[#2a3a4a] text-white font-medium hover:bg-[#3a4a5a] transition-colors"
               >
-                <X className="w-5 h-5 text-white/70" />
+                OK
+              </button>
+              <button 
+                onClick={cancelAddApps}
+                className="px-6 py-2 rounded-lg bg-cyan-400 text-[#0a1929] font-medium hover:bg-cyan-300 transition-colors"
+              >
+                CANCEL
               </button>
             </div>
-            
-            {/* Not Added Count */}
-            <div className="px-4 py-3 text-cyan-400/80 text-sm shrink-0">
-              {notIncludedApps.length} Available games
-            </div>
-            
-            {/* App List */}
-            <div className="flex-1 overflow-y-auto px-4 pb-4 min-h-0">
-              {isLoadingApps ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
-                </div>
-              ) : notIncludedApps.length === 0 ? (
-                <div className="text-center py-12 text-white/50">
-                  <p>All apps have been added!</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {notIncludedApps.map((app) => (
-                    <div
+          </div>
+          
+          {/* App Grid */}
+          <div className="flex-1 overflow-y-auto p-4 min-h-0">
+            {isLoadingApps ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
+              </div>
+            ) : notIncludedApps.length === 0 ? (
+              <div className="text-center py-12 text-white/50">
+                <p>All apps have been added!</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-7 gap-4">
+                {notIncludedApps.map((app) => {
+                  const isSelected = selectedApps.has(app.packageName);
+                  return (
+                    <button
                       key={app.packageName}
-                      className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/10"
+                      onClick={() => toggleAppSelection(app.packageName)}
+                      className="flex flex-col items-center gap-2 p-2 rounded-xl transition-all relative group"
                     >
+                      {/* Selection indicator */}
+                      <div className={`absolute top-1 right-1 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                        isSelected 
+                          ? 'bg-cyan-400 border-cyan-400' 
+                          : 'bg-white/10 border-white/30'
+                      }`}>
+                        {isSelected && (
+                          <svg className="w-3 h-3 text-[#0a1929]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </div>
+
                       {/* App Icon */}
-                      <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 overflow-hidden bg-white/5">
+                      <div className={`w-16 h-16 rounded-2xl overflow-hidden transition-all ${
+                        isSelected ? 'ring-2 ring-cyan-400 ring-offset-2 ring-offset-[#1a2635]' : ''
+                      }`}>
                         {app.icon ? (
                           <img
                             src={`data:image/png;base64,${app.icon}`}
@@ -412,8 +452,8 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-cyan-500/30 to-blue-900/30 flex items-center justify-center">
-                            <span className="text-xl font-bold text-cyan-400">
+                          <div className="w-full h-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center">
+                            <span className="text-2xl font-bold text-white/80">
                               {app.appName.charAt(0)}
                             </span>
                           </div>
@@ -421,22 +461,14 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
                       </div>
 
                       {/* App Name */}
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-white font-medium truncate">{app.appName}</h4>
-                      </div>
-
-                      {/* Include Button */}
-                      <button
-                        onClick={() => handleIncludeApp(app.packageName)}
-                        className="px-4 py-2 rounded-lg bg-cyan-500 text-[#0a1929] text-sm font-bold hover:bg-cyan-400 transition-colors"
-                      >
-                        Add
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                      <span className="text-xs text-white/70 truncate w-full text-center max-w-[80px]">
+                        {app.appName}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       )}
