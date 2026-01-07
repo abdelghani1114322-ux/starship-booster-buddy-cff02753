@@ -263,7 +263,15 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
   const currentApp = includedApps[currentAppIndex];
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#0a1929] overflow-hidden">
+    <div 
+      className="fixed inset-0 z-50 bg-[#0a1929] overflow-hidden"
+      onClick={() => {
+        // Hide assistant panel when clicking on main content
+        if (showAssistant) {
+          setShowAssistant(false);
+        }
+      }}
+    >
       {/* Diagonal Accent Lines - Left */}
       <div className="absolute left-0 top-0 bottom-0 w-24 overflow-hidden pointer-events-none">
         <div 
@@ -289,7 +297,7 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
       </div>
 
       {/* Header */}
-      <div className="relative flex items-center justify-between px-6 py-4 z-10">
+      <div className="relative flex items-center justify-between px-6 py-4 z-10" onClick={(e) => e.stopPropagation()}>
         {/* Back Button */}
         <button
           onClick={onClose}
@@ -316,7 +324,7 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
       </div>
 
       {/* Main Content */}
-      <div className="relative flex items-center justify-between h-[calc(100vh-180px)] px-4">
+      <div className="relative flex items-center justify-between h-[calc(100vh-180px)] px-4" onClick={(e) => e.stopPropagation()}>
         {/* Left Stats */}
         <div className="flex flex-col items-center gap-4 w-32">
           <div className="text-center">
