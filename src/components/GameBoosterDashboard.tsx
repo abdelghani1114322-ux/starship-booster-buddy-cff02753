@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Zap, Cpu, MemoryStick, Gauge, Monitor, Settings, TrendingUp, PanelLeftOpen, Battery, Grid3X3, X, HardDrive, Thermometer, Clock } from "lucide-react";
@@ -12,8 +12,21 @@ import wifiOff from "@/assets/wifi-off.webp";
 import assistantToggle from "@/assets/assistant-toggle.png";
 import startAnimation from "@/assets/start_animation.mp4";
 
+interface LocationState {
+  openGameSpace?: boolean;
+  selectedApp?: {
+    packageName: string;
+    appName: string;
+    icon?: string;
+    isOptimized?: boolean;
+  };
+}
+
 export const GameBoosterDashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const locationState = location.state as LocationState | null;
+  
   const [cpuUsage, setCpuUsage] = useState(45);
   const [ramUsage, setRamUsage] = useState(62);
   const [fps, setFps] = useState(60);
@@ -34,9 +47,22 @@ export const GameBoosterDashboard = () => {
   const [storageUsed, setStorageUsed] = useState(22.86);
   const [batteryLevel, setBatteryLevel] = useState(85);
   const [batteryTimeRemaining, setBatteryTimeRemaining] = useState<number | null>(null);
+  const [selectedAppFromNav, setSelectedAppFromNav] = useState<LocationState['selectedApp'] | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number>(0);
   const touchStartY = useRef<number>(0);
+
+  // Handle navigation state to open Game Space with selected app
+  useEffect(() => {
+    if (locationState?.openGameSpace) {
+      setShowAdvanced(true);
+      if (locationState.selectedApp) {
+        setSelectedAppFromNav(locationState.selectedApp);
+      }
+      // Clear the state to prevent reopening on refresh
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [locationState, navigate, location.pathname]);
 
   // Simulate real-time performance metrics based on mode
   useEffect(() => {
@@ -814,7 +840,19 @@ export const GameBoosterDashboard = () => {
 
       {/* Advanced Dashboard */}
       {showAdvanced && (
-        <AdvancedDashboard onClose={() => setShowAdvanced(false)} />
+        <AdvancedDashboard 
+          onClose={() => {
+            setShowAdvanced(false);
+            setSelectedAppFromNav(null);
+          }} 
+          initialApp={selectedAppFromNav ? {
+            packageName: selectedAppFromNav.packageName,
+            appName: selectedAppFromNav.appName,
+            icon: selectedAppFromNav.icon,
+            isIncluded: true,
+            boosted: false,
+          } : null}
+        />
       )}
 
       {/* Developer Credit */}

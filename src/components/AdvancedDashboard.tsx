@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Menu, ChevronRight, Plus, Loader2, Trash2 } from "lucide-react";
+import { ArrowLeft, Menu, ChevronRight, Plus, Loader2, Trash2, Bookmark } from "lucide-react";
 import { toast } from "sonner";
 import { Capacitor } from "@capacitor/core";
 import { BoostAssistant } from "./BoostAssistant";
+import startAnimation from "@/assets/start_animation.mp4";
 
 interface AdvancedDashboardProps {
   onClose: () => void;
+  initialApp?: InstalledApp | null;
 }
 
 interface InstalledApp {
@@ -16,8 +18,14 @@ interface InstalledApp {
   boosted: boolean;
 }
 
-export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
-  const [includedApps, setIncludedApps] = useState<InstalledApp[]>([]);
+export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProps) => {
+  const [includedApps, setIncludedApps] = useState<InstalledApp[]>(() => {
+    // If initialApp is provided, start with it included
+    if (initialApp) {
+      return [{ ...initialApp, isIncluded: true }];
+    }
+    return [];
+  });
   const [allApps, setAllApps] = useState<InstalledApp[]>([]);
   const [currentAppIndex, setCurrentAppIndex] = useState(0);
   const [batteryLevel, setBatteryLevel] = useState(88);
@@ -35,6 +43,7 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
   const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
   const [showMenu, setShowMenu] = useState(false);
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+  const [showLaunchVideo, setShowLaunchVideo] = useState(false);
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isLongPressRef = useRef(false);
 
@@ -175,7 +184,32 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
     setIncludedApps(prev => 
       prev.map((a, i) => i === currentAppIndex ? { ...a, boosted: true } : a)
     );
-    toast.success(`${app.appName} Boosted & Started!`);
+    // Show intro video then launch the app
+    setShowLaunchVideo(true);
+  };
+
+  const handleVideoEnd = async () => {
+    setShowLaunchVideo(false);
+    const app = includedApps[currentAppIndex];
+    if (!app) return;
+    
+    if (Capacitor.isNativePlatform()) {
+      try {
+        if (Capacitor.getPlatform() === "android") {
+          window.open(`intent://#Intent;package=${app.packageName};end`, "_system");
+          toast.success(`Launching ${app.appName}`);
+          // Show assistant panel after launch
+          setShowAssistant(true);
+        }
+      } catch (error) {
+        console.error("Error launching app:", error);
+        toast.error("Failed to launch app");
+      }
+    } else {
+      // Web fallback
+      toast.success(`${app.appName} Boosted & Started!`);
+      setShowAssistant(true);
+    }
   };
 
   const nextApp = () => {
@@ -570,6 +604,21 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
         </div>
       )}
 
+      {/* Launch Video Overlay */}
+      {showLaunchVideo && (
+        <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center">
+          <video
+            autoPlay
+            muted
+            playsInline
+            onEnded={handleVideoEnd}
+            className="w-full h-full object-cover"
+          >
+            <source src={startAnimation} type="video/mp4" />
+          </video>
+        </div>
+      )}
+
       {/* Boost Assistant Panel */}
       <BoostAssistant
         cpuUsage={cpuUsage}
@@ -582,6 +631,65 @@ export const AdvancedDashboard = ({ onClose }: AdvancedDashboardProps) => {
         setWifiEnabled={setWifiEnabled}
         setPerformanceMode={setPerformanceMode}
       />
+    </div>
+  );
+};
+
+// Optimizer Mode Selector component
+interface OptimizerModeSelectorProps {
+  app: InstalledApp;
+  onBasicSelect: () => void;
+  onVSpaceSelect: () => void;
+  onClose: () => void;
+}
+
+export const OptimizerModeSelector = ({ app, onBasicSelect, onVSpaceSelect, onClose }: OptimizerModeSelectorProps) => {
+  return (
+    <div 
+      className="fixed inset-0 z-[200] bg-black/80 flex items-end justify-center p-4"
+      onClick={onClose}
+    >
+      <div 
+        className="w-full max-w-md bg-gradient-to-b from-[#1a2635] to-[#0d1821] rounded-2xl p-4 animate-slide-up"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <span className="text-lime-400 font-semibold">{app.appName}</span>
+            <span className="text-white/60">•</span>
+            <span className="text-white/60 text-sm">Select Optimizer Mode</span>
+          </div>
+          <button className="text-white/40 hover:text-white">
+            <Bookmark className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Mode Options */}
+        <div className="flex gap-3">
+          {/* BASIC Mode */}
+          <button
+            onClick={onBasicSelect}
+            className="flex-1 py-3 px-6 rounded-full bg-[#2a3a4a] text-white font-bold text-sm tracking-wider hover:bg-[#3a4a5a] transition-colors"
+          >
+            BASIC
+          </button>
+
+          {/* V-SPACE Mode */}
+          <button
+            onClick={onVSpaceSelect}
+            className="flex-[2] py-3 px-6 rounded-full bg-lime-400 text-[#0a1929] font-bold text-sm tracking-wider hover:bg-lime-300 transition-colors flex items-center justify-center gap-2"
+          >
+            <span>V-SPACE</span>
+            <div className="w-5 h-5 rounded border border-[#0a1929]/30 flex items-center justify-center">
+              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="5" y="4" width="14" height="17" rx="2" />
+                <path d="M9 9h6M9 13h6M9 17h4" />
+              </svg>
+            </div>
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
