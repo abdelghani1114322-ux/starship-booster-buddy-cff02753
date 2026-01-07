@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Search, Zap, Loader2, RefreshCw } from "lucide-react";
+import { ArrowLeft, Search, Zap, Loader2, RefreshCw, Bookmark } from "lucide-react";
 import { toast } from "sonner";
 import { Capacitor, registerPlugin } from "@capacitor/core";
+import startAnimation from "@/assets/start_animation.mp4";
+import { BoostAssistant } from "@/components/BoostAssistant";
 
 interface InstalledApp {
   packageName: string;
@@ -31,6 +33,16 @@ export default function MyApps() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [showSystemApps, setShowSystemApps] = useState(false);
+  const [selectedApp, setSelectedApp] = useState<InstalledApp | null>(null);
+  const [showOptimizerSelector, setShowOptimizerSelector] = useState(false);
+  const [showLaunchVideo, setShowLaunchVideo] = useState(false);
+  const [showAssistant, setShowAssistant] = useState(false);
+  const [performanceMode, setPerformanceMode] = useState<"saving" | "balance" | "boost">("balance");
+  const [wifiEnabled, setWifiEnabled] = useState(false);
+  const [cpuUsage] = useState(45);
+  const [ramUsage] = useState(62);
+  const [fps] = useState(60);
+  const [gpuUsage] = useState(38);
 
   useEffect(() => {
     loadInstalledApps();
@@ -171,6 +183,48 @@ export default function MyApps() {
     }
   };
 
+  const handleAppClick = (app: InstalledApp) => {
+    setSelectedApp(app);
+    setShowOptimizerSelector(true);
+  };
+
+  const handleBasicLaunch = async () => {
+    if (!selectedApp) return;
+    setShowOptimizerSelector(false);
+    setShowLaunchVideo(true);
+  };
+
+  const handleVSpaceLaunch = () => {
+    if (!selectedApp) return;
+    setShowOptimizerSelector(false);
+    // Navigate to Game Space (Advanced Dashboard) with the selected app
+    navigate("/", { state: { openGameSpace: true, selectedApp: selectedApp } });
+  };
+
+  const handleVideoEnd = async () => {
+    setShowLaunchVideo(false);
+    if (!selectedApp) return;
+
+    if (Capacitor.isNativePlatform() && InstalledAppsNative) {
+      try {
+        await InstalledAppsNative.launchApp({ packageName: selectedApp.packageName });
+        toast.success(`Launching ${selectedApp.appName}...`);
+        setShowAssistant(true);
+      } catch (error) {
+        try {
+          window.location.href = `intent://#Intent;package=${selectedApp.packageName};end`;
+          toast.success(`Launching ${selectedApp.appName}...`);
+          setShowAssistant(true);
+        } catch (e) {
+          toast.error(`Cannot launch ${selectedApp.appName}`);
+        }
+      }
+    } else {
+      toast.success(`${selectedApp.appName} launched!`);
+      setShowAssistant(true);
+    }
+  };
+
   const handleLaunchApp = async (packageName: string, appName: string) => {
     if (Capacitor.isNativePlatform() && InstalledAppsNative) {
       try {
@@ -265,7 +319,7 @@ export default function MyApps() {
             {filteredApps.map((app) => (
               <div
                 key={app.packageName}
-                onClick={() => handleLaunchApp(app.packageName, app.appName)}
+                onClick={() => handleAppClick(app)}
                 className={`flex items-center gap-4 p-3 rounded-lg bg-card/60 border border-border cursor-pointer transition-all hover:border-primary/50 active:scale-[0.98] ${
                   app.isOptimized ? "border-primary/30 bg-primary/5" : ""
                 }`}
@@ -319,6 +373,84 @@ export default function MyApps() {
           </div>
         )}
       </div>
+
+      {/* Optimizer Mode Selector */}
+      {showOptimizerSelector && selectedApp && (
+        <div 
+          className="fixed inset-0 z-[200] bg-black/80 flex items-end justify-center p-4"
+          onClick={() => setShowOptimizerSelector(false)}
+        >
+          <div 
+            className="w-full max-w-md bg-gradient-to-b from-[#1a2635] to-[#0d1821] rounded-2xl p-4 animate-in slide-in-from-bottom duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-lime-400 font-semibold">{selectedApp.appName}</span>
+                <span className="text-white/60">•</span>
+                <span className="text-white/60 text-sm">Select Optimizer Mode</span>
+              </div>
+              <button className="text-white/40 hover:text-white">
+                <Bookmark className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Mode Options */}
+            <div className="flex gap-3">
+              {/* BASIC Mode */}
+              <button
+                onClick={handleBasicLaunch}
+                className="flex-1 py-3 px-6 rounded-full bg-[#2a3a4a] text-white font-bold text-sm tracking-wider hover:bg-[#3a4a5a] transition-colors"
+              >
+                BASIC
+              </button>
+
+              {/* V-SPACE Mode */}
+              <button
+                onClick={handleVSpaceLaunch}
+                className="flex-[2] py-3 px-6 rounded-full bg-lime-400 text-[#0a1929] font-bold text-sm tracking-wider hover:bg-lime-300 transition-colors flex items-center justify-center gap-2"
+              >
+                <span>V-SPACE</span>
+                <div className="w-5 h-5 rounded border border-[#0a1929]/30 flex items-center justify-center">
+                  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="5" y="4" width="14" height="17" rx="2" />
+                    <path d="M9 9h6M9 13h6M9 17h4" />
+                  </svg>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Launch Video Overlay */}
+      {showLaunchVideo && (
+        <div className="fixed inset-0 z-[300] bg-black flex items-center justify-center">
+          <video
+            autoPlay
+            muted
+            playsInline
+            onEnded={handleVideoEnd}
+            className="w-full h-full object-cover"
+          >
+            <source src={startAnimation} type="video/mp4" />
+          </video>
+        </div>
+      )}
+
+      {/* Boost Assistant Panel - shows after BASIC launch */}
+      <BoostAssistant
+        cpuUsage={cpuUsage}
+        ramUsage={ramUsage}
+        fps={fps}
+        gpuUsage={gpuUsage}
+        performanceMode={performanceMode}
+        isVisible={showAssistant}
+        wifiEnabled={wifiEnabled}
+        setWifiEnabled={setWifiEnabled}
+        setPerformanceMode={setPerformanceMode}
+      />
     </div>
   );
 }
