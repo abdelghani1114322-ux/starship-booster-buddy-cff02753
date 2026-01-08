@@ -1,9 +1,18 @@
 import { useState, useEffect, useRef } from "react";
 import { ArrowLeft, Menu, ChevronRight, Plus, Loader2, Trash2, Bookmark } from "lucide-react";
 import { toast } from "sonner";
-import { Capacitor } from "@capacitor/core";
+import { Capacitor, registerPlugin } from "@capacitor/core";
 import { BoostAssistant } from "./BoostAssistant";
 import startAnimation from "@/assets/start_animation.mp4";
+
+interface InstalledAppsPlugin {
+  getInstalledApps(options?: { includeSystemApps?: boolean; includeIcons?: boolean; iconSize?: number }): Promise<{ apps: any[]; count: number }>;
+  launchApp(options: { packageName: string }): Promise<{ success: boolean; packageName: string }>;
+}
+
+const InstalledAppsNative = Capacitor.isNativePlatform()
+  ? registerPlugin<InstalledAppsPlugin>("InstalledApps")
+  : null;
 
 interface AdvancedDashboardProps {
   onClose: () => void;
@@ -69,30 +78,20 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
     
     setIsLoadingApps(true);
     
-    if (Capacitor.isNativePlatform()) {
+    if (Capacitor.isNativePlatform() && InstalledAppsNative) {
       try {
-        const { CapacitorUsageStatsManager } = await import(
-          "@capgo/capacitor-android-usagestatsmanager"
-        );
+        // Use native InstalledApps plugin for real app names and icons
+        const result = await InstalledAppsNative.getInstalledApps({
+          includeSystemApps: false,
+          includeIcons: true,
+          iconSize: 96
+        });
         
-        const permissionResult = await CapacitorUsageStatsManager.isUsageStatsPermissionGranted();
-        
-        if (!permissionResult.granted) {
-          toast.info("Permission required", {
-            description: "Please grant usage access to see installed apps",
-          });
-          await CapacitorUsageStatsManager.openUsageStatsSettings();
-          setIsLoadingApps(false);
-          return;
-        }
-        
-        const packages = await CapacitorUsageStatsManager.queryAllPackages();
-        
-        if (packages && packages.packages) {
-          const apps: InstalledApp[] = packages.packages.map((pkg: any) => ({
-            packageName: pkg.packageName || pkg,
-            appName: extractAppName(pkg.packageName || pkg),
-            icon: pkg.icon,
+        if (result && result.apps) {
+          const apps: InstalledApp[] = result.apps.map((app: any) => ({
+            packageName: app.packageName,
+            appName: app.appName || extractAppName(app.packageName),
+            icon: app.icon,
             isIncluded: false,
             boosted: false,
           }));
@@ -193,14 +192,12 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
     const app = includedApps[currentAppIndex];
     if (!app) return;
     
-    if (Capacitor.isNativePlatform()) {
+    if (Capacitor.isNativePlatform() && InstalledAppsNative) {
       try {
-        if (Capacitor.getPlatform() === "android") {
-          window.open(`intent://#Intent;package=${app.packageName};end`, "_system");
-          toast.success(`Launching ${app.appName}`);
-          // Show assistant panel after launch
-          setShowAssistant(true);
-        }
+        await InstalledAppsNative.launchApp({ packageName: app.packageName });
+        toast.success(`Launching ${app.appName}`);
+        // Show assistant panel after launch
+        setShowAssistant(true);
       } catch (error) {
         console.error("Error launching app:", error);
         toast.error("Failed to launch app");
