@@ -3,7 +3,7 @@ import { ArrowLeft, Menu, ChevronRight, Plus, Loader2, Trash2, Bookmark } from "
 import { toast } from "sonner";
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import { BoostAssistant } from "./BoostAssistant";
-import startAnimation from "@/assets/start_animation.mp4";
+
 
 interface InstalledAppsPlugin {
   getInstalledApps(options?: { includeSystemApps?: boolean; includeIcons?: boolean; iconSize?: number }): Promise<{ apps: any[]; count: number }>;
@@ -52,7 +52,7 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
   const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
   const [showMenu, setShowMenu] = useState(false);
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
-  const [showLaunchVideo, setShowLaunchVideo] = useState(false);
+  // Video intro removed - apps launch directly
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isLongPressRef = useRef(false);
 
@@ -174,7 +174,7 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
     loadInstalledApps();
   };
 
-  const startGame = () => {
+  const startGame = async () => {
     if (includedApps.length === 0) {
       toast.info("Add a game first");
       return;
@@ -183,31 +183,23 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
     setIncludedApps(prev => 
       prev.map((a, i) => i === currentAppIndex ? { ...a, boosted: true } : a)
     );
-    // Show intro video then launch the app
-    setShowLaunchVideo(true);
-  };
-
-  const handleVideoEnd = async () => {
-    setShowLaunchVideo(false);
-    const app = includedApps[currentAppIndex];
-    if (!app) return;
     
+    // Launch app directly and show assistant
     if (Capacitor.isNativePlatform() && InstalledAppsNative) {
       try {
         await InstalledAppsNative.launchApp({ packageName: app.packageName });
         toast.success(`Launching ${app.appName}`);
-        // Show assistant panel after launch
         setShowAssistant(true);
       } catch (error) {
         console.error("Error launching app:", error);
         toast.error("Failed to launch app");
       }
     } else {
-      // Web fallback
       toast.success(`${app.appName} Boosted & Started!`);
       setShowAssistant(true);
     }
   };
+
 
   const nextApp = () => {
     if (includedApps.length > 0) {
@@ -609,20 +601,6 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
         </div>
       )}
 
-      {/* Launch Video Overlay */}
-      {showLaunchVideo && (
-        <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center">
-          <video
-            autoPlay
-            muted
-            playsInline
-            onEnded={handleVideoEnd}
-            className="w-full h-full object-cover"
-          >
-            <source src={startAnimation} type="video/mp4" />
-          </video>
-        </div>
-      )}
 
       {/* Boost Assistant Panel */}
       <BoostAssistant
