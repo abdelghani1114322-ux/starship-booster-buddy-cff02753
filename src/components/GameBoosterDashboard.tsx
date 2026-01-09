@@ -387,99 +387,264 @@ export const GameBoosterDashboard = () => {
             </div>
           </div>
 
-          {/* Performance Mode Buttons */}
-          <div className="grid grid-cols-3 gap-6 max-w-3xl mx-auto">
-            {/* Low Power Mode */}
+          {/* Performance Mode Buttons - Gaming Style */}
+          <div className="grid grid-cols-3 gap-4 max-w-4xl mx-auto">
+            {/* ECO Mode */}
             <button
               onClick={() => handleModeChange("saving")}
-              className={`group relative flex flex-col items-center gap-4 p-6 rounded-2xl transition-all duration-300 ${
+              className={`group relative overflow-hidden rounded-xl transition-all duration-500 ${
                 performanceMode === "saving"
-                  ? "bg-primary/10 shadow-[0_0_30px_rgba(16,185,129,0.4)] border-2 border-primary"
-                  : "bg-card/50 border-2 border-border hover:border-primary/50"
+                  ? "scale-105"
+                  : "hover:scale-102"
               }`}
             >
-              <div className={`relative ${performanceMode === "saving" ? "animate-pulse" : ""}`}>
-                <Battery className={`w-16 h-16 ${
-                  performanceMode === "saving" ? "text-primary" : "text-muted-foreground"
+              {/* Background with gradient */}
+              <div className={`absolute inset-0 transition-all duration-500 ${
+                performanceMode === "saving"
+                  ? "bg-gradient-to-br from-emerald-900/80 via-emerald-950/90 to-black"
+                  : "bg-gradient-to-br from-slate-800/60 via-slate-900/80 to-black"
+              }`} />
+              
+              {/* Animated border glow */}
+              <div className={`absolute inset-0 rounded-xl transition-all duration-500 ${
+                performanceMode === "saving"
+                  ? "shadow-[inset_0_0_20px_rgba(16,185,129,0.4),0_0_30px_rgba(16,185,129,0.3)]"
+                  : "shadow-[inset_0_0_10px_rgba(100,116,139,0.2)]"
+              }`} />
+              
+              {/* Border */}
+              <div className={`absolute inset-0 rounded-xl border-2 transition-all duration-300 ${
+                performanceMode === "saving"
+                  ? "border-emerald-500/80"
+                  : "border-slate-700/50 group-hover:border-emerald-500/30"
+              }`} />
+              
+              {/* Corner accents */}
+              <div className={`absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 rounded-tl-xl transition-colors ${
+                performanceMode === "saving" ? "border-emerald-400" : "border-slate-600"
+              }`} />
+              <div className={`absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 rounded-tr-xl transition-colors ${
+                performanceMode === "saving" ? "border-emerald-400" : "border-slate-600"
+              }`} />
+              <div className={`absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 rounded-bl-xl transition-colors ${
+                performanceMode === "saving" ? "border-emerald-400" : "border-slate-600"
+              }`} />
+              <div className={`absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 rounded-br-xl transition-colors ${
+                performanceMode === "saving" ? "border-emerald-400" : "border-slate-600"
+              }`} />
+              
+              <div className="relative p-6 flex flex-col items-center gap-3">
+                {/* Icon with glow ring */}
+                <div className="relative">
+                  <div className={`absolute inset-0 rounded-full transition-all duration-500 ${
+                    performanceMode === "saving"
+                      ? "bg-emerald-500/20 animate-pulse scale-150"
+                      : ""
+                  }`} />
+                  <div className={`relative w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    performanceMode === "saving"
+                      ? "bg-gradient-to-br from-emerald-500/30 to-emerald-900/50 shadow-[0_0_20px_rgba(16,185,129,0.5)]"
+                      : "bg-slate-800/50"
+                  }`}>
+                    <Battery className={`w-8 h-8 transition-colors duration-300 ${
+                      performanceMode === "saving" ? "text-emerald-400" : "text-slate-500"
+                    }`} />
+                  </div>
+                  {performanceMode === "saving" && (
+                    <div className="absolute -inset-2 rounded-full border border-emerald-500/30 animate-ping" />
+                  )}
+                </div>
+                
+                {/* Label */}
+                <span className={`text-sm font-bold tracking-wider uppercase transition-colors duration-300 ${
+                  performanceMode === "saving" ? "text-emerald-400" : "text-slate-500"
+                }`}>
+                  ECO
+                </span>
+                
+                {/* Status indicator */}
+                <div className={`h-1 w-12 rounded-full transition-all duration-500 ${
+                  performanceMode === "saving"
+                    ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]"
+                    : "bg-slate-700"
                 }`} />
-                {performanceMode === "saving" && (
-                  <>
-                    <Zap className="w-6 h-6 text-accent absolute -top-2 -left-2 animate-bounce" />
-                    <Zap className="w-6 h-6 text-accent absolute -top-2 -right-2 animate-bounce delay-75" />
-                  </>
-                )}
               </div>
-              <span className={`text-sm font-semibold ${
-                performanceMode === "saving" ? "text-primary" : "text-muted-foreground"
-              }`}>
-                Low Power
-              </span>
-              {performanceMode === "saving" && (
-                <div className="absolute -bottom-2 left-0 right-0 h-1 bg-primary rounded-full shadow-[0_0_10px_rgba(16,185,129,0.6)]" />
-              )}
             </button>
 
-            {/* Balanced Mode */}
+            {/* BALANCE Mode */}
             <button
               onClick={() => handleModeChange("balance")}
-              className={`group relative flex flex-col items-center gap-4 p-6 rounded-2xl transition-all duration-300 ${
+              className={`group relative overflow-hidden rounded-xl transition-all duration-500 ${
                 performanceMode === "balance"
-                  ? "bg-secondary/10 shadow-[0_0_30px_rgba(59,130,246,0.4)] border-2 border-secondary"
-                  : "bg-card/50 border-2 border-border hover:border-secondary/50"
+                  ? "scale-105"
+                  : "hover:scale-102"
               }`}
             >
-              <div className={`relative ${performanceMode === "balance" ? "animate-pulse" : ""}`}>
-                <Gauge className={`w-16 h-16 ${
-                  performanceMode === "balance" ? "text-secondary" : "text-muted-foreground"
-                }`} />
-                {performanceMode === "balance" && (
-                  <div className="absolute inset-0 animate-spin-slow">
-                    <Zap className="w-5 h-5 text-accent absolute -top-6 left-1/2 -translate-x-1/2" />
+              {/* Background with gradient */}
+              <div className={`absolute inset-0 transition-all duration-500 ${
+                performanceMode === "balance"
+                  ? "bg-gradient-to-br from-amber-900/80 via-orange-950/90 to-black"
+                  : "bg-gradient-to-br from-slate-800/60 via-slate-900/80 to-black"
+              }`} />
+              
+              {/* Animated border glow */}
+              <div className={`absolute inset-0 rounded-xl transition-all duration-500 ${
+                performanceMode === "balance"
+                  ? "shadow-[inset_0_0_20px_rgba(245,158,11,0.4),0_0_30px_rgba(245,158,11,0.3)]"
+                  : "shadow-[inset_0_0_10px_rgba(100,116,139,0.2)]"
+              }`} />
+              
+              {/* Border */}
+              <div className={`absolute inset-0 rounded-xl border-2 transition-all duration-300 ${
+                performanceMode === "balance"
+                  ? "border-amber-500/80"
+                  : "border-slate-700/50 group-hover:border-amber-500/30"
+              }`} />
+              
+              {/* Corner accents */}
+              <div className={`absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 rounded-tl-xl transition-colors ${
+                performanceMode === "balance" ? "border-amber-400" : "border-slate-600"
+              }`} />
+              <div className={`absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 rounded-tr-xl transition-colors ${
+                performanceMode === "balance" ? "border-amber-400" : "border-slate-600"
+              }`} />
+              <div className={`absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 rounded-bl-xl transition-colors ${
+                performanceMode === "balance" ? "border-amber-400" : "border-slate-600"
+              }`} />
+              <div className={`absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 rounded-br-xl transition-colors ${
+                performanceMode === "balance" ? "border-amber-400" : "border-slate-600"
+              }`} />
+              
+              <div className="relative p-6 flex flex-col items-center gap-3">
+                {/* Icon with glow ring */}
+                <div className="relative">
+                  <div className={`absolute inset-0 rounded-full transition-all duration-500 ${
+                    performanceMode === "balance"
+                      ? "bg-amber-500/20 animate-pulse scale-150"
+                      : ""
+                  }`} />
+                  <div className={`relative w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    performanceMode === "balance"
+                      ? "bg-gradient-to-br from-amber-500/30 to-orange-900/50 shadow-[0_0_20px_rgba(245,158,11,0.5)]"
+                      : "bg-slate-800/50"
+                  }`}>
+                    <Gauge className={`w-8 h-8 transition-colors duration-300 ${
+                      performanceMode === "balance" ? "text-amber-400" : "text-slate-500"
+                    }`} />
                   </div>
-                )}
+                  {performanceMode === "balance" && (
+                    <div className="absolute -inset-2 rounded-full border border-amber-500/30 animate-ping" />
+                  )}
+                </div>
+                
+                {/* Label */}
+                <span className={`text-sm font-bold tracking-wider uppercase transition-colors duration-300 ${
+                  performanceMode === "balance" ? "text-amber-400" : "text-slate-500"
+                }`}>
+                  BALANCE
+                </span>
+                
+                {/* Status indicator */}
+                <div className={`h-1 w-12 rounded-full transition-all duration-500 ${
+                  performanceMode === "balance"
+                    ? "bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.8)]"
+                    : "bg-slate-700"
+                }`} />
               </div>
-              <span className={`text-sm font-semibold ${
-                performanceMode === "balance" ? "text-secondary" : "text-muted-foreground"
-              }`}>
-                Balanced
-              </span>
-              {performanceMode === "balance" && (
-                <div className="absolute -bottom-2 left-0 right-0 h-1 bg-secondary rounded-full shadow-[0_0_10px_rgba(59,130,246,0.6)]" />
-              )}
             </button>
 
-            {/* Gamer Mode */}
+            {/* BEAST Mode */}
             <button
               onClick={() => handleModeChange("boost")}
-              className={`group relative flex flex-col items-center gap-4 p-6 rounded-2xl transition-all duration-300 ${
+              className={`group relative overflow-hidden rounded-xl transition-all duration-500 ${
                 performanceMode === "boost"
-                  ? "bg-primary/10 shadow-[0_0_40px_rgba(16,185,129,0.6)] border-2 border-primary"
-                  : "bg-card/50 border-2 border-border hover:border-primary/50"
+                  ? "scale-105"
+                  : "hover:scale-102"
               }`}
             >
-              <div className={`relative ${performanceMode === "boost" ? "animate-bounce" : ""}`}>
-                <Zap className={`w-16 h-16 ${
-                  performanceMode === "boost" ? "text-primary" : "text-muted-foreground"
-                }`} />
-                {performanceMode === "boost" && (
-                  <>
-                    <div className="absolute inset-0 animate-ping opacity-50">
-                      <Zap className="w-16 h-16 text-primary" />
-                    </div>
-                    <Zap className="w-4 h-4 text-accent absolute top-0 left-0 animate-pulse" />
-                    <Zap className="w-4 h-4 text-accent absolute top-0 right-0 animate-pulse delay-75" />
-                    <Zap className="w-4 h-4 text-accent absolute bottom-0 left-1/2 -translate-x-1/2 animate-pulse delay-150" />
-                  </>
-                )}
-              </div>
-              <span className={`text-sm font-semibold ${
-                performanceMode === "boost" ? "text-primary" : "text-muted-foreground"
-              }`}>
-                Gamer Mode
-              </span>
+              {/* Background with gradient */}
+              <div className={`absolute inset-0 transition-all duration-500 ${
+                performanceMode === "boost"
+                  ? "bg-gradient-to-br from-red-900/80 via-red-950/90 to-black"
+                  : "bg-gradient-to-br from-slate-800/60 via-slate-900/80 to-black"
+              }`} />
+              
+              {/* Animated border glow */}
+              <div className={`absolute inset-0 rounded-xl transition-all duration-500 ${
+                performanceMode === "boost"
+                  ? "shadow-[inset_0_0_25px_rgba(239,68,68,0.5),0_0_40px_rgba(239,68,68,0.4)]"
+                  : "shadow-[inset_0_0_10px_rgba(100,116,139,0.2)]"
+              }`} />
+              
+              {/* Border */}
+              <div className={`absolute inset-0 rounded-xl border-2 transition-all duration-300 ${
+                performanceMode === "boost"
+                  ? "border-red-500/80"
+                  : "border-slate-700/50 group-hover:border-red-500/30"
+              }`} />
+              
+              {/* Corner accents */}
+              <div className={`absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 rounded-tl-xl transition-colors ${
+                performanceMode === "boost" ? "border-red-400" : "border-slate-600"
+              }`} />
+              <div className={`absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 rounded-tr-xl transition-colors ${
+                performanceMode === "boost" ? "border-red-400" : "border-slate-600"
+              }`} />
+              <div className={`absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 rounded-bl-xl transition-colors ${
+                performanceMode === "boost" ? "border-red-400" : "border-slate-600"
+              }`} />
+              <div className={`absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 rounded-br-xl transition-colors ${
+                performanceMode === "boost" ? "border-red-400" : "border-slate-600"
+              }`} />
+              
+              {/* Animated energy particles for boost mode */}
               {performanceMode === "boost" && (
-                <div className="absolute -bottom-2 left-0 right-0 h-1 bg-primary rounded-full shadow-[0_0_10px_rgba(16,185,129,0.6)]" />
+                <>
+                  <div className="absolute top-1/4 left-1/4 w-1 h-1 bg-red-400 rounded-full animate-ping" />
+                  <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-red-400 rounded-full animate-ping delay-150" />
+                  <div className="absolute bottom-1/4 left-1/3 w-1 h-1 bg-red-400 rounded-full animate-ping delay-300" />
+                </>
               )}
+              
+              <div className="relative p-6 flex flex-col items-center gap-3">
+                {/* Icon with glow ring */}
+                <div className="relative">
+                  <div className={`absolute inset-0 rounded-full transition-all duration-500 ${
+                    performanceMode === "boost"
+                      ? "bg-red-500/20 animate-pulse scale-150"
+                      : ""
+                  }`} />
+                  <div className={`relative w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    performanceMode === "boost"
+                      ? "bg-gradient-to-br from-red-500/40 to-red-900/60 shadow-[0_0_25px_rgba(239,68,68,0.6)]"
+                      : "bg-slate-800/50"
+                  }`}>
+                    <Zap className={`w-8 h-8 transition-colors duration-300 ${
+                      performanceMode === "boost" ? "text-red-400" : "text-slate-500"
+                    }`} />
+                  </div>
+                  {performanceMode === "boost" && (
+                    <>
+                      <div className="absolute -inset-2 rounded-full border border-red-500/40 animate-ping" />
+                      <div className="absolute -inset-4 rounded-full border border-red-500/20 animate-ping delay-150" />
+                    </>
+                  )}
+                </div>
+                
+                {/* Label */}
+                <span className={`text-sm font-bold tracking-wider uppercase transition-colors duration-300 ${
+                  performanceMode === "boost" ? "text-red-400" : "text-slate-500"
+                }`}>
+                  BEAST
+                </span>
+                
+                {/* Status indicator */}
+                <div className={`h-1 w-12 rounded-full transition-all duration-500 ${
+                  performanceMode === "boost"
+                    ? "bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.9)]"
+                    : "bg-slate-700"
+                }`} />
+              </div>
             </button>
           </div>
         </div>
