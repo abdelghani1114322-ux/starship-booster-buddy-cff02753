@@ -644,62 +644,101 @@ export const GameBoosterDashboard = () => {
         <div className="flex justify-center mt-8 mb-12">
           <button 
             onClick={() => setShowGamesLobby(true)}
-            className="relative p-6 bg-card/60 backdrop-blur rounded-2xl border border-border hover:border-red-500/60 transition-all hover:scale-105 cursor-pointer"
+            className="relative p-4 bg-gradient-to-br from-slate-800/90 via-slate-900/95 to-slate-950 backdrop-blur rounded-2xl border border-slate-700/50 hover:border-red-500/60 transition-all hover:scale-105 cursor-pointer shadow-xl"
           >
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4">
               <span 
-                className="text-sm font-bold tracking-widest text-muted-foreground"
+                className="text-sm font-bold tracking-[0.3em] text-slate-400"
                 style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}
               >
                 Gravity X
               </span>
               <div className="relative">
-                {/* Outer tech rings */}
-                <svg className="w-32 h-32" viewBox="0 0 100 100">
-                  {/* Outer decorative ring */}
-                  <circle cx="50" cy="50" r="48" fill="none" stroke="hsl(var(--muted))" strokeWidth="1" opacity="0.3" />
-                  <circle cx="50" cy="50" r="44" fill="none" stroke="hsl(var(--muted))" strokeWidth="2" opacity="0.4" />
-                  {/* Tech details - dots around */}
-                  {Array.from({ length: 12 }).map((_, i) => (
-                    <circle
-                      key={i}
-                      cx={50 + 46 * Math.cos((i * 30 * Math.PI) / 180)}
-                      cy={50 + 46 * Math.sin((i * 30 * Math.PI) / 180)}
-                      r="2"
-                      fill="#ef4444"
-                      opacity="0.6"
+                <svg className="w-40 h-40" viewBox="0 0 120 120">
+                  <defs>
+                    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="#ef4444" stopOpacity="0.8" />
+                      <stop offset="60%" stopColor="#dc2626" stopOpacity="0.4" />
+                      <stop offset="100%" stopColor="#7f1d1d" stopOpacity="0" />
+                    </radialGradient>
+                    <filter id="redGlow" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="3" result="glow"/>
+                      <feMerge>
+                        <feMergeNode in="glow"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+                    <linearGradient id="ringGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#475569" />
+                      <stop offset="50%" stopColor="#334155" />
+                      <stop offset="100%" stopColor="#1e293b" />
+                    </linearGradient>
+                    <linearGradient id="ringGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#64748b" />
+                      <stop offset="100%" stopColor="#334155" />
+                    </linearGradient>
+                  </defs>
+                  
+                  {/* Outermost mechanical ring - dark gray */}
+                  <circle cx="60" cy="60" r="56" fill="none" stroke="#1e293b" strokeWidth="4" />
+                  <circle cx="60" cy="60" r="54" fill="none" stroke="url(#ringGradient1)" strokeWidth="2" />
+                  
+                  {/* Outer tech ring with segments */}
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="#334155" strokeWidth="6" />
+                  {/* Segmented outer ring effect */}
+                  {Array.from({ length: 24 }).map((_, i) => (
+                    <line
+                      key={`outer-seg-${i}`}
+                      x1={60 + 47 * Math.cos((i * 15 * Math.PI) / 180)}
+                      y1={60 + 47 * Math.sin((i * 15 * Math.PI) / 180)}
+                      x2={60 + 53 * Math.cos((i * 15 * Math.PI) / 180)}
+                      y2={60 + 53 * Math.sin((i * 15 * Math.PI) / 180)}
+                      stroke="#475569"
+                      strokeWidth="2"
                     />
                   ))}
-                  {/* Middle glowing ring */}
+                  
+                  {/* Middle tech ring with notches */}
+                  <circle cx="60" cy="60" r="42" fill="none" stroke="#475569" strokeWidth="4" />
+                  <circle cx="60" cy="60" r="40" fill="none" stroke="#64748b" strokeWidth="1" opacity="0.5" />
+                  
+                  {/* Red accent dots around middle ring */}
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <circle
+                      key={`red-dot-${i}`}
+                      cx={60 + 44 * Math.cos((i * 45 * Math.PI) / 180)}
+                      cy={60 + 44 * Math.sin((i * 45 * Math.PI) / 180)}
+                      r="3"
+                      fill="#ef4444"
+                      style={{ filter: 'drop-shadow(0 0 4px #ef4444)' }}
+                    />
+                  ))}
+                  
+                  {/* Inner metallic ring */}
+                  <circle cx="60" cy="60" r="35" fill="none" stroke="url(#ringGradient2)" strokeWidth="5" />
+                  <circle cx="60" cy="60" r="32" fill="none" stroke="#94a3b8" strokeWidth="1" opacity="0.3" />
+                  
+                  {/* Red glowing inner ring */}
                   <circle 
-                    cx="50" cy="50" r="36" 
-                    fill="none" 
-                    stroke="#64748b" 
-                    strokeWidth="3" 
-                    opacity="0.6"
-                  />
-                  <circle 
-                    cx="50" cy="50" r="32" 
+                    cx="60" cy="60" r="28" 
                     fill="none" 
                     stroke="#ef4444" 
-                    strokeWidth="2" 
-                    opacity="0.8"
-                    style={{ filter: 'drop-shadow(0 0 6px #ef4444)' }}
+                    strokeWidth="2"
+                    style={{ filter: 'drop-shadow(0 0 8px #ef4444)' }}
                   />
-                  {/* Inner circle background */}
-                  <circle cx="50" cy="50" r="26" fill="#1a1a2e" />
-                  <circle 
-                    cx="50" cy="50" r="24" 
-                    fill="none" 
-                    stroke="#ef4444" 
-                    strokeWidth="1.5"
-                    opacity="0.5"
-                  />
-                  {/* X symbol */}
-                  <g style={{ filter: 'drop-shadow(0 0 8px #ef4444)' }}>
-                    <line x1="38" y1="38" x2="62" y2="62" stroke="#ef4444" strokeWidth="4" strokeLinecap="round" />
-                    <line x1="62" y1="38" x2="38" y2="62" stroke="#ef4444" strokeWidth="4" strokeLinecap="round" />
+                  
+                  {/* Core background with glow */}
+                  <circle cx="60" cy="60" r="25" fill="#0f172a" />
+                  <circle cx="60" cy="60" r="24" fill="url(#coreGlow)" />
+                  
+                  {/* X symbol with enhanced glow */}
+                  <g filter="url(#redGlow)">
+                    <line x1="45" y1="45" x2="75" y2="75" stroke="#ef4444" strokeWidth="5" strokeLinecap="round" />
+                    <line x1="75" y1="45" x2="45" y2="75" stroke="#ef4444" strokeWidth="5" strokeLinecap="round" />
                   </g>
+                  
+                  {/* Core highlight */}
+                  <circle cx="55" cy="55" r="8" fill="white" opacity="0.05" />
                 </svg>
               </div>
             </div>
