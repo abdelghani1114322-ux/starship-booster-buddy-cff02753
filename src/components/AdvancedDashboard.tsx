@@ -54,7 +54,8 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
   const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
   const [showMenu, setShowMenu] = useState(false);
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
-  // Video intro removed - apps launch directly
+  const [showGraphicsSelector, setShowGraphicsSelector] = useState(false);
+  const [selectedGraphicsApi, setSelectedGraphicsApi] = useState<"opengl" | "vulkan" | null>(null);
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isLongPressRef = useRef(false);
 
@@ -176,21 +177,29 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
     loadInstalledApps();
   };
 
-  const startGame = async () => {
+  const startGame = () => {
     if (includedApps.length === 0) {
       toast.info("Add a game first");
       return;
     }
+    // Show graphics API selector instead of launching directly
+    setShowGraphicsSelector(true);
+  };
+
+  const launchWithGraphicsApi = async (api: "opengl" | "vulkan") => {
+    setSelectedGraphicsApi(api);
+    setShowGraphicsSelector(false);
+    
     const app = includedApps[currentAppIndex];
     setIncludedApps(prev => 
       prev.map((a, i) => i === currentAppIndex ? { ...a, boosted: true } : a)
     );
     
-    // Launch app directly and show assistant button (panel hidden initially)
+    // Launch app with selected graphics API
     if (Capacitor.isNativePlatform() && InstalledAppsNative) {
       try {
         await InstalledAppsNative.launchApp({ packageName: app.packageName });
-        toast.success(`Launching ${app.appName}`);
+        toast.success(`Launching ${app.appName} with ${api.toUpperCase()}`);
         setShowAssistantButton(true);
         setShowAssistant(false);
       } catch (error) {
@@ -198,7 +207,7 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
         toast.error("Failed to launch app");
       }
     } else {
-      toast.success(`${app.appName} Boosted & Started!`);
+      toast.success(`${app.appName} started with ${api.toUpperCase()}!`);
       setShowAssistantButton(true);
       setShowAssistant(false);
     }
@@ -605,8 +614,67 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
         </div>
       )}
 
+      {/* Graphics API Selector */}
+      {showGraphicsSelector && (
+        <div 
+          className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4"
+          onClick={() => setShowGraphicsSelector(false)}
+        >
+          <div 
+            className="w-full max-w-sm bg-gradient-to-b from-[#1a2a3a] to-[#0d1821] rounded-2xl p-6 border border-cyan-400/30 shadow-[0_0_40px_rgba(34,211,238,0.3)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-bold text-white mb-1">Select Graphics API</h3>
+              <p className="text-cyan-400/70 text-sm">{includedApps[currentAppIndex]?.appName}</p>
+            </div>
 
-      {/* Floating Assistant Button - shows after app launch */}
+            {/* Graphics Options */}
+            <div className="flex gap-4">
+              {/* OpenGL Option */}
+              <button
+                onClick={() => launchWithGraphicsApi("opengl")}
+                className="flex-1 py-6 px-4 rounded-xl bg-gradient-to-b from-[#2a3a4a] to-[#1a2a3a] border-2 border-green-500/50 hover:border-green-400 transition-all group hover:shadow-[0_0_20px_rgba(34,197,94,0.4)]"
+              >
+                <div className="flex flex-col items-center gap-3">
+                  {/* OpenGL Icon */}
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center shadow-[0_0_20px_rgba(34,197,94,0.5)] group-hover:scale-110 transition-transform">
+                    <span className="text-2xl font-bold text-white">GL</span>
+                  </div>
+                  <span className="text-white font-semibold text-lg">OpenGL</span>
+                  <span className="text-green-400/70 text-xs">Compatible</span>
+                </div>
+              </button>
+
+              {/* Vulkan Option */}
+              <button
+                onClick={() => launchWithGraphicsApi("vulkan")}
+                className="flex-1 py-6 px-4 rounded-xl bg-gradient-to-b from-[#2a3a4a] to-[#1a2a3a] border-2 border-red-500/50 hover:border-red-400 transition-all group hover:shadow-[0_0_20px_rgba(239,68,68,0.4)]"
+              >
+                <div className="flex flex-col items-center gap-3">
+                  {/* Vulkan Icon */}
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.5)] group-hover:scale-110 transition-transform">
+                    <span className="text-2xl font-bold text-white">VK</span>
+                  </div>
+                  <span className="text-white font-semibold text-lg">Vulkan</span>
+                  <span className="text-red-400/70 text-xs">High Performance</span>
+                </div>
+              </button>
+            </div>
+
+            {/* Cancel */}
+            <button
+              onClick={() => setShowGraphicsSelector(false)}
+              className="w-full mt-4 py-2 text-white/50 hover:text-white text-sm transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+
       {showAssistantButton && (
         <button
           onClick={(e) => {
