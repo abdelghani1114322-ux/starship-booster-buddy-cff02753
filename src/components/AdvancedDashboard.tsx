@@ -3,6 +3,7 @@ import { ArrowLeft, Menu, ChevronRight, Plus, Loader2, Trash2, Bookmark } from "
 import { toast } from "sonner";
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import { BoostAssistant } from "./BoostAssistant";
+import assistantButton from "@/assets/assistant-button.png";
 
 
 interface InstalledAppsPlugin {
@@ -41,6 +42,7 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
   const [showAppPicker, setShowAppPicker] = useState(false);
   const [isLoadingApps, setIsLoadingApps] = useState(false);
   const [showAssistant, setShowAssistant] = useState(false);
+  const [showAssistantButton, setShowAssistantButton] = useState(false);
   const [wifiEnabled, setWifiEnabled] = useState(false);
   const [performanceMode, setPerformanceMode] = useState<"saving" | "balance" | "boost">("balance");
   const [cpuUsage, setCpuUsage] = useState(45);
@@ -184,19 +186,21 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
       prev.map((a, i) => i === currentAppIndex ? { ...a, boosted: true } : a)
     );
     
-    // Launch app directly and show assistant
+    // Launch app directly and show assistant button (panel hidden initially)
     if (Capacitor.isNativePlatform() && InstalledAppsNative) {
       try {
         await InstalledAppsNative.launchApp({ packageName: app.packageName });
         toast.success(`Launching ${app.appName}`);
-        setShowAssistant(true);
+        setShowAssistantButton(true);
+        setShowAssistant(false);
       } catch (error) {
         console.error("Error launching app:", error);
         toast.error("Failed to launch app");
       }
     } else {
       toast.success(`${app.appName} Boosted & Started!`);
-      setShowAssistant(true);
+      setShowAssistantButton(true);
+      setShowAssistant(false);
     }
   };
 
@@ -601,6 +605,19 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
         </div>
       )}
 
+
+      {/* Floating Assistant Button - shows after app launch */}
+      {showAssistantButton && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowAssistant(!showAssistant);
+          }}
+          className="fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-full bg-transparent flex items-center justify-center transform hover:scale-110 active:scale-95 transition-transform"
+        >
+          <img src={assistantButton} alt="Assistant" className="w-full h-full object-contain" />
+        </button>
+      )}
 
       {/* Boost Assistant Panel */}
       <BoostAssistant
