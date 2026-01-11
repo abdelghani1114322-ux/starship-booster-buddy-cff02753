@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { Zap, Cpu, MemoryStick, Gauge, Monitor, Settings, TrendingUp, PanelLeftOpen, Battery, Grid3X3, X, HardDrive, Thermometer, Clock } from "lucide-react";
+import { Zap, Cpu, MemoryStick, Gauge, Monitor, Settings, TrendingUp, PanelLeftOpen, Battery, Grid3X3, X, HardDrive, Thermometer, Clock, Wifi, Globe, Signal, Radar } from "lucide-react";
 import { BoostAssistant } from "./BoostAssistant";
 import { AdvancedDashboard } from "./AdvancedDashboard";
 import { GravityXDashboard } from "./GravityXDashboard";
@@ -48,6 +48,9 @@ export const GameBoosterDashboard = () => {
   const [batteryLevel, setBatteryLevel] = useState(85);
   const [batteryTimeRemaining, setBatteryTimeRemaining] = useState<number | null>(null);
   const [selectedAppFromNav, setSelectedAppFromNav] = useState<LocationState['selectedApp'] | null>(null);
+  const [selectedDns, setSelectedDns] = useState<string>("auto");
+  const [pingBoostEnabled, setPingBoostEnabled] = useState(false);
+  const [currentPing, setCurrentPing] = useState(45);
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number>(0);
   const touchStartY = useRef<number>(0);
@@ -780,6 +783,93 @@ export const GameBoosterDashboard = () => {
             </div>
           </Card>
         </div>
+
+        {/* Network Optimization Section */}
+        <Card className="p-4 bg-gradient-to-br from-card/90 to-card/70 border-primary/20">
+          <div className="flex items-center gap-2 mb-4">
+            <Globe className="w-5 h-5 text-primary" />
+            <h3 className="font-semibold text-foreground">Network Optimization</h3>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            {/* DNS Changer */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Wifi className="w-4 h-4 text-cyan-400" />
+                <span className="text-sm text-muted-foreground">DNS Server</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { id: "auto", label: "Auto", color: "text-green-400" },
+                  { id: "google", label: "Google", color: "text-blue-400" },
+                  { id: "cloudflare", label: "Cloudflare", color: "text-orange-400" },
+                  { id: "gaming", label: "Gaming", color: "text-red-400" },
+                ].map((dns) => (
+                  <button
+                    key={dns.id}
+                    onClick={() => {
+                      setSelectedDns(dns.id);
+                      toast.success(`DNS changed to ${dns.label}`);
+                    }}
+                    className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                      selectedDns === dns.id
+                        ? `bg-primary/20 border-2 border-primary ${dns.color}`
+                        : "bg-muted/30 border border-border/50 text-muted-foreground hover:bg-muted/50"
+                    }`}
+                  >
+                    {dns.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Ping Booster */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Signal className="w-4 h-4 text-yellow-400" />
+                  <span className="text-sm text-muted-foreground">Ping Booster</span>
+                </div>
+                <span className={`text-lg font-bold ${currentPing < 50 ? "text-green-400" : currentPing < 100 ? "text-yellow-400" : "text-red-400"}`}>
+                  {currentPing}ms
+                </span>
+              </div>
+              
+              <button
+                onClick={() => {
+                  setPingBoostEnabled(!pingBoostEnabled);
+                  if (!pingBoostEnabled) {
+                    setCurrentPing(prev => Math.max(15, prev - 20));
+                    toast.success("Ping Booster activated!", { description: "Network routes optimized" });
+                  } else {
+                    setCurrentPing(prev => prev + 20);
+                    toast.info("Ping Booster disabled");
+                  }
+                }}
+                className={`w-full py-3 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 ${
+                  pingBoostEnabled
+                    ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-[0_0_20px_rgba(34,197,94,0.4)]"
+                    : "bg-muted/40 border border-border text-muted-foreground hover:bg-muted/60"
+                }`}
+              >
+                <Radar className={`w-4 h-4 ${pingBoostEnabled ? "animate-pulse" : ""}`} />
+                {pingBoostEnabled ? "Active" : "Activate"}
+              </button>
+
+              {/* Ping indicator bar */}
+              <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full transition-all duration-500 rounded-full ${
+                    currentPing < 50 ? "bg-gradient-to-r from-green-500 to-emerald-400" : 
+                    currentPing < 100 ? "bg-gradient-to-r from-yellow-500 to-amber-400" : 
+                    "bg-gradient-to-r from-red-500 to-rose-400"
+                  }`}
+                  style={{ width: `${Math.max(10, 100 - currentPing)}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        </Card>
 
         {/* Quick Actions */}
         <div className="flex justify-center">
