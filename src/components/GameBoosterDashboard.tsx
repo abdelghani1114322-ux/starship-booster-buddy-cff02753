@@ -782,22 +782,10 @@ export const GameBoosterDashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Button variant="outline" className="h-auto py-4 flex-col gap-2">
-            <Cpu className="h-5 w-5" />
-            <span className="text-sm">Clear Cache</span>
-          </Button>
-          <Button variant="outline" className="h-auto py-4 flex-col gap-2">
-            <MemoryStick className="h-5 w-5" />
-            <span className="text-sm">Free RAM</span>
-          </Button>
-          <Button variant="outline" className="h-auto py-4 flex-col gap-2">
-            <Monitor className="h-5 w-5" />
-            <span className="text-sm">GPU Optimize</span>
-          </Button>
+        <div className="flex justify-center">
           <Button 
             variant="outline" 
-            className="h-auto py-4 flex-col gap-2"
+            className="h-auto py-4 px-8 flex-col gap-2"
             onClick={() => setShowAdvanced(true)}
           >
             <Settings className="h-5 w-5" />
