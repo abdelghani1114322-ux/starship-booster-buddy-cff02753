@@ -55,7 +55,8 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
   const [showMenu, setShowMenu] = useState(false);
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
   const [showGraphicsSelector, setShowGraphicsSelector] = useState(false);
-  const [selectedGraphicsApi, setSelectedGraphicsApi] = useState<"opengl" | "vulkan" | null>(null);
+  const [selectedGraphicsApi, setSelectedGraphicsApi] = useState<"opengl" | "vulkan">("vulkan");
+  const [vortexMode, setVortexMode] = useState<"disable" | "battery" | "performance" | "adaptive">("performance");
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isLongPressRef = useRef(false);
 
@@ -588,30 +589,133 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
         </div>
       )}
 
-      {/* Menu Overlay */}
+      {/* Menu Overlay - Vortex Mode */}
       {showMenu && (
-        <div className="fixed inset-0 z-60 bg-black/80" onClick={() => setShowMenu(false)}>
+        <div className="fixed inset-0 z-60 bg-black/90 flex items-center justify-center p-4" onClick={() => setShowMenu(false)}>
           <div 
-            className="absolute right-0 top-0 bottom-0 w-64 bg-[#0a1929] border-l border-cyan-400/20 p-6"
+            className="w-full max-w-md bg-[#1a1a1a] rounded-2xl p-6"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-bold text-white mb-6">Menu</h3>
-            <div className="space-y-4">
-              <button className="w-full text-left text-white/70 hover:text-cyan-400 transition-colors py-2">
-                Settings
-              </button>
-              <button className="w-full text-left text-white/70 hover:text-cyan-400 transition-colors py-2">
-                Performance Mode
-              </button>
-              <button className="w-full text-left text-white/70 hover:text-cyan-400 transition-colors py-2">
-                Game Library
-              </button>
-              <button 
-                onClick={onClose}
-                className="w-full text-left text-white/70 hover:text-cyan-400 transition-colors py-2"
-              >
-                Exit
-              </button>
+            {/* Vortex Mode Section */}
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-white mb-2">Vortex Mode</h2>
+              <p className="text-white/50 text-sm mb-6">This features will change your booster profile on Apollo V-Space</p>
+              
+              {/* Mode Options */}
+              <div className="grid grid-cols-4 gap-3">
+                {/* Disable */}
+                <button
+                  onClick={() => setVortexMode("disable")}
+                  className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
+                    vortexMode === "disable" 
+                      ? "bg-[#2a2a2a] border-green-500" 
+                      : "bg-[#1a1a1a] border-white/20 hover:border-white/40"
+                  }`}
+                >
+                  <svg className="w-8 h-8 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M4.93 4.93l14.14 14.14"/>
+                  </svg>
+                  <span className="text-white/70 text-xs">Disable</span>
+                </button>
+
+                {/* Battery */}
+                <button
+                  onClick={() => setVortexMode("battery")}
+                  className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
+                    vortexMode === "battery" 
+                      ? "bg-[#2a2a2a] border-green-500" 
+                      : "bg-[#1a1a1a] border-white/20 hover:border-white/40"
+                  }`}
+                >
+                  <svg className="w-8 h-8 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="6" y="4" width="12" height="18" rx="2"/>
+                    <rect x="9" y="1" width="6" height="2"/>
+                    <rect x="8" y="10" width="8" height="8" fill="currentColor" opacity="0.3"/>
+                  </svg>
+                  <span className="text-white/70 text-xs">Battery</span>
+                </button>
+
+                {/* Performance */}
+                <button
+                  onClick={() => setVortexMode("performance")}
+                  className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
+                    vortexMode === "performance" 
+                      ? "bg-[#2a2a2a] border-green-500" 
+                      : "bg-[#1a1a1a] border-white/20 hover:border-white/40"
+                  }`}
+                >
+                  <svg className={`w-8 h-8 ${vortexMode === "performance" ? "text-green-500" : "text-white/70"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                    <path d="M8 12h8" strokeWidth="3"/>
+                  </svg>
+                  <span className={`text-xs ${vortexMode === "performance" ? "text-green-500" : "text-white/70"}`}>Performance</span>
+                </button>
+
+                {/* Adaptive */}
+                <button
+                  onClick={() => setVortexMode("adaptive")}
+                  className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
+                    vortexMode === "adaptive" 
+                      ? "bg-[#2a2a2a] border-green-500" 
+                      : "bg-[#1a1a1a] border-white/20 hover:border-white/40"
+                  }`}
+                >
+                  <svg className="w-8 h-8 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                  </svg>
+                  <span className="text-white/70 text-xs">Adaptive</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Select Render Section */}
+            <div>
+              <h2 className="text-2xl font-bold text-[#4ade80] mb-4">Select Render</h2>
+              
+              <div className="flex gap-4">
+                {/* OpenGL Option */}
+                <button
+                  onClick={() => setSelectedGraphicsApi("opengl")}
+                  className={`flex-1 p-4 rounded-xl bg-[#1a1a1a] border transition-all text-left ${
+                    selectedGraphicsApi === "opengl"
+                      ? "border-green-500"
+                      : "border-white/20 hover:border-white/40"
+                  }`}
+                >
+                  <div className="mb-3">
+                    <span className="text-white text-lg font-bold italic">Open</span>
+                    <span className="text-white text-lg font-bold italic">GL</span>
+                    <span className="text-red-500 text-xs align-top">®</span>
+                  </div>
+                  <p className="text-white/50 text-xs leading-relaxed">
+                    OpenGL is a cross-platform graphics API that enables developers to interact with a computer's GPU to render 2D and 3D graphics.
+                  </p>
+                </button>
+
+                {/* Vulkan Option */}
+                <button
+                  onClick={() => setSelectedGraphicsApi("vulkan")}
+                  className={`flex-1 p-4 rounded-xl bg-[#1a1a1a] border-2 transition-all text-left ${
+                    selectedGraphicsApi === "vulkan"
+                      ? "border-[#cc0000] shadow-[0_0_15px_rgba(204,0,0,0.3)]"
+                      : "border-white/20 hover:border-white/40"
+                  }`}
+                >
+                  <div className="mb-3 flex items-center gap-1">
+                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2L4 20h16L12 2z" fill="#cc0000"/>
+                      <path d="M12 7L7 17h10L12 7z" fill="#1a1a1a"/>
+                    </svg>
+                    <span className="text-[#cc0000] text-lg font-bold italic">Vulkan</span>
+                    <span className="text-[#cc0000] text-[8px]">™</span>
+                  </div>
+                  <p className="text-white/50 text-xs leading-relaxed">
+                    Vulkan is a low-level graphics API designed for high-performance rendering on modern GPUs.
+                  </p>
+                </button>
+              </div>
             </div>
           </div>
         </div>
