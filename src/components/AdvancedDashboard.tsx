@@ -144,17 +144,19 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
   };
 
   const confirmAddApps = () => {
-    const appsToAdd = allApps.filter(app => selectedApps.has(app.packageName) && !app.isIncluded);
+    if (selectedApps.size === 0) {
+      toast.info("No apps selected");
+      setShowAppPicker(false);
+      return;
+    }
+
+    const appsToAdd = allApps.filter(app => selectedApps.has(app.packageName));
     
     if (appsToAdd.length === 0) {
       toast.info("No new apps selected");
       setShowAppPicker(false);
       return;
     }
-
-    setAllApps(prev => prev.map(app => 
-      selectedApps.has(app.packageName) ? { ...app, isIncluded: true } : app
-    ));
     
     setIncludedApps(prev => [
       ...prev,
@@ -164,7 +166,7 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
     toast.success(`${appsToAdd.length} app(s) added`);
     setSelectedApps(new Set());
     setShowAppPicker(false);
-    }
+  }
 
   const cancelAddApps = () => {
     setSelectedApps(new Set());
@@ -261,7 +263,8 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
     }
   };
 
-  const notIncludedApps = allApps.filter(app => !app.isIncluded);
+  const includedPackages = new Set(includedApps.map(app => app.packageName));
+  const notIncludedApps = allApps.filter(app => !includedPackages.has(app.packageName));
   const currentApp = includedApps[currentAppIndex];
 
   return (
