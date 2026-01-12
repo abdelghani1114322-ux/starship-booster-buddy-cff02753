@@ -617,59 +617,63 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
       {/* Graphics API Selector */}
       {showGraphicsSelector && (
         <div 
-          className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4"
           onClick={() => setShowGraphicsSelector(false)}
         >
           <div 
-            className="w-full max-w-sm bg-gradient-to-b from-[#1a2a3a] to-[#0d1821] rounded-2xl p-6 border border-cyan-400/30 shadow-[0_0_40px_rgba(34,211,238,0.3)]"
+            className="w-full max-w-md"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="text-center mb-6">
-              <h3 className="text-xl font-bold text-white mb-1">Select Graphics API</h3>
-              <p className="text-cyan-400/70 text-sm">{includedApps[currentAppIndex]?.appName}</p>
-            </div>
+            <h2 className="text-2xl font-bold text-[#4ade80] mb-6 ml-1">Select Render</h2>
 
             {/* Graphics Options */}
             <div className="flex gap-4">
               {/* OpenGL Option */}
               <button
                 onClick={() => launchWithGraphicsApi("opengl")}
-                className="flex-1 py-6 px-4 rounded-xl bg-gradient-to-b from-[#2a3a4a] to-[#1a2a3a] border-2 border-green-500/50 hover:border-green-400 transition-all group hover:shadow-[0_0_20px_rgba(34,197,94,0.4)]"
+                className="flex-1 p-5 rounded-xl bg-[#1a1a1a] border border-white/20 hover:border-white/40 transition-all text-left"
               >
-                <div className="flex flex-col items-center gap-3">
-                  {/* OpenGL Icon */}
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center shadow-[0_0_20px_rgba(34,197,94,0.5)] group-hover:scale-110 transition-transform">
-                    <span className="text-2xl font-bold text-white">GL</span>
-                  </div>
-                  <span className="text-white font-semibold text-lg">OpenGL</span>
-                  <span className="text-green-400/70 text-xs">Compatible</span>
+                {/* OpenGL Logo */}
+                <div className="mb-4">
+                  <svg className="h-8" viewBox="0 0 120 50" fill="none">
+                    <text x="0" y="35" fill="white" fontSize="24" fontFamily="Arial, sans-serif" fontWeight="bold" fontStyle="italic">
+                      Open
+                    </text>
+                    <text x="55" y="35" fill="white" fontSize="24" fontFamily="Arial, sans-serif" fontWeight="bold" fontStyle="italic">
+                      GL
+                    </text>
+                    <text x="55" y="35" fill="white" fontSize="24" fontFamily="Arial, sans-serif" fontWeight="bold" fontStyle="italic" style={{ letterSpacing: '-1px' }}>
+                      <tspan fill="#cc0000">®</tspan>
+                    </text>
+                  </svg>
                 </div>
+                {/* Description */}
+                <p className="text-white/60 text-sm leading-relaxed">
+                  OpenGL is a cross-platform graphics API that enables developers to interact with a computer's GPU to render 2D and 3D graphics.
+                </p>
               </button>
 
               {/* Vulkan Option */}
               <button
                 onClick={() => launchWithGraphicsApi("vulkan")}
-                className="flex-1 py-6 px-4 rounded-xl bg-gradient-to-b from-[#2a3a4a] to-[#1a2a3a] border-2 border-red-500/50 hover:border-red-400 transition-all group hover:shadow-[0_0_20px_rgba(239,68,68,0.4)]"
+                className="flex-1 p-5 rounded-xl bg-[#1a1a1a] border-2 border-[#cc0000] hover:border-[#ff3333] transition-all text-left hover:shadow-[0_0_20px_rgba(204,0,0,0.3)]"
               >
-                <div className="flex flex-col items-center gap-3">
-                  {/* Vulkan Icon */}
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.5)] group-hover:scale-110 transition-transform">
-                    <span className="text-2xl font-bold text-white">VK</span>
-                  </div>
-                  <span className="text-white font-semibold text-lg">Vulkan</span>
-                  <span className="text-red-400/70 text-xs">High Performance</span>
+                {/* Vulkan Logo */}
+                <div className="mb-4 flex items-center gap-2">
+                  <svg className="h-8" viewBox="0 0 30 30" fill="none">
+                    <path d="M15 2L2 28h26L15 2z" fill="#cc0000"/>
+                    <path d="M15 8L7 24h16L15 8z" fill="#1a1a1a"/>
+                  </svg>
+                  <span className="text-[#cc0000] text-2xl font-bold italic">Vulkan</span>
+                  <span className="text-[#cc0000] text-xs">™</span>
                 </div>
+                {/* Description */}
+                <p className="text-white/60 text-sm leading-relaxed">
+                  Vulkan is a low-level graphics API designed for high-performance rendering on modern GPUs.
+                </p>
               </button>
             </div>
-
-            {/* Cancel */}
-            <button
-              onClick={() => setShowGraphicsSelector(false)}
-              className="w-full mt-4 py-2 text-white/50 hover:text-white text-sm transition-colors"
-            >
-              Cancel
-            </button>
           </div>
         </div>
       )}
