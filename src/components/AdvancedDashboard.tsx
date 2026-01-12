@@ -591,9 +591,9 @@ export const AdvancedDashboard = ({ onClose, initialApp }: AdvancedDashboardProp
 
       {/* Menu Overlay - Vortex Mode */}
       {showMenu && (
-        <div className="fixed inset-0 z-60 bg-black/90 flex items-center justify-center p-4" onClick={() => setShowMenu(false)}>
+        <div className="fixed inset-0 z-60 bg-black/80" onClick={() => setShowMenu(false)}>
           <div 
-            className="w-full max-w-md bg-[#1a1a1a] rounded-2xl p-6"
+            className="absolute right-0 top-0 bottom-0 w-full max-w-md bg-[#1a1a1a] p-6 overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Vortex Mode Section */}
