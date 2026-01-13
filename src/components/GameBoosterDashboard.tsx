@@ -51,6 +51,11 @@ export const GameBoosterDashboard = () => {
   const [selectedDns, setSelectedDns] = useState<string>("auto");
   const [pingBoostEnabled, setPingBoostEnabled] = useState(false);
   const [currentPing, setCurrentPing] = useState(45);
+  const [basePing, setBasePing] = useState(45);
+  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [packetLoss, setPacketLoss] = useState(2.5);
+  const [jitter, setJitter] = useState(8);
+  const [networkStatus, setNetworkStatus] = useState<"excellent" | "good" | "fair" | "poor">("good");
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number>(0);
   const touchStartY = useRef<number>(0);
@@ -173,6 +178,91 @@ export const GameBoosterDashboard = () => {
     }
   };
 
+  // Network simulation - DNS affects base ping, ping booster reduces it further
+  const getDnsBasePing = (dns: string) => {
+    switch (dns) {
+      case "google": return 35;
+      case "cloudflare": return 28;
+      case "gaming": return 22;
+      default: return 45;
+    }
+  };
+
+  // Real-time network monitoring simulation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const dnsBase = getDnsBasePing(selectedDns);
+      const boostReduction = pingBoostEnabled ? 12 : 0;
+      const fluctuation = (Math.random() - 0.5) * 10;
+      const newPing = Math.max(8, Math.round(dnsBase - boostReduction + fluctuation));
+      
+      setCurrentPing(newPing);
+      
+      // Update jitter based on stability
+      const newJitter = pingBoostEnabled 
+        ? Math.max(1, Math.round(3 + Math.random() * 4))
+        : Math.max(3, Math.round(6 + Math.random() * 8));
+      setJitter(newJitter);
+      
+      // Update packet loss
+      const newPacketLoss = pingBoostEnabled 
+        ? Math.round(Math.random() * 0.5 * 10) / 10
+        : Math.round(Math.random() * 3 * 10) / 10;
+      setPacketLoss(newPacketLoss);
+      
+      // Determine network status
+      if (newPing < 30 && newJitter < 5) {
+        setNetworkStatus("excellent");
+      } else if (newPing < 50 && newJitter < 8) {
+        setNetworkStatus("good");
+      } else if (newPing < 80) {
+        setNetworkStatus("fair");
+      } else {
+        setNetworkStatus("poor");
+      }
+    }, 1500);
+    
+    return () => clearInterval(interval);
+  }, [selectedDns, pingBoostEnabled]);
+
+  // Handle DNS change with optimization animation
+  const handleDnsChange = (dnsId: string) => {
+    if (dnsId === selectedDns) return;
+    
+    setIsOptimizing(true);
+    setSelectedDns(dnsId);
+    
+    // Simulate DNS propagation
+    setTimeout(() => {
+      setIsOptimizing(false);
+      const dnsLabels: Record<string, string> = {
+        auto: "Automatic",
+        google: "Google (8.8.8.8)",
+        cloudflare: "Cloudflare (1.1.1.1)",
+        gaming: "Gaming DNS (optimized)"
+      };
+      toast.success(`DNS configured: ${dnsLabels[dnsId]}`, {
+        description: `Expected ping improvement: ${45 - getDnsBasePing(dnsId)}ms`
+      });
+    }, 800);
+  };
+
+  // Handle Ping Booster toggle
+  const handlePingBoostToggle = () => {
+    if (!pingBoostEnabled) {
+      setIsOptimizing(true);
+      setTimeout(() => {
+        setPingBoostEnabled(true);
+        setIsOptimizing(false);
+        toast.success("Ping Booster Activated! 🚀", {
+          description: "Network routes optimized, packet prioritization enabled"
+        });
+      }, 1200);
+    } else {
+      setPingBoostEnabled(false);
+      toast.info("Ping Booster disabled");
+    }
+  };
   const getStatusColor = (value: number, inverse = false) => {
     if (inverse) {
       if (value >= 100) return "text-primary";
@@ -785,10 +875,43 @@ export const GameBoosterDashboard = () => {
         </div>
 
         {/* Network Optimization Section */}
-        <Card className="p-4 bg-gradient-to-br from-card/90 to-card/70 border-primary/20">
-          <div className="flex items-center gap-2 mb-4">
-            <Globe className="w-5 h-5 text-primary" />
-            <h3 className="font-semibold text-foreground">Network Optimization</h3>
+        <Card className={`p-4 bg-gradient-to-br from-card/90 to-card/70 border-primary/20 transition-all ${isOptimizing ? "animate-pulse" : ""}`}>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Globe className={`w-5 h-5 text-primary ${isOptimizing ? "animate-spin" : ""}`} />
+              <h3 className="font-semibold text-foreground">Network Optimization</h3>
+            </div>
+            {/* Network Status Badge */}
+            <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
+              networkStatus === "excellent" ? "bg-green-500/20 text-green-400 border border-green-500/40" :
+              networkStatus === "good" ? "bg-blue-500/20 text-blue-400 border border-blue-500/40" :
+              networkStatus === "fair" ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/40" :
+              "bg-red-500/20 text-red-400 border border-red-500/40"
+            }`}>
+              {networkStatus}
+            </div>
+          </div>
+          
+          {/* Network Stats Row */}
+          <div className="grid grid-cols-3 gap-3 mb-4 p-3 bg-muted/20 rounded-lg">
+            <div className="text-center">
+              <div className={`text-lg font-bold ${currentPing < 30 ? "text-green-400" : currentPing < 60 ? "text-blue-400" : currentPing < 100 ? "text-yellow-400" : "text-red-400"}`}>
+                {currentPing}ms
+              </div>
+              <div className="text-xs text-muted-foreground">Ping</div>
+            </div>
+            <div className="text-center border-x border-border/30">
+              <div className={`text-lg font-bold ${jitter < 5 ? "text-green-400" : jitter < 10 ? "text-yellow-400" : "text-red-400"}`}>
+                {jitter}ms
+              </div>
+              <div className="text-xs text-muted-foreground">Jitter</div>
+            </div>
+            <div className="text-center">
+              <div className={`text-lg font-bold ${packetLoss < 1 ? "text-green-400" : packetLoss < 2 ? "text-yellow-400" : "text-red-400"}`}>
+                {packetLoss}%
+              </div>
+              <div className="text-xs text-muted-foreground">Loss</div>
+            </div>
           </div>
           
           <div className="grid grid-cols-2 gap-4">
@@ -800,24 +923,25 @@ export const GameBoosterDashboard = () => {
               </div>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { id: "auto", label: "Auto", color: "text-green-400" },
-                  { id: "google", label: "Google", color: "text-blue-400" },
-                  { id: "cloudflare", label: "Cloudflare", color: "text-orange-400" },
-                  { id: "gaming", label: "Gaming", color: "text-red-400" },
+                  { id: "auto", label: "Auto", color: "text-green-400", desc: "System default" },
+                  { id: "google", label: "Google", color: "text-blue-400", desc: "8.8.8.8" },
+                  { id: "cloudflare", label: "CF", color: "text-orange-400", desc: "1.1.1.1" },
+                  { id: "gaming", label: "Gaming", color: "text-red-400", desc: "Optimized" },
                 ].map((dns) => (
                   <button
                     key={dns.id}
-                    onClick={() => {
-                      setSelectedDns(dns.id);
-                      toast.success(`DNS changed to ${dns.label}`);
-                    }}
-                    className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                    onClick={() => handleDnsChange(dns.id)}
+                    disabled={isOptimizing}
+                    className={`px-3 py-2 rounded-lg text-xs font-medium transition-all relative overflow-hidden ${
                       selectedDns === dns.id
-                        ? `bg-primary/20 border-2 border-primary ${dns.color}`
-                        : "bg-muted/30 border border-border/50 text-muted-foreground hover:bg-muted/50"
-                    }`}
+                        ? `bg-primary/20 border-2 border-primary ${dns.color} shadow-[0_0_10px_rgba(59,130,246,0.3)]`
+                        : "bg-muted/30 border border-border/50 text-muted-foreground hover:bg-muted/50 hover:border-primary/30"
+                    } ${isOptimizing ? "opacity-50 cursor-wait" : ""}`}
                   >
-                    {dns.label}
+                    <span className="block">{dns.label}</span>
+                    {selectedDns === dns.id && (
+                      <span className="text-[10px] opacity-70 block">{dns.desc}</span>
+                    )}
                   </button>
                 ))}
               </div>
@@ -827,40 +951,42 @@ export const GameBoosterDashboard = () => {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Signal className="w-4 h-4 text-yellow-400" />
+                  <Signal className={`w-4 h-4 ${pingBoostEnabled ? "text-green-400 animate-pulse" : "text-yellow-400"}`} />
                   <span className="text-sm text-muted-foreground">Ping Booster</span>
                 </div>
-                <span className={`text-lg font-bold ${currentPing < 50 ? "text-green-400" : currentPing < 100 ? "text-yellow-400" : "text-red-400"}`}>
+                <span className={`text-lg font-bold transition-all ${currentPing < 30 ? "text-green-400" : currentPing < 60 ? "text-blue-400" : currentPing < 100 ? "text-yellow-400" : "text-red-400"}`}>
                   {currentPing}ms
                 </span>
               </div>
               
               <button
-                onClick={() => {
-                  setPingBoostEnabled(!pingBoostEnabled);
-                  if (!pingBoostEnabled) {
-                    setCurrentPing(prev => Math.max(15, prev - 20));
-                    toast.success("Ping Booster activated!", { description: "Network routes optimized" });
-                  } else {
-                    setCurrentPing(prev => prev + 20);
-                    toast.info("Ping Booster disabled");
-                  }
-                }}
+                onClick={handlePingBoostToggle}
+                disabled={isOptimizing}
                 className={`w-full py-3 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 ${
                   pingBoostEnabled
                     ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-[0_0_20px_rgba(34,197,94,0.4)]"
                     : "bg-muted/40 border border-border text-muted-foreground hover:bg-muted/60"
-                }`}
+                } ${isOptimizing ? "opacity-50 cursor-wait" : ""}`}
               >
-                <Radar className={`w-4 h-4 ${pingBoostEnabled ? "animate-pulse" : ""}`} />
-                {pingBoostEnabled ? "Active" : "Activate"}
+                {isOptimizing ? (
+                  <>
+                    <Radar className="w-4 h-4 animate-spin" />
+                    Optimizing...
+                  </>
+                ) : (
+                  <>
+                    <Radar className={`w-4 h-4 ${pingBoostEnabled ? "animate-pulse" : ""}`} />
+                    {pingBoostEnabled ? "Active" : "Activate"}
+                  </>
+                )}
               </button>
 
               {/* Ping indicator bar */}
               <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
                 <div 
                   className={`h-full transition-all duration-500 rounded-full ${
-                    currentPing < 50 ? "bg-gradient-to-r from-green-500 to-emerald-400" : 
+                    currentPing < 30 ? "bg-gradient-to-r from-green-500 to-emerald-400" : 
+                    currentPing < 60 ? "bg-gradient-to-r from-blue-500 to-cyan-400" : 
                     currentPing < 100 ? "bg-gradient-to-r from-yellow-500 to-amber-400" : 
                     "bg-gradient-to-r from-red-500 to-rose-400"
                   }`}
